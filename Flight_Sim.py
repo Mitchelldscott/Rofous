@@ -3,6 +3,16 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 
+"""
+	This function is a compliment to the Pose3D object. 
+It is used to update a 3-dimensional pose (x,y,z,roll,pitch,theta) 
+using 6-DOF accel/gyro. 
+~Params
+	- pose: dictionary of coordinates/angles -> {'x':0, 'y':0, 'z':0, 'roll':0, 'pitch':0, 'yaw':0} float
+	- deltas: accel/gyro readings -> [0, 0, 0, 0, 0, 0] float
+~Return
+	- None
+"""
 def update(pose, deltas):
 	pose['x'] += deltas[0]
 	pose['y'] += deltas[1]
@@ -12,6 +22,15 @@ def update(pose, deltas):
 	pose['yaw'] += np.radians(deltas[5])
 
 
+"""
+	This function creates a 3D unit vector from spherical coordinates.
+Note that because it is a unit vector magnitude ie R has no use.
+~Params
+	- theta: rotational offset in xy plane where 0 is the x-axis -> float
+	- phi: rotational offset of the z-axis where 0 is the z-axis -> float
+~Return
+	- A 3D Pose (x,y,z) rounded to 4 places
+"""
 def spherical2cartesian(theta, phi):
 	theta = np.radians(theta)
 	phi = np.radians(phi)
@@ -26,6 +45,21 @@ def spherical2cartesian(theta, phi):
 		return (np.round(np.cos(theta)*np.sin(phi), 4), np.round(np.sin(theta)*np.sin(phi), 4), np.round(np.cos(phi), 4))
 
 
+"""
+	This function uses the heading and deltas to calculate the adjustments
+required to stabilize and maintain the desired/instructed flight path. By
+creating an adjustment for each motor based on the direction the motor is going
+and the direction we want to make it go. An important feature is acceleration
+muting. Meaning if the bot is moving in a direction, telling it to go that direction 
+again will not increase the speed much.
+~Params
+	- heading: 3D unit vector specifying desired direction -> (0, 0, 0) float
+	- deltas: readings from an accel/gyro -> [0, 0, 0, 0, 0, 0] float
+~Return
+	- adjustments: A dictionary of adjustments
+		* Note that the adjustments are for the entire device
+		 ie xpitch will be added to two motors and subtracted from two (assuming the device is a quadcopter)
+"""
 def translate(heading, deltas):
 	adjustment = {'xpitch' : heading[0] - (deltas[0] + (deltas[4] / 2000)),
 								'yroll' : heading[1] - (deltas[1] + (deltas[3] / 2000)),
@@ -34,6 +68,14 @@ def translate(heading, deltas):
 	return adjustment
 
 
+"""
+	This function draws vectors based on the pose and heading of the device.
+~Params
+	- pose: A 3D pose of the device -> (x,y,z) float
+	- heading: A 3D unit vector -> (x,y,z) float
+~Return
+	- None
+"""
 def render(pose, heading):
 	fig = plt.figure(figsize=(8, 5))
 	ax0 = fig.add_subplot(121, projection='3d')
