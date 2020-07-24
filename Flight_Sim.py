@@ -6,7 +6,9 @@ from mpl_toolkits.mplot3d import Axes3D
 """
 	This function is a compliment to the Pose3D object. 
 It is used to update a 3-dimensional pose (x,y,z,roll,pitch,theta) 
-using 6-DOF accel/gyro. 
+using 6-DOF accel/gyro. The cycle time is assumed to be 1 for ease of
+development. In an actual implementtion this needs to be included in
+as an arguement/global.
 ~Params
 	- pose: dictionary of coordinates/angles -> {'x':0, 'y':0, 'z':0, 'roll':0, 'pitch':0, 'yaw':0} float
 	- deltas: accel/gyro readings -> [0, 0, 0, 0, 0, 0] float
@@ -23,7 +25,7 @@ def update(pose, deltas):
 
 
 """
-	This function creates a 3D unit vector from spherical coordinates.
+	This function creates a 3D cartesian unit vector from spherical coordinates.
 Note that because it is a unit vector magnitude ie R has no use.
 ~Params
 	- theta: rotational offset in xy plane where 0 is the x-axis -> float
@@ -34,13 +36,8 @@ Note that because it is a unit vector magnitude ie R has no use.
 def spherical2cartesian(theta, phi):
 	theta = np.radians(theta)
 	phi = np.radians(phi)
-	if theta == 'N/A':
-		if phi == 'N/A':
-			return (0, 0, 0)
-		else:
+	if phi == 0:
 			return (0, 0, 1)
-	elif phi == 'N/A':
-		return (np.cos(theta), np.sin(theta), 0)
 	else:
 		return (np.round(np.cos(theta)*np.sin(phi), 4), np.round(np.sin(theta)*np.sin(phi), 4), np.round(np.cos(phi), 4))
 
@@ -99,12 +96,13 @@ def render(pose, heading):
 
 
 pose = {'x':0, 'y':0, 'z':0, 'roll':0, 'pitch':0, 'yaw':0}
-heading = spherical2cartesian(0, 90)
+heading = spherical2cartesian(90, 90)
 
-deltas = [1, 0, 0, 0, 0, 0]
+deltas = [0, 0, 0, 0, 0, 0]
 update(pose, deltas)
 print(f'Adjustments {translate(heading, deltas)}')
 print(f'Heading {heading}')
+print(f'Deltas {deltas}')
 #render(pose, heading)
 
 
