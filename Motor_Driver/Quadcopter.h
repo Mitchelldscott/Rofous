@@ -52,7 +52,7 @@ class Quadcopter {
   public:
     Servo motors[4];
     Pose3D pose;
-    float heading[3];
+    float heading[3] = {0.0, 0.0, 0.0};
     int throttle;
     
     Quadcopter(int cycle_time, int pin1, int pin2, int pin3, int pin4){
@@ -61,9 +61,6 @@ class Quadcopter {
       motors[1].attach(pin2);
       motors[2].attach(pin3);
       motors[3].attach(pin4);
-      heading[0] = 0.0;
-      heading[1] = 0.0;
-      heading[2] = 0.0;
       throttle = 1000;
     }
     
@@ -79,18 +76,12 @@ class Quadcopter {
     *  ~Return
     *    - None
     */
-    void spherical2cartesian(float theta, float phi, bool e_bit){
-      theta = radians(theta);
-      phi = radians(phi);
-      if( phi == 0.0 ){
-        heading[0], heading[1] = 0;
-        heading[2] = 1;
-      }
-      else{
-       heading[0] = round(cos(theta)*sin(phi)) * e_bit;
-       heading[1] = round(sin(theta)*sin(phi)) * e_bit;
-       heading[2] = round(cos(phi)) * e_bit;
-      }
+    void spherical2cartesian(int t, int p, bool e_bit){
+      float theta = radians(t);
+      float phi = radians(p);
+      heading[0] = cos(theta)*sin(phi) * e_bit;
+      heading[1] = sin(theta)*sin(phi) * e_bit;
+      heading[2] = cos(phi) * e_bit;
     }
 
     
@@ -110,10 +101,12 @@ class Quadcopter {
      *  - None
      */
     void heading2adjustments(float deltas[6], int adjustments[4]){
-      adjustments[0] = int(heading[0] - (deltas[0] + (deltas[4] / 2000)));
-      adjustments[1] = int(heading[1] - (deltas[1] + (deltas[3] / 2000)));
+      adjustments[0] = int(heading[0] - (deltas[0] + deltas[4]));
+      adjustments[1] = int(heading[1] - (deltas[1] + deltas[3]));
+      //Serial.println(heading[2]);
+      //Serial.println(deltas[2]);
       adjustments[2] = int(heading[2] - deltas[2]);
-      adjustments[3] = int(-deltas[5] / 2000);
+      adjustments[3] = int(-deltas[5]);
     }
     /*
      *  This function is a simple motor driver.
@@ -125,11 +118,23 @@ class Quadcopter {
      *  ~Return
      *  - None
      */
-    int adjust_motor_speeds(float pose_adj[4], boolean enable_bit){
-      motors[0].writeMicroseconds(throttle - pose_adj[0] - pose_adj[1] + pose_adj[2] - pose_adj[3] * enable_bit);
-      motors[1].writeMicroseconds(throttle - pose_adj[0] + pose_adj[1] + pose_adj[2] + pose_adj[3] * enable_bit);
-      motors[2].writeMicroseconds(throttle + pose_adj[0] - pose_adj[1] + pose_adj[2] + pose_adj[3] * enable_bit);
-      motors[3].writeMicroseconds(throttle + pose_adj[0] + pose_adj[1] + pose_adj[2] - pose_adj[3] * enable_bit);
+    int adjust_motor_speeds(int pose_adj[4], boolean enable_bit){
+      //Serial.print("Active Throttle: ");
+      motors[0].writeMicroseconds(throttle + pose_adj[0] + pose_adj[1] + pose_adj[2] + pose_adj[3] * enable_bit);
+      //Serial.print(throttle + pose_adj[0] + pose_adj[1] + pose_adj[2] + pose_adj[3] * enable_bit);
+      //Serial.print("\t");
+      motors[1].writeMicroseconds(throttle + pose_adj[0] - pose_adj[1] + pose_adj[2] - pose_adj[3] * enable_bit);
+      //Serial.print(throttle + pose_adj[0] - pose_adj[1] + pose_adj[2] - pose_adj[3] * enable_bit);
+      //Serial.print("\t");
+      motors[2].writeMicroseconds(throttle - pose_adj[0] - pose_adj[1] + pose_adj[2] - pose_adj[3] * enable_bit);
+      //Serial.print(throttle - pose_adj[0] - pose_adj[1] + pose_adj[2] - pose_adj[3] * enable_bit);
+      //Serial.print("\t");
+      motors[3].writeMicroseconds(throttle - pose_adj[0] + pose_adj[1] + pose_adj[2] + pose_adj[3] * enable_bit);
+      //Serial.println(throttle - pose_adj[0] + pose_adj[1] + pose_adj[2] + pose_adj[3] * enable_bit);
+      throttle = ((throttle + pose_adj[0] + pose_adj[1] + pose_adj[2] + pose_adj[3] * enable_bit) + 
+                   (throttle + pose_adj[0] - pose_adj[1] + pose_adj[2] - pose_adj[3] * enable_bit) +
+                    (throttle - pose_adj[0] - pose_adj[1] + pose_adj[2] - pose_adj[3] * enable_bit) + 
+                      (throttle - pose_adj[0] + pose_adj[1] + pose_adj[2] + pose_adj[3] * enable_bit)) / 4;
     }
 };
 

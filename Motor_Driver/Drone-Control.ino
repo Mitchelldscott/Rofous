@@ -20,24 +20,29 @@
 #include <ArduinoBLE.h>
 #include <Arduino_LSM6DS3.h>
 
-#define CYCLE_TIME 1
-#define motor_fr 2
-#define motor_fl 3
-#define motor_rl 12
-#define motor_rr 9
+#define CYCLE_TIME 600
+#define motor_fr 3
+#define motor_fl 6
+#define motor_rl 9
+#define motor_rr 12
 #define throttle 1000
+
 
 Quadcopter device = Quadcopter(CYCLE_TIME, motor_fr, motor_fl, motor_rl, motor_rr);
 
 BLEService fcService("1010");
-BLEUnsignedCharCharacteristic heading("1313", BLEWrite);
+BLEUnsignedCharCharacteristic thetaChar("1300", BLEWrite);
+BLEUnsignedCharCharacteristic phiChar("0013", BLEWrite);
 BLEUnsignedCharCharacteristic kill_switch("6793", BLEWrite);
-BLEFloatCharacteristic poseX("0111", BLERead);
-BLEFloatCharacteristic poseY("1011", BLERead);
-BLEFloatCharacteristic poseZ("1101", BLERead);
+BLEFloatCharacteristic headingX("0111", BLERead);
+BLEFloatCharacteristic headingY("1011", BLERead);
+BLEFloatCharacteristic headingZ("1101", BLERead);
 
 float offsets[6];
-int enable_bit = 1;
+float ble_reader = 0;
+int theta;
+int phi;
+bool enable_bit = true;
 
 
 void zero_imu(float offset[6]){
@@ -65,11 +70,11 @@ void zero_imu(float offset[6]){
   offset[5] /= 10;
 }
 
+
 void setup() {
                                                         
   Serial.begin(9600);                                   // Initialize the Serial Connection
-  while (!Serial);                                      //  - Used for debugging and in future will be the main comms for RPi -> Arduino
-                                                        //  - If not connected the device will freeze
+  
   if (!IMU.begin()) {                                   // Initialize the IMU device
     Serial.println("Failed to initialize IMU!");        //  - Used for gyro/accel stabilization
     while (1);                                          //  - If fails device will freeze
@@ -80,20 +85,18 @@ void setup() {
   if(BLE.begin()){                                      // Initialize the BLE service
     BLE.setLocalName("Flight Controller");              //  - Provides a manual control
     BLE.setAdvertisedService(fcService);
-    fcService.addCharacteristic(heading);
-    fcService.addCharacteristic(poseX);
-    fcService.addCharacteristic(poseY);
-    fcService.addCharacteristic(poseZ);
+    fcService.addCharacteristic(thetaChar);
+    fcService.addCharacteristic(phiChar);
     fcService.addCharacteristic(kill_switch);
+    fcService.addCharacteristic(headingX);
+    fcService.addCharacteristic(headingY);
+    fcService.addCharacteristic(headingZ);
     BLE.addService(fcService);
     BLE.setEventHandler(BLEConnected, blePeripheralConnectHandler);
     BLE.setEventHandler(BLEDisconnected, blePeripheralDisconnectHandler);
-    heading.setEventHandler(BLEWritten, headingReceiver);
+    thetaChar.setEventHandler(BLEWritten, thetaReceiver);
+    phiChar.setEventHandler(BLEWritten, phiReceiver);
     kill_switch.setEventHandler(BLEWritten, killReceiver);
-    heading.setValue(0);
-    poseX.setValue(0);
-    poseY.setValue(0);
-    poseZ.setValue(0);
     BLE.advertise();
   }
   else
@@ -104,14 +107,31 @@ void setup() {
   device.motors[2].writeMicroseconds(throttle * enable_bit);
   device.motors[3].writeMicroseconds(throttle * enable_bit);
   
-  delay(2500);
+  delay(2500);                                                                      // Allows motors to initialize
 }
 
 
 void loop() {
-
-  int start = millis();
+  unsigned long start = micros();
   float deltas[6];
+
+  BLE.poll(); 
+
+  while(Serial.available() > 0){
+    int state = Serial.read();
+    switch(state){
+      case 0:
+        theta = Serial.read();
+        phi = Serial.read();
+        enable_bit = Serial.read();
+        device.spherical2cartesian(theta, phi, enable_bit);
+    }
+  }
+
+  if(ble_reader >= 1){
+    device.spherical2cartesian(theta, phi, enable_bit);
+    ble_reader = 0;
+  }
   
   if (IMU.accelerationAvailable() && IMU.gyroscopeAvailable()){
     IMU.readAcceleration(deltas[0], deltas[1], deltas[2]);
@@ -123,60 +143,49 @@ void loop() {
     deltas[4] -= offsets[4];
     deltas[5] -= offsets[5];
   }
-
-  int adjustments[6] = {0, 0, 0, 0, 0, 0};
+  
+  int adjustments[4] = {0, 0, 0, 0};
   device.heading2adjustments(deltas, adjustments);
-  Serial.print("Adjustments: ");
-  Serial.print("{x : ");
-  Serial.print(adjustments[0]);
-  Serial.print(", y : ");
-  Serial.print(adjustments[1]);
-  Serial.print(", z : ");
-  Serial.print(adjustments[2]);
-  Serial.print(", roll : ");
-  Serial.print(adjustments[3]);
-  Serial.print(", pitch : ");
-  Serial.print(adjustments[4]);
-  Serial.print(", yaw : ");
-  Serial.print(adjustments[5]);
-  Serial.println("}");
-  poseX.setValue(device.pose.x);
-  poseY.setValue(device.pose.y);
-  poseZ.setValue(device.pose.z);
-   
- //m_1.writeMicroseconds(value * enable_bit);
- //m_2.writeMicroseconds(value * enable_bit);
- //m_3.writeMicroseconds(value * enable_bit);
- //m_4.writeMicroseconds(value * enable_bit);
- 
- //Serial.println(value);
- int t = millis();
- while( t - start < CYCLE_TIME)
-  Serial.println("Under Cycled: try lowering cycle time");
-  Serial.print("Previous Duration: ");
-  Serial.println(t - start);
-  t = millis();
+  device.adjust_motor_speeds(adjustments, enable_bit);
+  headingX.writeValue(device.heading[0]);
+  headingY.writeValue(device.heading[1]);
+  headingZ.writeValue(device.heading[2]);
+
+  unsigned long t = micros();
+  while( t - start < CYCLE_TIME){
+    t = micros();  
+    //Serial.print("Under Cycled: ");
+    //Serial.println(t - start);  
+  }
 }
 
 void blePeripheralConnectHandler(BLEDevice central) {
   // central connected event handler
-  Serial.print("Connected event, central: ");
-  Serial.println(central.address());
+  //Serial.print("Connected event, central: ");
+  //Serial.println(central.address());
 }
 
 void blePeripheralDisconnectHandler(BLEDevice central) {
   // central disconnected event handler
-  Serial.print("Disconnected event, central: ");
-  Serial.println(central.address());
+  //Serial.print("Disconnected event, central: ");
+  //Serial.println(central.address());
 }
 
-void headingReceiver(BLEDevice central, BLECharacteristic characteristic) {
-  Serial.print("Characteristic event, written: ");
+void thetaReceiver(BLEDevice central, BLECharacteristic characteristic) {
+  //Serial.println("Theta Heading Recieved: ");
+  theta = characteristic.value()[0];
+  ble_reader += .5;
+}
+
+void phiReceiver(BLEDevice central, BLECharacteristic characteristic) {
+  //Serial.println("Phi Heading Recieved: ");
+  phi = characteristic.value()[0]; 
+  ble_reader += .5;
 }
 
 void killReceiver(BLEDevice central, BLECharacteristic characteristic) {
-  if(characteristic == '0'){
-    Serial.print("Kill Switch Activated");
+  if(characteristic.value()[0] == '0'){
+    //Serial.print("Kill Switch Activated");
     enable_bit = 0;
   }
   else
