@@ -1,108 +1,125 @@
+############################################################################################################
+#	variableActual -> in the inertial frame
+#	
+
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from matplotlib.animation import FuncAnimation
 
 
-"""
-	This function is a compliment to the Pose3D object. 
-It is used to update a 3-dimensional pose (x,y,z,roll,pitch,theta) 
-using 6-DOF accel/gyro. The cycle time is assumed to be 1 for ease of
-development. In an actual implementtion this needs to be included in
-as an arguement/global.
-~Params
-	- pose: dictionary of coordinates/angles -> {'x':0, 'y':0, 'z':0, 'roll':0, 'pitch':0, 'yaw':0} float
-	- deltas: accel/gyro readings -> [0, 0, 0, 0, 0, 0] float
-~Return
-	- None
-"""
-def update(pose, deltas):
-	pose['x'] += deltas[0]
-	pose['y'] += deltas[1]
-	pose['z'] += deltas[2]
-	pose['roll'] += np.radians(deltas[3])
-	pose['pitch'] += np.radians(deltas[4])
-	pose['yaw'] += np.radians(deltas[5])
+def R(pose, flopper=[0, 0, 0]):
+	return {'x' : (flopper[0] * np.cos(pose['psi']) * np.cos(pose['theta'])) + (flopper[1] * (np.cos(pose['psi']) * np.sin(pose['phi']) * np.sin(pose['theta']) - (np.sin(pose['psi']) * np.cos(pose['phi'])))) + (flopper[2] * (np.cos(pose['psi']) * np.sin(pose['theta']) * np.cos(pose['phi']) + (np.sin(pose['psi']) * np.sin(pose['phi'])))) + pose['x'],
+		'y' : (flopper[0] * np.sin(pose['psi']) * np.cos(pose['theta'])) + (flopper[1] * (np.sin(pose['psi']) * np.sin(pose['phi']) * np.sin(pose['theta']) + (np.cos(pose['psi']) * np.cos(pose['phi'])))) + (flopper[2] * (np.sin(pose['psi']) * np.sin(pose['theta']) * np.cos(pose['phi']) - (np.cos(pose['psi']) * np.sin(pose['phi'])))) + pose['y'], 
+		'z' : (flopper[0] * -np.sin(pose['theta'])) + (flopper[1] * np.cos(pose['theta']) * np.sin(pose['phi'])) + (flopper[2] * np.cos(pose['theta']) * np.cos(pose['phi'])) + pose['z']}
 
 
-"""
-	This function creates a 3D cartesian unit vector from spherical coordinates.
-Note that because it is a unit vector magnitude ie R has no use.
-~Params
-	- theta: rotational offset in xy plane where 0 is the x-axis -> float
-	- phi: rotational offset of the z-axis where 0 is the z-axis -> float
-~Return
-	- A 3D Pose (x,y,z) rounded to 4 places
-"""
-def spherical2cartesian(theta, phi):
-	theta = np.radians(theta)
-	phi = np.radians(phi)
-	if phi == 0:
-			return (0, 0, 1)
-	else:
-		return (np.round(np.cos(theta)*np.sin(phi), 4), np.round(np.sin(theta)*np.sin(phi), 4), np.round(np.cos(phi), 4))
+def update(pose, deltas, cycleTime):
+	pose['x'] += deltas['x'] * cycleTime**2
+	pose['y'] += deltas['y'] * cycleTime**2
+	pose['z'] += deltas['z'] * cycleTime**2
+	if pose['z'] < 0:
+		pose['z'] = 0.0
+	pose['phi'] += np.radians(deltas['phi']) * cycleTime**2
+	pose['theta'] += np.radians(deltas['theta']) * cycleTime**2
+	pose['psi'] += np.radians(deltas['psi']) * cycleTime**2
+	return pose
 
 
-"""
-	This function uses the heading and deltas to calculate the adjustments
-required to stabilize and maintain the desired/instructed flight path. By
-creating an adjustment for each motor based on the direction the motor is going
-and the direction we want to make it go. An important feature is acceleration
-muting. Meaning if the bot is moving in a direction, telling it to go that direction 
-again will not increase the speed much.
-~Params
-	- heading: 3D unit vector specifying desired direction -> (0, 0, 0) float
-	- deltas: readings from an accel/gyro -> [0, 0, 0, 0, 0, 0] float
-~Return
-	- adjustments: A dictionary of adjustments
-		* Note that the adjustments are for the entire device
-		 ie xpitch will be added to two motors and subtracted from two (assuming the device is a quadcopter)
-"""
-def translate(heading, deltas):
-	adjustment = {'xpitch' : heading[0] - (deltas[0] + (deltas[4] / 2000)),
-								'yroll' : heading[1] - (deltas[1] + (deltas[3] / 2000)),
-								'z' : heading[2] - deltas[2],
-								'yaw' : -deltas[5] / 2000}
-	return adjustment
+def get_netForce(pose, omegas, mass, velocity, k=0.005, b=0.003):
+	fNet = {'x':0, 'y':0, 'z':-mass * 9.81, 'phi':0, 'theta':0, 'psi':0}
+	thrusts = []
+	for i,omega in enumerate(omegas):
+		if i < len(omegas) / 4 or i >= 3 * len(omegas) / 4:
+			fNet['phi'] += omega**2
+		else:
+			fNet['phi'] -= omega**2
+		if i < len(omegas) / 2:
+			fNet['theta'] += omega**2
+		else:
+			fNet['theta'] -= omega**2
+		fNet['psi'] += omega**2 * (-1)**i
+		thrusts.append(omega**2)
+	thrustActual = R(pose, flopper=[0,0,np.sum(thrusts) * k])
+	drag = R(pose, flopper=[-b * velocity['x'], -b * velocity['y'], -b * velocity['z']])
+	fNet['x'] += thrustActual['x'] + drag['x']
+	fNet['y'] += thrustActual['y'] + drag['y']
+	fNet['z'] += thrustActual['z'] + drag['z']
+	return fNet
 
 
-"""
-	This function draws vectors based on the pose and heading of the device.
-~Params
-	- pose: A 3D pose of the device -> (x,y,z) float
-	- heading: A 3D unit vector -> (x,y,z) float
-~Return
-	- None
-"""
-def render(pose, heading):
-	fig = plt.figure(figsize=(8, 5))
-	ax0 = fig.add_subplot(121, projection='3d')
-	ax1 = fig.add_subplot(122, projection='3d')
-	xVect = (np.round(np.cos(pose['yaw'])*np.cos(pose['pitch']), 4), np.round(-np.sin(pose['yaw']), 4), np.round(-np.sin(pose['pitch']), 4))
-	yVect = (np.round(np.sin(pose['yaw']), 4), np.round(np.cos(pose['roll'])*np.cos(pose['yaw']), 4), np.round(np.sin(pose['roll']), 4))
-	zVect = (np.round(np.sin(pose['pitch']), 4), np.round(np.sin(pose['roll']), 4), np.round(np.cos(pose['pitch'])*np.cos(pose['roll']), 4))
-	ax0.plot([pose['x'], pose['x'] + xVect[0]], [pose['y'], pose['y'] + xVect[1]], [pose['z'], pose['z'] + xVect[2]], color='b')
-	ax0.plot([pose['x'], pose['x'] + yVect[0]], [pose['y'], pose['y'] + yVect[1]], [pose['z'], pose['z'] +  yVect[2]], color='r')
-	ax0.plot([pose['x'], pose['x'] + zVect[0]], [pose['y'], pose['y'] + zVect[1]], [pose['z'], pose['z'] +  zVect[2]], color='g')
-	ax1.plot([pose['x'], pose['x'] + heading[0]], [pose['y'], pose['y'] + heading[1]], [pose['z'], pose['z'] + heading[2]], color='y')
-	ax1.scatter([pose['x'] + heading[0]], [pose['y'] + heading[1]], [pose['z'] + heading[2]], color='purple', marker='^')
-	ax0.scatter([7, 7, -7, -7], [7, -7, -7, 7], [0, 0, 0, 0], color='w')
-	ax0.scatter([7, 7, -7, -7], [7, -7, -7, 7], [7, 7, 7, 7], color='w')
-	ax1.scatter([2, 2, -2, -2], [2, -2, -2, 2], [-2, -2, -2, -2], color='w')
-	ax1.scatter([2, 2, -2, -2], [2, -2, -2, 2], [2, 2, 2, 2], color='w')
-	print(f'X unit vector: {xVect}')
-	print(f'Y unit vector: {yVect}')
-	print(f'Z unit vector: {zVect}')
+def step(target, pose, data):
+	xComp = data['gains'][0] * (target[0] - pose['x'])
+	yComp = data['gains'][1] * (target[1] - pose['y'])
+	zComp = data['gains'][2] * (target[2] - pose['z'])
+	phiComp = data['gains'][3] * (target[3] - pose['phi'])
+	thetaComp = data['gains'][4] * (target[4] - pose['theta'])
+	psiComp = data['gains'][5] * (target[5] - pose['psi'])
+	data['omegas'][0] += -xComp + yComp + zComp
+	data['omegas'][1] += -xComp - yComp + zComp
+	data['omegas'][2] += xComp - yComp + zComp
+	data['omegas'][3] += xComp + yComp + zComp
+	return data
+
+
+def renderDevice(ax, pose, fNet, motors=[(1,1,0), (-1,1,0), (-1,-1,0), (1,-1,0)], colors=['r', 'b']):
+	for i,motor in enumerate(motors):
+		motorPose = R(pose, flopper=motor)
+		ax.scatter(motorPose['x'], motorPose['y'], motorPose['z'], color=colors[i % 2], marker='o')
+		ax.plot([pose['x'], motorPose['x']],
+			[pose['y'], motorPose['y']],
+			[pose['z'], motorPose['z']], color='black')
+	ax.plot([pose['x'], fNet['x'] + pose['x']], [pose['y'], fNet['y'] + pose['y']], [pose['z'], fNet['z'] + pose['z']], color='y')
+	print(f'New Pose {pose["x"]}\n\t{pose["y"]}\n\t{pose["z"]}\n\t{pose["phi"]}\n\t{pose["theta"]}\n\t{pose["psi"]}')
+	print(f'Forces: {fNet["x"]}\n\t{fNet["y"]}\n\t{fNet["z"]}\n\t{fNet["phi"]}\n\t{fNet["theta"]}\n\t{fNet["psi"]}')
+	ax.set_xlim3d(-5,5)
+	ax.set_ylim3d(-5,5)
+	ax.set_zlim3d(0,30)
+
+
+def draw(frame, axes, poseActual, netForce, data):
+	target = list(map(float, input('Enter Target Pose(i.e. 0 0 0 0 0 0):\n\t').split()))
+	while len(target) != 6:
+		print('Usage Error: target pose formatting')
+		target = list(map(int, input('Enter Target Pose(i.e. 0 0 0 0 0 0):\n\t').split()))
+	velocity = {'x': netForce['x'] * data['CT'], 'y': netForce['y'] * data['CT'], 'z': netForce['z'] * data['CT']}
+	netForce = get_netForce(poseActual, data['omegas'], data['mass'], velocity)
+	poseActual = update(poseActual, netForce, data['CT'])
+	data = step(target, poseActual, data)
+	data['t'].append(frame)
+	axes[1].clear()
+	axes[1].plot([0, velocity['x']],[0, velocity['y']], [0, velocity['z']], color='b')
+	axes[1].plot([0, netForce['x']],[0, netForce['y']], [0, netForce['z']], color='r')
+	axes[1].legend(['Velocity', 'Acceleration'])
+	axes[2].bar([1,3,5,7], data['omegas'], color='g', tick_label=['Front Left', 'Front right','Rear Right', 'Rear Left'])
+	axes[0].clear()
+	renderDevice(axes[0], poseActual, netForce)
+
+
+def main():
+	cycleTime = .5
+	omegas = [0, 0, 0, 0]
+	t = [0]
+	m = 4
+	g = 9.81
+	data = {'t':t, 
+			'CT':cycleTime, 
+			'omegas':omegas, 
+			'mass':m, 
+			'Fx': [0], 'Fy':[0], 'Fz':[-m * g], 'Fphi':[0], 'Ftheta':[0], 'Fpsi':[0],
+			'gains':[1, 1, 1, 1, 1, 1]}
+	poseActual = {'x':0, 'y':0, 'z':0, 'phi':0, 'theta':0, 'psi':0}
+	netForce = {'x':0, 'y':0, 'z':-m * g, 'phi':0, 'theta':0, 'psi':0}
+	fig = plt.figure(figsize=(10,6))
+	ax0 = fig.add_subplot(221, projection='3d')
+	ax1 = fig.add_subplot(222, projection='3d')
+	ax2 = fig.add_subplot(223)
+	ani = FuncAnimation(fig, draw, 200, fargs=([ax0, ax1, ax2], poseActual, netForce, data), interval=10)
 	plt.show()
+	
+		
 
 
-pose = {'x':0, 'y':0, 'z':0, 'roll':0, 'pitch':0, 'yaw':0}
-heading = spherical2cartesian(90, 90)
-
-deltas = [0, 0, 0, 0, 0, 0]
-update(pose, deltas)
-print(f'Adjustments {translate(heading, deltas)}')
-print(f'Heading {heading}')
-print(f'Deltas {deltas}')
-#render(pose, heading)
-
-
+if __name__ == "__main__":
+	main()
