@@ -1,6 +1,5 @@
 # Buffs
-This Repository is meant for version control of a quadcopter controller. The two major
-branches of development are computer vision and motor driving. The motor driver started
-as a python notebook and transitioned into a c and h file. Due to the requirements of 
-the computer vision development, a google colab notebook is used. The data for computer 
-vision is in the data file. 
+This repo is my first attempt at implementing control algorithms. Currently only uses PID as a positional control, still has some bugs to work out.
+
+The majority of this project is focused on the simulation (Aerial_Device.py)
+The unit tester script is how you can see the simulations inner workings and issues.
