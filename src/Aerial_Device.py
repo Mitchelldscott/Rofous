@@ -21,7 +21,7 @@ class Controller():
 		self.tolerance = tolerance
 		self.loss = np.array([0])
 
-	def converge(self, target, pose, velocity, net_force):
+	def pose_converge(self, target, pose, velocity, net_force):
 		""" So proud of this """
 		#self.loss.append(np.linalg.norm(target - pose))
 
@@ -62,7 +62,7 @@ class DeviceID():
 			self.path[tag] = np.concatenate([self.path[tag][1:],[new_val]])
 
 
-class Device():
+class Aerial_Device():
 	""" This class is used to perform forward kinematics of an N-copter device
 			- only quadcopter is stable
 			- needs serious tuning 
@@ -91,7 +91,7 @@ class Device():
 		self.net_force = np.array([0,0,G*self.id.configs['mass'],0,0,0]) # Needs to be in the earth frame where [0,0,0,0,0,0] is start pose
 		self.velocity = np.zeros(6)	# also in earth frame
 		self.poseActual = np.zeros(6) # also in earth frame
-		self.throttle = np.zeros(len(self.throttle)) # rotations per second
+		self.throttle = np.zeros(len(self.throttle)) # rotations per minute
 		self.id.path['poses'] = np.array([self.poseActual])
 		self.id.path['velocities'] = np.array([self.velocity])
 		self.id.path['accelerations'] = np.array([self.net_force / self.id.configs['mass']])
@@ -107,7 +107,8 @@ class Device():
 	def adjust_throttles(self, deltas=[], target=[]):
 
 		if len(deltas) < 1:
-			deltas = self.control.converge(target, self.poseActual, self.velocity, self.net_force)
+			deltas = self.control.pose_converge(target, self.poseActual, self.velocity, self.net_force)
+
 		for i,val in enumerate(deltas):
 			self.throttle[i] = np.min([val + self.throttle[i], self.id.configs['max rpm']])
 
@@ -115,7 +116,10 @@ class Device():
 	def R(self, effector, ref=[]):
 		""" Rotates a 3D vector (effector) by some angles (ref)
 			effector can be a 3D vector or a 6D pose
-			ref must be a list of 3 angles to rotate about each axis """
+			if 6D only the x,y,z will be affected. phi, theta, psi need 
+			to be updated on their own
+			ref must be a list of 3 angles to rotate about each axis 
+			default ref is poseActuals angular offsets"""
 
 		if len(ref) < 3:
 			ref = self.poseActual[3:]
@@ -137,17 +141,20 @@ class Device():
 
 		if len(effector) > 3:
 			return np.concatenate([np.array(np.matmul(R, np.array([effector[:3]]).T)).reshape(3), effector[3:] + ref])
+
 		return np.array(np.matmul(R, effector.T))
 	
 	def T(self, displacement, ref=[]):
 		""" translates a pose (ref) w.r.t. a displacement
 			displacement can be a 3D vector or 6D pose
 			ref should be [x,y,z]"""
+
 		if len(ref) < 3:
 			ref = self.poseActual[:3]
 
 		if len(displacement) > 3:
 			return np.concatenate([displacement[:3] + ref, displacement[3:]])
+
 		return np.array(displacement[:3] + ref)
 
 	def update_odometry(self, t=.005):
@@ -204,17 +211,20 @@ class Device():
 		# plot lines from (0,0)_i -> motor_k_i
 		for i,motor in enumerate(self.id.configs['motor configuration']):
 			motor_pose = self.T(self.R(motor)[0])
-			ax.scatter(motor_pose[0], motor_pose[1], motor_pose[2], color=colors[i % 2], marker='o', s=200)
+			ax.scatter(motor_pose[0], motor_pose[1], motor_pose[2], color=colors[i % 2], marker='o', s=20)
 			body_links = np.array(list(zip(self.poseActual[:3], motor_pose)))
-			ax.plot(body_links[0], body_links[1], body_links[2], color='black', lw=10)
+			ax.plot(body_links[0], body_links[1], body_links[2], color='black', lw=3)
+
+		# plot the pose history
+		ax.plot(self.id.path['poses'][0][-10:], self.id.path['poses'][1][-10:], self.id.path['poses'][2][-10:], color='c')
 
 		# plot a net force indicator
 		indi = np.array(list(zip(self.poseActual, self.poseActual + self.net_force)))
 		ax.plot(indi[0], indi[1], indi[2], color='y')
 
-		ax.set_xlim((self.poseActual[0] - 1, self.poseActual[0] + 1))
-		ax.set_ylim((self.poseActual[1] - 1, self.poseActual[1] + 1))
-		ax.set_zlim((self.poseActual[2] - 1, self.poseActual[2] + 1))
+		ax.set_xlim((self.poseActual[0] - 10, self.poseActual[0] + 10))
+		ax.set_ylim((self.poseActual[1] - 10, self.poseActual[1] + 10))
+		ax.set_zlim((self.poseActual[2] - 10, self.poseActual[2] + 10))
 
 		# print status
 		if verbose > 0:
@@ -223,6 +233,7 @@ class Device():
 
 
 	def populate_ax_from_id(self,ax,odom,colors,label='',title=''):
+		""" Given an array shape (n,6) will plot against time"""
 		t_span = np.array(range(len(odom)))
 		ax.clear()
 		ax.plot(t_span, odom[:,0], color=colors[0], label=f'X-{label}')
@@ -244,6 +255,8 @@ class Device():
 		self.populate_ax_from_id(ax, self.id.path['poses'], colors, label='Poses', title='Poses over time')
 
 	def render(self, colors=['r','b','g','c','m','y'], v=0):
+		""" Current render method pretty weak
+		It would be nice to not use matplotlib"""
 		fig = plt.figure(figsize=(15,8))
 		axes = [fig.add_subplot(221, projection='3d'),
 				fig.add_subplot(222),

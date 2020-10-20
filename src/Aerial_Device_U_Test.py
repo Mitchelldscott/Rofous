@@ -31,7 +31,7 @@ class Device_Doctor():
 		self.log_file = e_log
 		self.protocol = protocol
 		self.name_tag = '[Device-Doctor]'
-		self.device = Aerial_Device.Device()
+		self.device = Aerial_Device.Aerial_Device()
 		self.configs = self.load_test_data(test_data_path)
 		self.tags = self.configs['Tags']
 		for test in self.tags:
@@ -343,10 +343,10 @@ def main():
 	#doc.run(protocol=['nt','y'], visualize=True, horizon=200)
 	doc.launch_test(1)
 	doc.neutral_thrust_test(50, visualize=True)
-	doc.throttle_test(np.array([-10,-10,10,10]), 22, watch_value=0)
-	doc.neutral_thrust_test(50, visualize=True)
+	doc.throttle_test(np.array([0,1,0,1]), 50, watch_value=0, visualize=True)
+	#doc.neutral_thrust_test(50, visualize=True)
 	#doc.throttle_test(np.array([2,2,-2,-2]), 5, watch_value=0)
-	doc.neutral_thrust_test(50, visualize=True)
+	#doc.neutral_thrust_test(50, visualize=True)
 
 	doc.dump_log()
 
