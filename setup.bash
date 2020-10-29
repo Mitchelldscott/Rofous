@@ -5,10 +5,9 @@
 
 helpFunction()
 {
-   echo -e "\t-e Decides the location of the default python3 environment for this project\n"
+   echo -e "\n\t-e Decides the location of the default python3 environment for this project\n"
    exit 1 # Exit script after printing help
 }
-
 
 DIR=$PWD
 ME="Installer"
@@ -35,11 +34,11 @@ if [ -z "$ENV_PATH" ]; then
 	helpFunction 
 fi
 
-
+sudo apt-get update
 python3 -m venv "${ENV_PATH}/drone-env"
 source "${ENV_PATH}/drone-env/bin/activate"
 echo "[${ME}] Creating your default environment"
-echo "$DIR/python3_requirments.txt"
+pip install --upgrade pip
 pip install --ignore-installed -r "$DIR/python3_requirements.txt"
 
 if [[ *"$DIR/rofous_tools"* == "$PYTHONPATH" ]]; then
@@ -50,5 +49,6 @@ else
 fi
 
 echo "alias load_rofous='source ${ENV_PATH}/drone-env/bin/activate && export PYTHONPATH=$PYTHONPATH:${DIR}rofous_tools'" >> ~/.bashrc
-
-echo "\n\tSuccessful Install\t"
+echo " "
+echo "[ME] Successful Install "
+echo " "
