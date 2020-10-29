@@ -2,7 +2,7 @@
 	Aerial device kinematics class test script
 	Author : Mitchell Scott
 		- misc4432@colorado.edu
-	Project : Humming Bird
+	Project : Rofous
 """
 
 import os

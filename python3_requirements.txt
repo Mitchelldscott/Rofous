@@ -1,0 +1,6 @@
+numpy
+scipy
+pyYAML
+scikit-build
+matplotlib
+opencv-python
