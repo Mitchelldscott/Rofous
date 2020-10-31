@@ -1,0 +1,28 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/main.cpp
+iostream
+-
+AD_U_Test.hpp
+/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/AD_U_Test.hpp
+
+/home/m_dyse/Dyse-Robotics/Projects/Rofous/test/AD_U_Test.cpp
+iostream
+-
+fstream
+-
+AD_U_Test.hpp
+/home/m_dyse/Dyse-Robotics/Projects/Rofous/test/AD_U_Test.hpp
+
+include/AD_U_Test.hpp
+vector
+-
+string
+-
+

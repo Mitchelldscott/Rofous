@@ -1,0 +1,1 @@
+/usr/bin/c++     CMakeFiles/rofous.dir/test/AD_U_Test.cpp.o CMakeFiles/rofous.dir/src/main.cpp.o  -o rofous 
