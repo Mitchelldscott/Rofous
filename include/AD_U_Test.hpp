@@ -1,3 +1,10 @@
+/*
+	Project: Rofous
+	Author: Mitchell Scott
+
+	TODO: Finish U-Tests and implement
+	the Aerial Device dynamics simulator
+*/
 #include <vector>
 #include <string>
 #ifndef __AD_U_TEST_H__
