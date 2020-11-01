@@ -111,44 +111,71 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named main
+# Target rules for targets named Rofous
 
 # Build rule for target.
-main: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 main
-.PHONY : main
+Rofous: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 Rofous
+.PHONY : Rofous
 
 # fast build rule for target.
-main/fast:
-	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/build
-.PHONY : main/fast
+Rofous/fast:
+	$(MAKE) -f CMakeFiles/Rofous.dir/build.make CMakeFiles/Rofous.dir/build
+.PHONY : Rofous/fast
 
-main.o: main.cpp.o
+src/Aerial_Device.o: src/Aerial_Device.cpp.o
 
-.PHONY : main.o
+.PHONY : src/Aerial_Device.o
 
 # target to build an object file
-main.cpp.o:
-	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/main.cpp.o
-.PHONY : main.cpp.o
+src/Aerial_Device.cpp.o:
+	$(MAKE) -f CMakeFiles/Rofous.dir/build.make CMakeFiles/Rofous.dir/src/Aerial_Device.cpp.o
+.PHONY : src/Aerial_Device.cpp.o
 
-main.i: main.cpp.i
+src/Aerial_Device.i: src/Aerial_Device.cpp.i
 
-.PHONY : main.i
+.PHONY : src/Aerial_Device.i
 
 # target to preprocess a source file
-main.cpp.i:
-	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/main.cpp.i
-.PHONY : main.cpp.i
+src/Aerial_Device.cpp.i:
+	$(MAKE) -f CMakeFiles/Rofous.dir/build.make CMakeFiles/Rofous.dir/src/Aerial_Device.cpp.i
+.PHONY : src/Aerial_Device.cpp.i
 
-main.s: main.cpp.s
+src/Aerial_Device.s: src/Aerial_Device.cpp.s
 
-.PHONY : main.s
+.PHONY : src/Aerial_Device.s
 
 # target to generate assembly for a file
-main.cpp.s:
-	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/main.cpp.s
-.PHONY : main.cpp.s
+src/Aerial_Device.cpp.s:
+	$(MAKE) -f CMakeFiles/Rofous.dir/build.make CMakeFiles/Rofous.dir/src/Aerial_Device.cpp.s
+.PHONY : src/Aerial_Device.cpp.s
+
+src/main.o: src/main.cpp.o
+
+.PHONY : src/main.o
+
+# target to build an object file
+src/main.cpp.o:
+	$(MAKE) -f CMakeFiles/Rofous.dir/build.make CMakeFiles/Rofous.dir/src/main.cpp.o
+.PHONY : src/main.cpp.o
+
+src/main.i: src/main.cpp.i
+
+.PHONY : src/main.i
+
+# target to preprocess a source file
+src/main.cpp.i:
+	$(MAKE) -f CMakeFiles/Rofous.dir/build.make CMakeFiles/Rofous.dir/src/main.cpp.i
+.PHONY : src/main.cpp.i
+
+src/main.s: src/main.cpp.s
+
+.PHONY : src/main.s
+
+# target to generate assembly for a file
+src/main.cpp.s:
+	$(MAKE) -f CMakeFiles/Rofous.dir/build.make CMakeFiles/Rofous.dir/src/main.cpp.s
+.PHONY : src/main.cpp.s
 
 test/AD_U_Test.o: test/AD_U_Test.cpp.o
 
@@ -156,7 +183,7 @@ test/AD_U_Test.o: test/AD_U_Test.cpp.o
 
 # target to build an object file
 test/AD_U_Test.cpp.o:
-	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/test/AD_U_Test.cpp.o
+	$(MAKE) -f CMakeFiles/Rofous.dir/build.make CMakeFiles/Rofous.dir/test/AD_U_Test.cpp.o
 .PHONY : test/AD_U_Test.cpp.o
 
 test/AD_U_Test.i: test/AD_U_Test.cpp.i
@@ -165,7 +192,7 @@ test/AD_U_Test.i: test/AD_U_Test.cpp.i
 
 # target to preprocess a source file
 test/AD_U_Test.cpp.i:
-	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/test/AD_U_Test.cpp.i
+	$(MAKE) -f CMakeFiles/Rofous.dir/build.make CMakeFiles/Rofous.dir/test/AD_U_Test.cpp.i
 .PHONY : test/AD_U_Test.cpp.i
 
 test/AD_U_Test.s: test/AD_U_Test.cpp.s
@@ -174,7 +201,7 @@ test/AD_U_Test.s: test/AD_U_Test.cpp.s
 
 # target to generate assembly for a file
 test/AD_U_Test.cpp.s:
-	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/test/AD_U_Test.cpp.s
+	$(MAKE) -f CMakeFiles/Rofous.dir/build.make CMakeFiles/Rofous.dir/test/AD_U_Test.cpp.s
 .PHONY : test/AD_U_Test.cpp.s
 
 # Help Target
@@ -184,11 +211,14 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
-	@echo "... main"
+	@echo "... Rofous"
 	@echo "... edit_cache"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
+	@echo "... src/Aerial_Device.o"
+	@echo "... src/Aerial_Device.i"
+	@echo "... src/Aerial_Device.s"
+	@echo "... src/main.o"
+	@echo "... src/main.i"
+	@echo "... src/main.s"
 	@echo "... test/AD_U_Test.o"
 	@echo "... test/AD_U_Test.i"
 	@echo "... test/AD_U_Test.s"

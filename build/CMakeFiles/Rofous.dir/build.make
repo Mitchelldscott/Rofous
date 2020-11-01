@@ -57,41 +57,93 @@ include CMakeFiles/Rofous.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/Rofous.dir/flags.make
 
-CMakeFiles/Rofous.dir/main.cpp.o: CMakeFiles/Rofous.dir/flags.make
-CMakeFiles/Rofous.dir/main.cpp.o: ../main.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/Rofous.dir/main.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Rofous.dir/main.cpp.o -c /home/m_dyse/Dyse-Robotics/Projects/Rofous/main.cpp
+CMakeFiles/Rofous.dir/src/Aerial_Device.cpp.o: CMakeFiles/Rofous.dir/flags.make
+CMakeFiles/Rofous.dir/src/Aerial_Device.cpp.o: ../src/Aerial_Device.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/Rofous.dir/src/Aerial_Device.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Rofous.dir/src/Aerial_Device.cpp.o -c /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/Aerial_Device.cpp
 
-CMakeFiles/Rofous.dir/main.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Rofous.dir/main.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/m_dyse/Dyse-Robotics/Projects/Rofous/main.cpp > CMakeFiles/Rofous.dir/main.cpp.i
+CMakeFiles/Rofous.dir/src/Aerial_Device.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Rofous.dir/src/Aerial_Device.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/Aerial_Device.cpp > CMakeFiles/Rofous.dir/src/Aerial_Device.cpp.i
 
-CMakeFiles/Rofous.dir/main.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Rofous.dir/main.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/m_dyse/Dyse-Robotics/Projects/Rofous/main.cpp -o CMakeFiles/Rofous.dir/main.cpp.s
+CMakeFiles/Rofous.dir/src/Aerial_Device.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Rofous.dir/src/Aerial_Device.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/Aerial_Device.cpp -o CMakeFiles/Rofous.dir/src/Aerial_Device.cpp.s
 
-CMakeFiles/Rofous.dir/main.cpp.o.requires:
+CMakeFiles/Rofous.dir/src/Aerial_Device.cpp.o.requires:
 
-.PHONY : CMakeFiles/Rofous.dir/main.cpp.o.requires
+.PHONY : CMakeFiles/Rofous.dir/src/Aerial_Device.cpp.o.requires
 
-CMakeFiles/Rofous.dir/main.cpp.o.provides: CMakeFiles/Rofous.dir/main.cpp.o.requires
-	$(MAKE) -f CMakeFiles/Rofous.dir/build.make CMakeFiles/Rofous.dir/main.cpp.o.provides.build
-.PHONY : CMakeFiles/Rofous.dir/main.cpp.o.provides
+CMakeFiles/Rofous.dir/src/Aerial_Device.cpp.o.provides: CMakeFiles/Rofous.dir/src/Aerial_Device.cpp.o.requires
+	$(MAKE) -f CMakeFiles/Rofous.dir/build.make CMakeFiles/Rofous.dir/src/Aerial_Device.cpp.o.provides.build
+.PHONY : CMakeFiles/Rofous.dir/src/Aerial_Device.cpp.o.provides
 
-CMakeFiles/Rofous.dir/main.cpp.o.provides.build: CMakeFiles/Rofous.dir/main.cpp.o
+CMakeFiles/Rofous.dir/src/Aerial_Device.cpp.o.provides.build: CMakeFiles/Rofous.dir/src/Aerial_Device.cpp.o
+
+
+CMakeFiles/Rofous.dir/test/AD_U_Test.cpp.o: CMakeFiles/Rofous.dir/flags.make
+CMakeFiles/Rofous.dir/test/AD_U_Test.cpp.o: ../test/AD_U_Test.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/Rofous.dir/test/AD_U_Test.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Rofous.dir/test/AD_U_Test.cpp.o -c /home/m_dyse/Dyse-Robotics/Projects/Rofous/test/AD_U_Test.cpp
+
+CMakeFiles/Rofous.dir/test/AD_U_Test.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Rofous.dir/test/AD_U_Test.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/m_dyse/Dyse-Robotics/Projects/Rofous/test/AD_U_Test.cpp > CMakeFiles/Rofous.dir/test/AD_U_Test.cpp.i
+
+CMakeFiles/Rofous.dir/test/AD_U_Test.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Rofous.dir/test/AD_U_Test.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/m_dyse/Dyse-Robotics/Projects/Rofous/test/AD_U_Test.cpp -o CMakeFiles/Rofous.dir/test/AD_U_Test.cpp.s
+
+CMakeFiles/Rofous.dir/test/AD_U_Test.cpp.o.requires:
+
+.PHONY : CMakeFiles/Rofous.dir/test/AD_U_Test.cpp.o.requires
+
+CMakeFiles/Rofous.dir/test/AD_U_Test.cpp.o.provides: CMakeFiles/Rofous.dir/test/AD_U_Test.cpp.o.requires
+	$(MAKE) -f CMakeFiles/Rofous.dir/build.make CMakeFiles/Rofous.dir/test/AD_U_Test.cpp.o.provides.build
+.PHONY : CMakeFiles/Rofous.dir/test/AD_U_Test.cpp.o.provides
+
+CMakeFiles/Rofous.dir/test/AD_U_Test.cpp.o.provides.build: CMakeFiles/Rofous.dir/test/AD_U_Test.cpp.o
+
+
+CMakeFiles/Rofous.dir/src/main.cpp.o: CMakeFiles/Rofous.dir/flags.make
+CMakeFiles/Rofous.dir/src/main.cpp.o: ../src/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/Rofous.dir/src/main.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Rofous.dir/src/main.cpp.o -c /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/main.cpp
+
+CMakeFiles/Rofous.dir/src/main.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Rofous.dir/src/main.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/main.cpp > CMakeFiles/Rofous.dir/src/main.cpp.i
+
+CMakeFiles/Rofous.dir/src/main.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Rofous.dir/src/main.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/main.cpp -o CMakeFiles/Rofous.dir/src/main.cpp.s
+
+CMakeFiles/Rofous.dir/src/main.cpp.o.requires:
+
+.PHONY : CMakeFiles/Rofous.dir/src/main.cpp.o.requires
+
+CMakeFiles/Rofous.dir/src/main.cpp.o.provides: CMakeFiles/Rofous.dir/src/main.cpp.o.requires
+	$(MAKE) -f CMakeFiles/Rofous.dir/build.make CMakeFiles/Rofous.dir/src/main.cpp.o.provides.build
+.PHONY : CMakeFiles/Rofous.dir/src/main.cpp.o.provides
+
+CMakeFiles/Rofous.dir/src/main.cpp.o.provides.build: CMakeFiles/Rofous.dir/src/main.cpp.o
 
 
 # Object files for target Rofous
 Rofous_OBJECTS = \
-"CMakeFiles/Rofous.dir/main.cpp.o"
+"CMakeFiles/Rofous.dir/src/Aerial_Device.cpp.o" \
+"CMakeFiles/Rofous.dir/test/AD_U_Test.cpp.o" \
+"CMakeFiles/Rofous.dir/src/main.cpp.o"
 
 # External object files for target Rofous
 Rofous_EXTERNAL_OBJECTS =
 
-Rofous: CMakeFiles/Rofous.dir/main.cpp.o
+Rofous: CMakeFiles/Rofous.dir/src/Aerial_Device.cpp.o
+Rofous: CMakeFiles/Rofous.dir/test/AD_U_Test.cpp.o
+Rofous: CMakeFiles/Rofous.dir/src/main.cpp.o
 Rofous: CMakeFiles/Rofous.dir/build.make
 Rofous: CMakeFiles/Rofous.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable Rofous"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable Rofous"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/Rofous.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -99,7 +151,9 @@ CMakeFiles/Rofous.dir/build: Rofous
 
 .PHONY : CMakeFiles/Rofous.dir/build
 
-CMakeFiles/Rofous.dir/requires: CMakeFiles/Rofous.dir/main.cpp.o.requires
+CMakeFiles/Rofous.dir/requires: CMakeFiles/Rofous.dir/src/Aerial_Device.cpp.o.requires
+CMakeFiles/Rofous.dir/requires: CMakeFiles/Rofous.dir/test/AD_U_Test.cpp.o.requires
+CMakeFiles/Rofous.dir/requires: CMakeFiles/Rofous.dir/src/main.cpp.o.requires
 
 .PHONY : CMakeFiles/Rofous.dir/requires
 

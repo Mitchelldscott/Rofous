@@ -1,5 +1,7 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/Rofous.dir/main.cpp.o"
+  "CMakeFiles/Rofous.dir/src/Aerial_Device.cpp.o"
+  "CMakeFiles/Rofous.dir/test/AD_U_Test.cpp.o"
+  "CMakeFiles/Rofous.dir/src/main.cpp.o"
   "Rofous.pdb"
   "Rofous"
 )

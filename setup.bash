@@ -44,11 +44,11 @@ pip install --ignore-installed -r "$DIR/python3_requirements.txt"
 if [[ *"$DIR/rofous_tools"* == "$PYTHONPATH" ]]; then
 	echo "[${ME}] Path already exported!"
 else
-	export PYTHONPATH=$PYTHONPATH:"${pwd}/";
-	echo "[${ME}] Added ${PWD}/rofous_tools to PYTHONPATH";
+	export PYTHONPATH=$PYTHONPATH:"${DIR}/";
+	echo "[${ME}] Added ${DIR}/rofous_tools to PYTHONPATH";
 fi
 
-echo "alias load_rofous='source ${ENV_PATH}/drone-env/bin/activate && export PYTHONPATH=$PYTHONPATH:${DIR}rofous_tools'" >> ~/.bashrc
+echo "alias load_rofous='source ${ENV_PATH}/drone-env/bin/activate && export PYTHONPATH=$PYTHONPATH:${DIR}/rofous_tools'" >> ~/.bashrc
 echo " "
 echo "[ME] Successful Install "
 echo " "
