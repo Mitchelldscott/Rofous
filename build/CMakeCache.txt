@@ -187,9 +187,6 @@ Rofous_BINARY_DIR:STATIC=/home/m_dyse/Dyse-Robotics/Projects/Rofous/build
 //Value Computed by CMake
 Rofous_SOURCE_DIR:STATIC=/home/m_dyse/Dyse-Robotics/Projects/Rofous
 
-//Dependencies for target
-Tests_LIB_DEPENDS:STATIC=
-
 
 ########################
 # INTERNAL cache entries

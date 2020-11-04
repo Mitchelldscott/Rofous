@@ -1,1 +1,1 @@
-/usr/bin/c++     CMakeFiles/Rofous.dir/src/Aerial_Device.cpp.o CMakeFiles/Rofous.dir/test/AD_U_Test.cpp.o CMakeFiles/Rofous.dir/src/main.cpp.o  -o Rofous 
+/usr/bin/c++     CMakeFiles/Rofous.dir/src/Aerial_Device.cpp.o CMakeFiles/Rofous.dir/src/U_Test.cpp.o CMakeFiles/Rofous.dir/src/main.cpp.o  -o ../bin/Rofous 

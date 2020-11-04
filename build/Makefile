@@ -150,6 +150,33 @@ src/Aerial_Device.cpp.s:
 	$(MAKE) -f CMakeFiles/Rofous.dir/build.make CMakeFiles/Rofous.dir/src/Aerial_Device.cpp.s
 .PHONY : src/Aerial_Device.cpp.s
 
+src/U_Test.o: src/U_Test.cpp.o
+
+.PHONY : src/U_Test.o
+
+# target to build an object file
+src/U_Test.cpp.o:
+	$(MAKE) -f CMakeFiles/Rofous.dir/build.make CMakeFiles/Rofous.dir/src/U_Test.cpp.o
+.PHONY : src/U_Test.cpp.o
+
+src/U_Test.i: src/U_Test.cpp.i
+
+.PHONY : src/U_Test.i
+
+# target to preprocess a source file
+src/U_Test.cpp.i:
+	$(MAKE) -f CMakeFiles/Rofous.dir/build.make CMakeFiles/Rofous.dir/src/U_Test.cpp.i
+.PHONY : src/U_Test.cpp.i
+
+src/U_Test.s: src/U_Test.cpp.s
+
+.PHONY : src/U_Test.s
+
+# target to generate assembly for a file
+src/U_Test.cpp.s:
+	$(MAKE) -f CMakeFiles/Rofous.dir/build.make CMakeFiles/Rofous.dir/src/U_Test.cpp.s
+.PHONY : src/U_Test.cpp.s
+
 src/main.o: src/main.cpp.o
 
 .PHONY : src/main.o
@@ -177,33 +204,6 @@ src/main.cpp.s:
 	$(MAKE) -f CMakeFiles/Rofous.dir/build.make CMakeFiles/Rofous.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
-test/AD_U_Test.o: test/AD_U_Test.cpp.o
-
-.PHONY : test/AD_U_Test.o
-
-# target to build an object file
-test/AD_U_Test.cpp.o:
-	$(MAKE) -f CMakeFiles/Rofous.dir/build.make CMakeFiles/Rofous.dir/test/AD_U_Test.cpp.o
-.PHONY : test/AD_U_Test.cpp.o
-
-test/AD_U_Test.i: test/AD_U_Test.cpp.i
-
-.PHONY : test/AD_U_Test.i
-
-# target to preprocess a source file
-test/AD_U_Test.cpp.i:
-	$(MAKE) -f CMakeFiles/Rofous.dir/build.make CMakeFiles/Rofous.dir/test/AD_U_Test.cpp.i
-.PHONY : test/AD_U_Test.cpp.i
-
-test/AD_U_Test.s: test/AD_U_Test.cpp.s
-
-.PHONY : test/AD_U_Test.s
-
-# target to generate assembly for a file
-test/AD_U_Test.cpp.s:
-	$(MAKE) -f CMakeFiles/Rofous.dir/build.make CMakeFiles/Rofous.dir/test/AD_U_Test.cpp.s
-.PHONY : test/AD_U_Test.cpp.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -216,12 +216,12 @@ help:
 	@echo "... src/Aerial_Device.o"
 	@echo "... src/Aerial_Device.i"
 	@echo "... src/Aerial_Device.s"
+	@echo "... src/U_Test.o"
+	@echo "... src/U_Test.i"
+	@echo "... src/U_Test.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
-	@echo "... test/AD_U_Test.o"
-	@echo "... test/AD_U_Test.i"
-	@echo "... test/AD_U_Test.s"
 .PHONY : help
 
 

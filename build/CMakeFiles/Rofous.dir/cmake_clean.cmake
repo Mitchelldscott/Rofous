@@ -1,9 +1,9 @@
 file(REMOVE_RECURSE
   "CMakeFiles/Rofous.dir/src/Aerial_Device.cpp.o"
-  "CMakeFiles/Rofous.dir/test/AD_U_Test.cpp.o"
+  "CMakeFiles/Rofous.dir/src/U_Test.cpp.o"
   "CMakeFiles/Rofous.dir/src/main.cpp.o"
-  "Rofous.pdb"
-  "Rofous"
+  "../bin/Rofous.pdb"
+  "../bin/Rofous"
 )
 
 # Per-language clean rules from dependency scanning.

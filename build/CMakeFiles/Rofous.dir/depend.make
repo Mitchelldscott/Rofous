@@ -4,11 +4,11 @@
 CMakeFiles/Rofous.dir/src/Aerial_Device.cpp.o: ../include/Aerial_Device.hpp
 CMakeFiles/Rofous.dir/src/Aerial_Device.cpp.o: ../src/Aerial_Device.cpp
 
-CMakeFiles/Rofous.dir/src/main.cpp.o: ../include/AD_U_Test.hpp
-CMakeFiles/Rofous.dir/src/main.cpp.o: ../include/Aerial_Device.hpp
-CMakeFiles/Rofous.dir/src/main.cpp.o: ../src/main.cpp
+CMakeFiles/Rofous.dir/src/U_Test.cpp.o: ../include/Aerial_Device.hpp
+CMakeFiles/Rofous.dir/src/U_Test.cpp.o: ../include/U_Test.hpp
+CMakeFiles/Rofous.dir/src/U_Test.cpp.o: ../src/U_Test.cpp
 
-CMakeFiles/Rofous.dir/test/AD_U_Test.cpp.o: ../include/AD_U_Test.hpp
-CMakeFiles/Rofous.dir/test/AD_U_Test.cpp.o: ../include/Aerial_Device.hpp
-CMakeFiles/Rofous.dir/test/AD_U_Test.cpp.o: ../test/AD_U_Test.cpp
+CMakeFiles/Rofous.dir/src/main.cpp.o: ../include/Aerial_Device.hpp
+CMakeFiles/Rofous.dir/src/main.cpp.o: ../include/U_Test.hpp
+CMakeFiles/Rofous.dir/src/main.cpp.o: ../src/main.cpp
 

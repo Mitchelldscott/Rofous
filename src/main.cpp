@@ -1,13 +1,7 @@
-/*
-	Project: Rofous
-	Author: Mitchell Scott
 
-	TODO: Finish U-Tests and implement
-	the Aerial Device dynamics simulator
-*/
 #include <iostream>
-#include "AD_U_Test.hpp"
-#define name "[Dev-Manager]"
+#include "U_Test.hpp"
+#define name "[EXE-MANAGER]"
 
 using namespace std;
 

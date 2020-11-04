@@ -6,16 +6,6 @@
 
 #IncludeRegexTransform: 
 
-../include/AD_U_Test.hpp
-vector
--
-string
--
-fstream
--
-Aerial_Device.hpp
-../include/Aerial_Device.hpp
-
 ../include/Aerial_Device.hpp
 vector
 -
@@ -25,6 +15,16 @@ fstream
 -
 iostream
 -
+
+../include/U_Test.hpp
+vector
+-
+string
+-
+fstream
+-
+Aerial_Device.hpp
+../include/Aerial_Device.hpp
 
 /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/Aerial_Device.cpp
 math.h
@@ -34,13 +34,7 @@ stdio.h
 Aerial_Device.hpp
 -
 
-/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/main.cpp
-iostream
--
-AD_U_Test.hpp
-/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/AD_U_Test.hpp
-
-/home/m_dyse/Dyse-Robotics/Projects/Rofous/test/AD_U_Test.cpp
+/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/U_Test.cpp
 fstream
 -
 iostream
@@ -49,6 +43,12 @@ stdlib.h
 -
 math.h
 -
-AD_U_Test.hpp
-/home/m_dyse/Dyse-Robotics/Projects/Rofous/test/AD_U_Test.hpp
+U_Test.hpp
+/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/U_Test.hpp
+
+/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/main.cpp
+iostream
+-
+U_Test.hpp
+/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/U_Test.hpp
 
