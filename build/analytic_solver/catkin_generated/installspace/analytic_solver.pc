@@ -1,0 +1,8 @@
+prefix=/home/m_dyse/Dyse-Robotics/Projects/Rofous/install
+
+Name: analytic_solver
+Description: Description of analytic_solver
+Version: 1.0.0
+Cflags: -I${prefix}/include
+Libs: -L${prefix}/lib -linclude
+Requires: 

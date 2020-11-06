@@ -1,0 +1,2 @@
+rofous_gazebo:rofous_solver
+-DCATKIN_DEVEL_PREFIX=/home/m_dyse/Dyse-Robotics/Projects/Rofous/devel -DCMAKE_INSTALL_PREFIX=/home/m_dyse/Dyse-Robotics/Projects/Rofous/install -G Unix Makefiles

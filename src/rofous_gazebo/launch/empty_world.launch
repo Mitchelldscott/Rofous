@@ -1,0 +1,19 @@
+<launch>
+
+	<!-- these are the arguments you can pass this launch file, for example paused:=true -->
+	<arg name="paused" default="false"/>
+	<arg name="physics" default="ode"/>
+	<arg name="verbose" default="false"/>
+	<arg name="world_name" default="$(find rofous_gazebo)/worlds/empty.world"/>
+
+	<include file="$(find gazebo_ros)/launch/empty_world.launch">
+	<arg name="world_name" value="$(find rofous_gazebo)/worlds/$(arg name)"/>
+	<!-- more default parameters can be changed here -->
+	</include>
+
+	<!-- Convert an xacro and put on parameter server -->
+	<param name="robot_description" command="$(find xacro)/xacro.py $(find rofous_description)/urdf/hummingbird.xacro" />
+
+	<!-- Spawn a robot into Gazebo -->
+	<node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model pr2" />
+</launch>
