@@ -56,5 +56,5 @@ You can run the C++ unit tests with
     
 You can run the python version with 
 
-    cd src/python3_nbs
+    cd src/Notebooks
     jupyter notebook
