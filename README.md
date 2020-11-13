@@ -31,24 +31,24 @@ The goal is to make a sneaky companion that can be instructed to follow people o
 # Install
 The repo is designed to be built inside of the dyse-robotics repo which includes general tools for projects, but can be built on its own.
 
-First clone the repo:
+First clone the repo: \\
     git clone https://github.com/mithellscott/Rofous
 
-Then cd into the project and run the setup script (pass the script the desired path to the python environment it will create)
+Then cd into the project and run the setup script (pass the script the desired path to the python environment it will create) \\
     cd Rofous
     ./setup.bash -e ~/pyenvs
     
-Now the project has an alias to load the tools in .bashrc run those like
+Now the project has an alias to load the tools in .bashrc run those like \\
     source ~/.bashrc
     load_rofous
     
-Now your python enviroment is configured and your catkin_ws should be initialized you can check that this was successful by
+Now your python enviroment is configured and your catkin_ws should be initialized you can check that this was successful by \\
     echo $PYTHON_PATH
     catkin_make
     
-You can run the C++ unit tests with
+You can run the C++ unit tests with \\
     ./bin/main U-Test
     
-You can run the python version with
+You can run the python version with \\
     cd src/python3_nbs
     jupyter notebook
