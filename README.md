@@ -1,5 +1,14 @@
-# Buffs
-This repo is my first attempt at implementing control algorithms. Currently only uses PID as a positional control, still has some bugs to work out.
+# Rofous
+This repo is dedicated to the development of an autonomous quadcopter.
 
-The majority of this project is focused on the simulation (Aerial_Device.py)
-The unit tester script is how you can see the simulations inner workings and issues.
+### Tasks
+- Find Components
+-- ESC: Hobbypower 30A
+-- flight controller: Arduino IOT 33
+-- motors: readytosky 9700Kv BLDC
+-- frame: f-450
+-- camera: ???
+-- on board processor: RPi 3b+
+-- battery: ** busted, need new one **
+
+- Kinematics
