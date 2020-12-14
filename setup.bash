@@ -51,7 +51,7 @@ else
 	echo "[${ME}] Added ${DIR}/rofous_tools to PYTHONPATH";
 fi
 
-echo "alias load_rofous='source ${ENV_PATH}/${ENV_PATH}/bin/activate && export PYTHONPATH=$PYTHONPATH:${DIR}/rofous_tools'" >> ~/.bashrc
+echo "alias load_rofous='source ${ENV_PATH}/${ENV_NAME}/bin/activate && export PYTHONPATH=$PYTHONPATH:${DIR}/rofous_tools'" >> ~/.bashrc
 echo " "
 echo "[ME] Successful Install "
 echo " "
