@@ -53,7 +53,7 @@ else
 fi
 
 # get user inputs, null will quit
-while getopts e:name:p: opt
+while getopts e:n:p: opt
 do
 	case ${opt} in
     	e) ENV_PATH=${OPTARG} ;;
@@ -71,6 +71,7 @@ sudo apt-get update
 python3 -m venv ${ENV_PATH}/${ENV_NAME}
 source ${ENV_PATH}/${ENV_NAME}/bin/activate
 echo [${ME}] Creating your default environment
+
 pip install --upgrade pip
 pip install --ignore-installed -r ${DIR}/python3_requirements.txt
 deactivate

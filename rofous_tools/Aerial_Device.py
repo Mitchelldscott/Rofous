@@ -2,7 +2,7 @@
 	Aerial device kinematics class
 	Author : Mitchell Scott
 		- misc4432@colorado.edu
-	Project : Humming Bird
+	Project : Rofous
 """
 
 import sys
@@ -13,37 +13,6 @@ from matplotlib.animation import FuncAnimation
 
 # Gravitational constant
 G = -9.81
-
-class Controller():
-	def __init__(self, tolerance=1e-3):
-		# Careful here changing these a little ruins everything
-		self.gains = np.array([5,2,.2])
-		self.tolerance = tolerance
-		self.loss = np.array([0])
-
-	def pose_converge(self, target, pose, velocity, net_force):
-		""" So proud of this """
-		#self.loss.append(np.linalg.norm(target - pose))
-
-		p = np.array(target - pose) * self.gains[0]
-		i = velocity * self.gains[1]
-		d = net_force * self.gains[2]
-
-		control_mat =np.matrix([[-1,-1, 1, 1,-1, 1],
-								[-1, 1, 1,-1,-1,-1],
-								[ 1, 1, 1,-1, 1, 1],
-								[ 1,-1, 1, 1, 1,-1]])
-
-		return np.array(np.matmul(control_mat, p - i - d))[0]
-
-	def tune(self, device, horizon=1000):
-		target = np.array([0,0,5,0,0,0])
-		d_losses
-		for i in range(horizon):
-			
-			d_losses.append(self.loss[i] - self.loss[i-1])
-			if d_losses[-1] > 0:
-				pass
 
 
 class DeviceID():
@@ -105,60 +74,10 @@ class Aerial_Device():
 		for i,val in enumerate(speeds):
 			self.throttle[i] = np.min([val, self.id.configs['max rpm']])
 
-	def adjust_throttles(self, deltas=[], target=[]):
-
-		if len(deltas) < 1:
-			deltas = self.control.pose_converge(target, self.poseActual, self.velocity, self.net_force)
-
-		signs = np.sign(deltas)
+	def adjust_throttles(self, deltas=[]):
 
 		for i,val in enumerate(deltas):
-			self.throttle[i] = np.min([np.max([val + self.throttle[i], -5]), self.id.configs['max rpm']])
-
-
-	def R(self, effector, ref=[]):
-		""" Rotates a 3D vector (effector) by some angles (ref)
-			effector can be a 3D vector or a 6D pose
-			if 6D only the x,y,z will be affected. phi, theta, psi need 
-			to be updated on their own
-			ref must be a list of 3 angles to rotate about each axis 
-			default ref is poseActuals angular offsets"""
-
-		if len(ref) < 3:
-			ref = self.poseActual[3:]
-
-		R = np.matrix([
-						[np.cos(ref[1])*np.cos(ref[2]),
-						np.cos(ref[1])*np.sin(ref[2]), 
-						-np.sin(ref[1])
-					],
-						[np.sin(ref[0])*np.sin(ref[1])*np.cos(ref[2])-(np.cos(ref[0])*np.sin(ref[2])), 
-						np.sin(ref[0])*np.sin(ref[1])*np.sin(ref[2])+(np.cos(ref[0])*np.cos(ref[2])), 
-						np.sin(ref[0])*np.cos(ref[1])
-					],
-						[np.cos(ref[0])*np.sin(ref[1])*np.cos(ref[2])+(np.sin(ref[0])*np.sin(ref[2])), 
-						np.cos(ref[0])*np.sin(ref[1])*np.sin(ref[2])-(np.sin(ref[0])*np.cos(ref[2])), 
-						np.cos(ref[0])*np.cos(ref[1])
-					]
-				])
-
-		if len(effector) > 3:
-			return np.concatenate([np.array(np.matmul(R, np.array([effector[:3]]).T)).reshape(3), effector[3:] + ref])
-
-		return np.array(np.matmul(R, effector.T))
-	
-	def T(self, displacement, ref=[]):
-		""" translates a pose (ref) w.r.t. a displacement
-			displacement can be a 3D vector or 6D pose
-			ref should be [x,y,z]"""
-
-		if len(ref) < 3:
-			ref = self.poseActual[:3]
-
-		if len(displacement) > 3:
-			return np.concatenate([displacement[:3] + ref, displacement[3:]])
-
-		return np.array(displacement[:3] + ref)
+			self.throttle[i] = np.min([np.max([val + self.throttle[i], 0]), self.id.configs['max rpm']])
 
 	def update_odometry(self, t=.005):
 		""" forward kinematics pose update """
