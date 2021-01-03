@@ -48,7 +48,8 @@ class Aerial_Device():
 			'motor configuration' : motor_config,
 			'rotational thrust' : motor_rotation_effect,
 			'speed2thrust' : p,
-			'vel2drag' : b},
+			'vel2drag' : b,
+			'length' : np.sqrt(motor_config[0][0]**2 + motor_config[0][1]**2)},
 			self.poseActual,
 			self.velocity,
 			self.net_force / mass,
@@ -111,7 +112,7 @@ class Aerial_Device():
 
 		# calculate the inertial thrust as proportional to sum(omega^2)
 		torque = np.matmul(self.id.configs['rotational thrust'], thrusts)
-		i_thrust = np.array([0, 0, np.sum(thrusts), torque[0], torque[1], torque[2]])
+		i_thrust = np.array([0, 0, np.sum(thrusts), torque[0] * self.id.configs['length'], torque[1] * self.id.configs['length'], torque[2]])
 
 		# calculate the drag force (w.r.t the earth frame) as inversly proprotional to velocity
 		drag = self.velocity * b
@@ -142,7 +143,8 @@ class Renderer():
 			ax.plot(body_links[0], body_links[1], body_links[2], color='black', lw=3)
 
 		# plot the pose history
-		ax.plot(self.device.id.path['poses'][0][-10:], self.device.id.path['poses'][1][-10:], self.device.id.path['poses'][2][-10:], color='c')
+		print(self.device.id.path['poses'])
+		ax.plot(self.device.id.path['poses'][-10:][0], self.device.id.path['poses'][-10:][1], self.device.id.path['poses'][-10:][2], color='c')
 
 		# plot a net force indicator
 		indi = np.array(list(zip(self.device.poseActual, self.device.poseActual + self.device.net_force)))

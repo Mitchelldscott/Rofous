@@ -1,5 +1,7 @@
+empy
 numpy
 scipy
 pyYAML
+catkin_pkg
 matplotlib
 opencv-python
