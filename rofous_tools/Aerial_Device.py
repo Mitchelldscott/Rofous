@@ -22,7 +22,6 @@ class Aerial_Device:
 		assert max_thrust > 0, f'Illegal Max Thrust Speed: {max_thrust} !> 0' # all motors must be identical for now
 		assert mass > 0, f'Illegal Mass: {mass} !> 0'
 		
-		self.path = [[0], [0], [0]]
 		self.mass = mass
 		self.t = cycle_time
 		self.autobots = None
@@ -30,14 +29,11 @@ class Aerial_Device:
 		self.p = max_thrust / 10 # assuming ideal condiditons
 		self.motor_spin = motor_spin
 		self.max_thrust = max_thrust
-		self.refActual = np.zeros(3)
-		self.linearVel = np.zeros(3)
-		self.poseActual = np.zeros(3)
-		self.referenceVel = np.zeros(3)
 		self.init_m_pose = motor_positions # motor positions relative to the body
 		self.init_m_ref = motor_orientations # motor orientations relative to the body
 		self.nMotors =  motor_positions.shape[0]
-		self.throttleActual = np.zeros(self.nMotors)
+		
+		self.reset()
 		
 		self.build_transformers()
 		
@@ -62,6 +58,15 @@ class Aerial_Device:
 			torque += self.autobots[i+1].transform(np.array([-thrust * d, 0.0, thrust * self.motor_spin[i]]), inverse=True) + (self.drag * self.referenceVel)
 		return lin_thrust + (0.0, 0.0, G * self.mass), torque
 	
+	def record_events(self, lin_accel, ang_accel):
+		for i in range(3):
+			self.path['Pose'][i].append(self.poseActual[i])
+			self.path['Pose'][i+3].append(self.refActual[i])
+			self.path['Velocity'][i].append(self.linearVel[i])
+			self.path['Velocity'][i+3].append(self.referenceVel[i])
+			self.path['Acceleration'][i].append(lin_accel[i])
+			self.path['Acceleration'][i+3].append(ang_accel[i])
+	
 	def update_odometry(self, t=-1):
 		if t == -1:
 			t = self.t
@@ -77,15 +82,29 @@ class Aerial_Device:
 			self.refActual[i] = self.wrap_angle(self.refActual[i])
 			self.referenceVel[i] = self.wrap_angle(self.referenceVel[i])
 		self.autobots[0].build_transform(self.refActual[0], self.refActual[1], self.refActual[2], self.poseActual)
-		self.path[0].append(self.poseActual[0])
-		self.path[1].append(self.poseActual[1])
-		self.path[2].append(self.poseActual[2])
+		self.record_events(lin_accel, ang_accel)
 	
 	def set_throttle(self, throttle):
 		# throttles must be between 0 and 100
 		assert len(throttle) == self.nMotors, f'Cannot set throttle: shape mismatch {len(throttle)} != {self.nMotors}'
 		for i,throt in enumerate(throttle):
 			self.throttleActual[i] = min(100.0, max(0.0, throt))
+			
+	def adjust_throttle(self, adjustments):
+		# throttles must be between 0 and 100
+		assert len(adjustments) == self.nMotors, f'Cannot set throttle: shape mismatch {len(adjustments)} != {self.nMotors}'
+		for i,throttle in enumerate(adjustments):
+			self.throttleActual[i] = min(100.0, max(0.0, throttle + self.throttleActual[i]))
+			
+	def reset(self):
+		self.path = {'Pose':[[0.0],[0.0],[0.0],[0.0],[0.0],[0.0]],
+					 'Velocity':[[0.0],[0.0],[0.0],[0.0],[0.0],[0.0]],
+					 'Acceleration':[[0.0],[0.0],[0.0],[0.0],[0.0],[0.0]]}
+		self.refActual = np.zeros(3)
+		self.linearVel = np.zeros(3)
+		self.poseActual = np.zeros(3)
+		self.referenceVel = np.zeros(3)
+		self.throttleActual = np.zeros(self.nMotors)
 
 """ This class is used for rendering and debugging the device"""
 class Renderer():
@@ -105,7 +124,7 @@ class Renderer():
 			ax.plot(body_links[0], body_links[1], body_links[2], color='black', lw=3)
 
 		# plot the pose history
-		ax.plot(self.device.path[0][-10:], self.device.path[1][-10:], self.device.path[2][-10:], color='c', lw=2)
+		ax.plot(self.device.path['Pose'][0][-10:], self.device.path['Pose'][1][-10:], self.device.path['Pose'][2][-10:], color='c', lw=2)
 
 		ax.set_xlim((self.device.poseActual[0] - 10, self.device.poseActual[0] + 10))
 		ax.set_ylim((self.device.poseActual[1] - 10, self.device.poseActual[1] + 10))
@@ -115,13 +134,42 @@ class Renderer():
 		# print status
 		if verbose > 0:
 			print(f'New Pose:\n\tX : {self.device.poseActual[0]} \tY: {self.device.poseActual[1]} \tZ: {self.device.poseActual[2]} \tPhi: {self.device.poseActual[3]} \tTheta: {self.device.poseActual[4]} \tPsi: {self.device.poseActual[5]}')
+			
+	
+	def populate_ax_from_id(self, ax, odom, colors, label='', title=''):
+		""" Given an array shape (n,3) will plot against time"""
+		t_span = np.array(range(len(odom[0])))
+		ax.clear()
+		ax.plot(t_span, odom[0], color=colors[0], label=f'X-{label}')
+		ax.plot(t_span, odom[1], color=colors[1], label=f'Y-{label}')
+		ax.plot(t_span, odom[2], color=colors[2], label=f'Z-{label}')
+		ax.plot(t_span, odom[3], color=colors[3], label=f'Phi-{label}')
+		ax.plot(t_span, odom[4], color=colors[4], label=f'Theta-{label}')
+		ax.plot(t_span, odom[5], color=colors[5], label=f'Psi-{label}')
+		ax.set_title(title)
+		ax.legend()
+
+	def render_velocity(self,ax,colors):
+		self.populate_ax_from_id(ax, self.device.path['Velocity'], colors, label='Velocity', title='Velocity over time')
+
+	def render_acceleration(self, ax, colors):
+		self.populate_ax_from_id(ax, self.device.path['Acceleration'], colors, label='Acceleration', title='Acceleration over time')
+
+	def render_pose(self, ax, colors):
+		self.populate_ax_from_id(ax, self.device.path['Pose'], colors, label='Pose', title='Pose over time')
 
 	def render(self, colors=['r','b','g','c','m','y'], v=0):
 		""" Current render method pretty weak
 		It would be nice to not use matplotlib"""
 		fig = plt.figure()
-		axes = fig.add_subplot(221, projection='3d')
+		axes = [fig.add_subplot(221, projection='3d'),
+				fig.add_subplot(222),
+				fig.add_subplot(223),
+				fig.add_subplot(224)]
 
-		self.render_device(axes, colors=colors[:2], verbose=v)
-
+		self.render_device(axes[0], colors=colors[:2], verbose=v)
+		self.render_pose(axes[1], colors)
+		self.render_velocity(axes[2], colors)
+		self.render_acceleration(axes[3], colors)
+		plt.tight_layout()
 		plt.show()
