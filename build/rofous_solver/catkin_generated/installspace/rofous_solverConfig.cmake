@@ -68,7 +68,7 @@ set(rofous_solver_CONFIG_INCLUDED TRUE)
 # set variables for source/devel/install prefixes
 if("FALSE" STREQUAL "TRUE")
   set(rofous_solver_SOURCE_PREFIX /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_solver)
-  set(rofous_solver_DEVEL_PREFIX /home/m_dyse/Dyse-Robotics/Projects/Rofous/devel)
+  set(rofous_solver_DEVEL_PREFIX /home/m_dyse/Dyse-Robotics/Projects/Rofous/devel/.private/rofous_solver)
   set(rofous_solver_INSTALL_PREFIX "")
   set(rofous_solver_PREFIX ${rofous_solver_DEVEL_PREFIX})
 else()

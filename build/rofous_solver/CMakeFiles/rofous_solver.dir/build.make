@@ -43,66 +43,66 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/m_dyse/Dyse-Robotics/Projects/Rofous/src
+CMAKE_SOURCE_DIR = /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_solver
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/m_dyse/Dyse-Robotics/Projects/Rofous/build
+CMAKE_BINARY_DIR = /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_solver
 
 # Include any dependencies generated for this target.
-include rofous_solver/CMakeFiles/rofous_solver.dir/depend.make
+include CMakeFiles/rofous_solver.dir/depend.make
 
 # Include the progress variables for this target.
-include rofous_solver/CMakeFiles/rofous_solver.dir/progress.make
+include CMakeFiles/rofous_solver.dir/progress.make
 
 # Include the compile flags for this target's objects.
-include rofous_solver/CMakeFiles/rofous_solver.dir/flags.make
+include CMakeFiles/rofous_solver.dir/flags.make
 
-rofous_solver/CMakeFiles/rofous_solver.dir/rofous_solver.cpp.o: rofous_solver/CMakeFiles/rofous_solver.dir/flags.make
-rofous_solver/CMakeFiles/rofous_solver.dir/rofous_solver.cpp.o: /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_solver/rofous_solver.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object rofous_solver/CMakeFiles/rofous_solver.dir/rofous_solver.cpp.o"
-	cd /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_solver && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/rofous_solver.dir/rofous_solver.cpp.o -c /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_solver/rofous_solver.cpp
+CMakeFiles/rofous_solver.dir/rofous_solver.cpp.o: CMakeFiles/rofous_solver.dir/flags.make
+CMakeFiles/rofous_solver.dir/rofous_solver.cpp.o: /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_solver/rofous_solver.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_solver/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/rofous_solver.dir/rofous_solver.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/rofous_solver.dir/rofous_solver.cpp.o -c /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_solver/rofous_solver.cpp
 
-rofous_solver/CMakeFiles/rofous_solver.dir/rofous_solver.cpp.i: cmake_force
+CMakeFiles/rofous_solver.dir/rofous_solver.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/rofous_solver.dir/rofous_solver.cpp.i"
-	cd /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_solver && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_solver/rofous_solver.cpp > CMakeFiles/rofous_solver.dir/rofous_solver.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_solver/rofous_solver.cpp > CMakeFiles/rofous_solver.dir/rofous_solver.cpp.i
 
-rofous_solver/CMakeFiles/rofous_solver.dir/rofous_solver.cpp.s: cmake_force
+CMakeFiles/rofous_solver.dir/rofous_solver.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/rofous_solver.dir/rofous_solver.cpp.s"
-	cd /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_solver && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_solver/rofous_solver.cpp -o CMakeFiles/rofous_solver.dir/rofous_solver.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_solver/rofous_solver.cpp -o CMakeFiles/rofous_solver.dir/rofous_solver.cpp.s
 
-rofous_solver/CMakeFiles/rofous_solver.dir/rofous_solver.cpp.o.requires:
+CMakeFiles/rofous_solver.dir/rofous_solver.cpp.o.requires:
 
-.PHONY : rofous_solver/CMakeFiles/rofous_solver.dir/rofous_solver.cpp.o.requires
+.PHONY : CMakeFiles/rofous_solver.dir/rofous_solver.cpp.o.requires
 
-rofous_solver/CMakeFiles/rofous_solver.dir/rofous_solver.cpp.o.provides: rofous_solver/CMakeFiles/rofous_solver.dir/rofous_solver.cpp.o.requires
-	$(MAKE) -f rofous_solver/CMakeFiles/rofous_solver.dir/build.make rofous_solver/CMakeFiles/rofous_solver.dir/rofous_solver.cpp.o.provides.build
-.PHONY : rofous_solver/CMakeFiles/rofous_solver.dir/rofous_solver.cpp.o.provides
+CMakeFiles/rofous_solver.dir/rofous_solver.cpp.o.provides: CMakeFiles/rofous_solver.dir/rofous_solver.cpp.o.requires
+	$(MAKE) -f CMakeFiles/rofous_solver.dir/build.make CMakeFiles/rofous_solver.dir/rofous_solver.cpp.o.provides.build
+.PHONY : CMakeFiles/rofous_solver.dir/rofous_solver.cpp.o.provides
 
-rofous_solver/CMakeFiles/rofous_solver.dir/rofous_solver.cpp.o.provides.build: rofous_solver/CMakeFiles/rofous_solver.dir/rofous_solver.cpp.o
+CMakeFiles/rofous_solver.dir/rofous_solver.cpp.o.provides.build: CMakeFiles/rofous_solver.dir/rofous_solver.cpp.o
 
 
-rofous_solver/CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.o: rofous_solver/CMakeFiles/rofous_solver.dir/flags.make
-rofous_solver/CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.o: /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_solver/test_rofous_solver.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object rofous_solver/CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.o"
-	cd /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_solver && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.o -c /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_solver/test_rofous_solver.cpp
+CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.o: CMakeFiles/rofous_solver.dir/flags.make
+CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.o: /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_solver/test_rofous_solver.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_solver/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.o -c /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_solver/test_rofous_solver.cpp
 
-rofous_solver/CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.i: cmake_force
+CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.i"
-	cd /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_solver && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_solver/test_rofous_solver.cpp > CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_solver/test_rofous_solver.cpp > CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.i
 
-rofous_solver/CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.s: cmake_force
+CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.s"
-	cd /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_solver && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_solver/test_rofous_solver.cpp -o CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_solver/test_rofous_solver.cpp -o CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.s
 
-rofous_solver/CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.o.requires:
+CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.o.requires:
 
-.PHONY : rofous_solver/CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.o.requires
+.PHONY : CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.o.requires
 
-rofous_solver/CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.o.provides: rofous_solver/CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.o.requires
-	$(MAKE) -f rofous_solver/CMakeFiles/rofous_solver.dir/build.make rofous_solver/CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.o.provides.build
-.PHONY : rofous_solver/CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.o.provides
+CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.o.provides: CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.o.requires
+	$(MAKE) -f CMakeFiles/rofous_solver.dir/build.make CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.o.provides.build
+.PHONY : CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.o.provides
 
-rofous_solver/CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.o.provides.build: rofous_solver/CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.o
+CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.o.provides.build: CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.o
 
 
 # Object files for target rofous_solver
@@ -113,28 +113,28 @@ rofous_solver_OBJECTS = \
 # External object files for target rofous_solver
 rofous_solver_EXTERNAL_OBJECTS =
 
-/home/m_dyse/Dyse-Robotics/Projects/Rofous/bin/rofous_solver: rofous_solver/CMakeFiles/rofous_solver.dir/rofous_solver.cpp.o
-/home/m_dyse/Dyse-Robotics/Projects/Rofous/bin/rofous_solver: rofous_solver/CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.o
-/home/m_dyse/Dyse-Robotics/Projects/Rofous/bin/rofous_solver: rofous_solver/CMakeFiles/rofous_solver.dir/build.make
-/home/m_dyse/Dyse-Robotics/Projects/Rofous/bin/rofous_solver: rofous_solver/CMakeFiles/rofous_solver.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable /home/m_dyse/Dyse-Robotics/Projects/Rofous/bin/rofous_solver"
-	cd /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_solver && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/rofous_solver.dir/link.txt --verbose=$(VERBOSE)
+/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/bin/rofous_solver: CMakeFiles/rofous_solver.dir/rofous_solver.cpp.o
+/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/bin/rofous_solver: CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.o
+/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/bin/rofous_solver: CMakeFiles/rofous_solver.dir/build.make
+/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/bin/rofous_solver: CMakeFiles/rofous_solver.dir/link.txt
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_solver/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/bin/rofous_solver"
+	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/rofous_solver.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
-rofous_solver/CMakeFiles/rofous_solver.dir/build: /home/m_dyse/Dyse-Robotics/Projects/Rofous/bin/rofous_solver
+CMakeFiles/rofous_solver.dir/build: /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/bin/rofous_solver
 
-.PHONY : rofous_solver/CMakeFiles/rofous_solver.dir/build
+.PHONY : CMakeFiles/rofous_solver.dir/build
 
-rofous_solver/CMakeFiles/rofous_solver.dir/requires: rofous_solver/CMakeFiles/rofous_solver.dir/rofous_solver.cpp.o.requires
-rofous_solver/CMakeFiles/rofous_solver.dir/requires: rofous_solver/CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.o.requires
+CMakeFiles/rofous_solver.dir/requires: CMakeFiles/rofous_solver.dir/rofous_solver.cpp.o.requires
+CMakeFiles/rofous_solver.dir/requires: CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.o.requires
 
-.PHONY : rofous_solver/CMakeFiles/rofous_solver.dir/requires
+.PHONY : CMakeFiles/rofous_solver.dir/requires
 
-rofous_solver/CMakeFiles/rofous_solver.dir/clean:
-	cd /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_solver && $(CMAKE_COMMAND) -P CMakeFiles/rofous_solver.dir/cmake_clean.cmake
-.PHONY : rofous_solver/CMakeFiles/rofous_solver.dir/clean
+CMakeFiles/rofous_solver.dir/clean:
+	$(CMAKE_COMMAND) -P CMakeFiles/rofous_solver.dir/cmake_clean.cmake
+.PHONY : CMakeFiles/rofous_solver.dir/clean
 
-rofous_solver/CMakeFiles/rofous_solver.dir/depend:
-	cd /home/m_dyse/Dyse-Robotics/Projects/Rofous/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/m_dyse/Dyse-Robotics/Projects/Rofous/src /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_solver /home/m_dyse/Dyse-Robotics/Projects/Rofous/build /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_solver /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_solver/CMakeFiles/rofous_solver.dir/DependInfo.cmake --color=$(COLOR)
-.PHONY : rofous_solver/CMakeFiles/rofous_solver.dir/depend
+CMakeFiles/rofous_solver.dir/depend:
+	cd /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_solver && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_solver /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_solver /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_solver /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_solver /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_solver/CMakeFiles/rofous_solver.dir/DependInfo.cmake --color=$(COLOR)
+.PHONY : CMakeFiles/rofous_solver.dir/depend
 

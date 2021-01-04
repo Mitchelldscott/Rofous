@@ -1,0 +1,8 @@
+prefix=/home/m_dyse/Dyse-Robotics/Projects/Rofous/devel/.private/rofous_description
+
+Name: rofous_description
+Description: Description of rofous_description
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

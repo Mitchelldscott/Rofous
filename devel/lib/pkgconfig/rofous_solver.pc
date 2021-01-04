@@ -1,8 +1,1 @@
-prefix=/home/m_dyse/Dyse-Robotics/Projects/Rofous/devel
-
-Name: rofous_solver
-Description: Description of rofous_solver
-Version: 1.0.0
-Cflags: -I/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_solver/include
-Libs: -L${prefix}/lib -linclude
-Requires: 
+/home/m_dyse/Dyse-Robotics/Projects/Rofous/devel/.private/rofous_solver/lib/pkgconfig/rofous_solver.pc
