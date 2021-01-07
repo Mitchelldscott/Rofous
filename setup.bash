@@ -66,6 +66,13 @@ done
 # force user to provide python environment path
 checkInputs
 
+if [[ ${DIR} == */Dyse-Robotics/Projects/* ]] || [[ ${DIR} == */dyse-robotics/Projects/* ]]; then
+	echo [${ME}] pulling Dyse-Tools ;
+	cp ../../dyse_tools/*.py rofous_tools
+else
+	echo [${ME}] Isolated project, no tools available -e\n\t{$DIR};
+fi
+
 # install python3 dependencies
 sudo apt-get update
 python3 -m venv ${ENV_PATH}/${ENV_NAME}
@@ -79,9 +86,11 @@ PYTHONPATH=/opt/ros/melodic/lib/python2.7/dist-packages
 
 # initialize the workspace
 echo [${ME}] initializing catkin workspace with ${ENV_PATH}/${ENV_NAME}/bin/python3 as executable path
-catkin_make -DPYTHON_EXECUTABLE=${ENV_PATH}/${ENV_NAME}/bin/python3
+catkin config --init
+catkin config -DPYTHON_EXECUTABLE=${ENV_PATH}/${ENV_NAME}/bin/python3
+catkin build
 
-echo "alias load_rofous='PYTHONPATH=$PYTHONPATH:${DIR}/rofous_tools && source ${DIR}/devel/setup.bash && source ${ENV_PATH}/${ENV_NAME}/bin/activate'" >> ~/.bashrc
+echo "alias load_rofous='PYTHONPATH=${PYTHONPATH}:${DIR}/rofous_tools && source ${DIR}/devel/setup.bash && source ${ENV_PATH}/${ENV_NAME}/bin/activate'" >> ~/.bashrc
 
 echo
 echo [${ME}] Successful Install

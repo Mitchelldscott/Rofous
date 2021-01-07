@@ -1,0 +1,8 @@
+CMakeFiles/Aerial_Device_Test.dir/src/Aerial_Device_Dev.cpp.o: In function `main':
+Aerial_Device_Dev.cpp:(.text+0xfe4): undefined reference to `Aerial_Device::~Aerial_Device()'
+Aerial_Device_Dev.cpp:(.text+0x13b2): undefined reference to `Aerial_Device::~Aerial_Device()'
+collect2: error: ld returned 1 exit status
+make[2]: *** [Aerial_Device_Test] Error 1
+make[1]: *** [CMakeFiles/Aerial_Device_Test.dir/all] Error 2
+make[1]: *** Waiting for unfinished jobs....
+make: *** [all] Error 2

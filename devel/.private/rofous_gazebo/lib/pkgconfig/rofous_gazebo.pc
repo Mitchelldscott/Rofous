@@ -1,0 +1,8 @@
+prefix=/home/m_dyse/Dyse-Robotics/Projects/Rofous/devel/.private/rofous_gazebo
+
+Name: rofous_gazebo
+Description: Description of rofous_gazebo
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

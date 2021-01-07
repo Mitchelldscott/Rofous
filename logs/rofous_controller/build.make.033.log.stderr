@@ -1,0 +1,17 @@
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Aerial_Device.cpp:[m[K In member function ‘[01m[Kvoid Aerial_Device::build_transformers()[m[K’:
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Aerial_Device.cpp:88:14:[m[K [01;31m[Kerror: [m[Kno matching function for call to ‘[01m[KTransformer::Transformer()[m[K’
+  Transformer [01;31m[Ktf[m[K;
+              [01;31m[K^~[m[K
+In file included from [01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/include/Aerial_Device.hpp:1:0[m[K,
+                 from [01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Aerial_Device.cpp:6[m[K:
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/include/Transformer.hpp:18:3:[m[K [01;36m[Knote: [m[Kcandidate: Transformer::Transformer(std::vector<float>, std::vector<float>, std::vector<char>, std::__cxx11::string)
+   [01;36m[KTransformer[m[K(vector<float>, vector<float>, vector<char>, string);
+   [01;36m[K^~~~~~~~~~~[m[K
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/include/Transformer.hpp:18:3:[m[K [01;36m[Knote: [m[K  candidate expects 4 arguments, 0 provided
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/include/Transformer.hpp:8:7:[m[K [01;36m[Knote: [m[Kcandidate: Transformer::Transformer(const Transformer&)
+ class [01;36m[KTransformer[m[K
+       [01;36m[K^~~~~~~~~~~[m[K
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/include/Transformer.hpp:8:7:[m[K [01;36m[Knote: [m[K  candidate expects 1 argument, 0 provided
+make[2]: *** [CMakeFiles/Aerial_Device_Test.dir/src/Aerial_Device.cpp.o] Error 1
+make[1]: *** [CMakeFiles/Aerial_Device_Test.dir/all] Error 2
+make: *** [all] Error 2

@@ -1,0 +1,8 @@
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Aerial_Device_Dev.cpp:[m[K In function ‘[01m[Kint main(int, char**)[m[K’:
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Aerial_Device_Dev.cpp:96:27:[m[K [01;31m[Kerror: [m[Kinvalid operands of types ‘[01m[Kconst char [8][m[K’ and ‘[01m[Kint[m[K’ to binary ‘[01m[Koperator<<[m[K’
+   test.info += [01;31m[K"\nState{" << i[m[K << "}:\n" + rofous.get_state().matrix_as_string();
+                [01;31m[K~~~~~~~~~~~^~~~[m[K
+make[2]: *** [CMakeFiles/Aerial_Device_Test.dir/src/Aerial_Device_Dev.cpp.o] Error 1
+make[2]: *** Waiting for unfinished jobs....
+make[1]: *** [CMakeFiles/Aerial_Device_Test.dir/all] Error 2
+make: *** [all] Error 2

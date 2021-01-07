@@ -1,0 +1,12 @@
+[35m[1mScanning dependencies of target rofous_gazebo_plugins[0m
+[ 50%] [32mBuilding CXX object CMakeFiles/rofous_gazebo_plugins.dir/src/rofous_gazebo_plugin.cpp.o[0m
+In file included from [01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_gazebo_plugins/src/rofous_gazebo_plugin.cpp:1:0[m[K:
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_gazebo_plugins/include/rofous_gazebo_plugin.hpp:1:0:[m[K [01;31m[Kerror: [m[Kunterminated #ifndef
+ #ifndef _ROFOUS_PLUGIN_HH_
+ 
+CMakeFiles/rofous_gazebo_plugins.dir/build.make:62: recipe for target 'CMakeFiles/rofous_gazebo_plugins.dir/src/rofous_gazebo_plugin.cpp.o' failed
+make[2]: *** [CMakeFiles/rofous_gazebo_plugins.dir/src/rofous_gazebo_plugin.cpp.o] Error 1
+CMakeFiles/Makefile2:67: recipe for target 'CMakeFiles/rofous_gazebo_plugins.dir/all' failed
+make[1]: *** [CMakeFiles/rofous_gazebo_plugins.dir/all] Error 2
+Makefile:140: recipe for target 'all' failed
+make: *** [all] Error 2

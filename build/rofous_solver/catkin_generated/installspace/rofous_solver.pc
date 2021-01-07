@@ -1,8 +1,0 @@
-prefix=/home/m_dyse/Dyse-Robotics/Projects/Rofous/install
-
-Name: rofous_solver
-Description: Description of rofous_solver
-Version: 1.0.0
-Cflags: -I${prefix}/include
-Libs: -L${prefix}/lib -linclude
-Requires: 

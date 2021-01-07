@@ -1,0 +1,8 @@
+[31m[1mCMake Error[0m at /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_gazebo_plugins/CMakeLists.txt:10 (find_package):
+  find_package called with invalid argument "catkin"
+
+
+[31m[1mCMake Error[0m at /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_gazebo_plugins/CMakeLists.txt:101 (catkin_package):
+  Unknown CMake command "catkin_package".
+
+

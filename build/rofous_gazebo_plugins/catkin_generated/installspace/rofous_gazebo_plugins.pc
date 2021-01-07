@@ -1,0 +1,8 @@
+prefix=/home/m_dyse/Dyse-Robotics/Projects/Rofous/install
+
+Name: rofous_gazebo_plugins
+Description: Description of rofous_gazebo_plugins
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
