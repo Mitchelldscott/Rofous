@@ -1,0 +1,6 @@
+CMakeFiles/Aerial_Device_Test.dir/src/Aerial_Device.cpp.o: In function `Aerial_Device::build_transformers()':
+Aerial_Device.cpp:(.text+0xd43): undefined reference to `Aerial_Device::radians(float)'
+collect2: error: ld returned 1 exit status
+make[2]: *** [Aerial_Device_Test] Error 1
+make[1]: *** [CMakeFiles/Aerial_Device_Test.dir/all] Error 2
+make: *** [all] Error 2

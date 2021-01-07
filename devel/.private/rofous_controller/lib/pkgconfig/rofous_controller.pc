@@ -1,0 +1,8 @@
+prefix=/home/m_dyse/Dyse-Robotics/Projects/Rofous/devel/.private/rofous_controller
+
+Name: rofous_controller
+Description: Description of rofous_controller
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

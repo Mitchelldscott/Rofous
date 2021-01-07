@@ -8,7 +8,6 @@ Version1.0
 """
 import numpy as np
 
-
 class Transformer:
     def __init__(self, phi, theta, psi, name, protocol=['psi', 'theta', 'phi'], translation=np.array([0.0,0.0,0.0]), parent=None):
         self.name = name

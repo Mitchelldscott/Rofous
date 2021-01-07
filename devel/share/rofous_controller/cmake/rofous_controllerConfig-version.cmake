@@ -1,0 +1,1 @@
+/home/m_dyse/Dyse-Robotics/Projects/Rofous/devel/.private/rofous_controller/share/rofous_controller/cmake/rofous_controllerConfig-version.cmake

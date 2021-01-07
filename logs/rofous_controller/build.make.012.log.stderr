@@ -1,0 +1,63 @@
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Aerial_Device.cpp:[m[K In constructor ‘[01m[KAerial_Device::Aerial_Device(int, float, float, float, std::vector<std::vector<float> >, std::vector<int>)[m[K’:
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Aerial_Device.cpp:35:47:[m[K [01;31m[Kerror: [m[Kno matching function for call to ‘[01m[Kstd::vector<std::vector<float> >::vector(int, double)[m[K’
+  vector<vector<float>> default_state((2,6),0.0[01;31m[K)[m[K
+                                               [01;31m[K^[m[K
+In file included from [01m[K/usr/include/c++/7/vector:64:0[m[K,
+                 from [01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/include/Matrix.hpp:1[m[K,
+                 from [01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/include/Transformer.hpp:1[m[K,
+                 from [01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/include/Aerial_Device.hpp:1[m[K,
+                 from [01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Aerial_Device.cpp:6[m[K:
+[01m[K/usr/include/c++/7/bits/stl_vector.h:411:2:[m[K [01;36m[Knote: [m[Kcandidate: template<class _InputIterator, class> std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&)
+  [01;36m[Kvector[m[K(_InputIterator __first, _InputIterator __last,
+  [01;36m[K^~~~~~[m[K
+[01m[K/usr/include/c++/7/bits/stl_vector.h:411:2:[m[K [01;36m[Knote: [m[K  template argument deduction/substitution failed:
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Aerial_Device.cpp:35:47:[m[K [01;36m[Knote: [m[K  deduced conflicting types for parameter ‘[01m[K_InputIterator[m[K’ (‘[01m[Kint[m[K’ and ‘[01m[Kdouble[m[K’)
+  vector<vector<float>> default_state((2,6),0.0[01;36m[K)[m[K
+                                               [01;36m[K^[m[K
+In file included from [01m[K/usr/include/c++/7/vector:64:0[m[K,
+                 from [01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/include/Matrix.hpp:1[m[K,
+                 from [01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/include/Transformer.hpp:1[m[K,
+                 from [01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/include/Aerial_Device.hpp:1[m[K,
+                 from [01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Aerial_Device.cpp:6[m[K:
+[01m[K/usr/include/c++/7/bits/stl_vector.h:383:7:[m[K [01;36m[Knote: [m[Kcandidate: std::vector<_Tp, _Alloc>::vector(std::initializer_list<_Tp>, const allocator_type&) [with _Tp = std::vector<float>; _Alloc = std::allocator<std::vector<float> >; std::vector<_Tp, _Alloc>::allocator_type = std::allocator<std::vector<float> >]
+       [01;36m[Kvector[m[K(initializer_list<value_type> __l,
+       [01;36m[K^~~~~~[m[K
+[01m[K/usr/include/c++/7/bits/stl_vector.h:383:7:[m[K [01;36m[Knote: [m[K  no known conversion for argument 1 from ‘[01m[Kint[m[K’ to ‘[01m[Kstd::initializer_list<std::vector<float> >[m[K’
+[01m[K/usr/include/c++/7/bits/stl_vector.h:358:7:[m[K [01;36m[Knote: [m[Kcandidate: std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&) [with _Tp = std::vector<float>; _Alloc = std::allocator<std::vector<float> >; std::vector<_Tp, _Alloc>::allocator_type = std::allocator<std::vector<float> >]
+       [01;36m[Kvector[m[K(vector&& __rv, const allocator_type& __m)
+       [01;36m[K^~~~~~[m[K
+[01m[K/usr/include/c++/7/bits/stl_vector.h:358:7:[m[K [01;36m[Knote: [m[K  no known conversion for argument 1 from ‘[01m[Kint[m[K’ to ‘[01m[Kstd::vector<std::vector<float> >&&[m[K’
+[01m[K/usr/include/c++/7/bits/stl_vector.h:348:7:[m[K [01;36m[Knote: [m[Kcandidate: std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&, const allocator_type&) [with _Tp = std::vector<float>; _Alloc = std::allocator<std::vector<float> >; std::vector<_Tp, _Alloc>::allocator_type = std::allocator<std::vector<float> >]
+       [01;36m[Kvector[m[K(const vector& __x, const allocator_type& __a)
+       [01;36m[K^~~~~~[m[K
+[01m[K/usr/include/c++/7/bits/stl_vector.h:348:7:[m[K [01;36m[Knote: [m[K  no known conversion for argument 1 from ‘[01m[Kint[m[K’ to ‘[01m[Kconst std::vector<std::vector<float> >&[m[K’
+[01m[K/usr/include/c++/7/bits/stl_vector.h:344:7:[m[K [01;36m[Knote: [m[Kcandidate: std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&) [with _Tp = std::vector<float>; _Alloc = std::allocator<std::vector<float> >]
+       [01;36m[Kvector[m[K(vector&& __x) noexcept
+       [01;36m[K^~~~~~[m[K
+[01m[K/usr/include/c++/7/bits/stl_vector.h:344:7:[m[K [01;36m[Knote: [m[K  candidate expects 1 argument, 2 provided
+[01m[K/usr/include/c++/7/bits/stl_vector.h:326:7:[m[K [01;36m[Knote: [m[Kcandidate: std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = std::vector<float>; _Alloc = std::allocator<std::vector<float> >]
+       [01;36m[Kvector[m[K(const vector& __x)
+       [01;36m[K^~~~~~[m[K
+[01m[K/usr/include/c++/7/bits/stl_vector.h:326:7:[m[K [01;36m[Knote: [m[K  candidate expects 1 argument, 2 provided
+[01m[K/usr/include/c++/7/bits/stl_vector.h:295:7:[m[K [01;36m[Knote: [m[Kcandidate: std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>::size_type, const value_type&, const allocator_type&) [with _Tp = std::vector<float>; _Alloc = std::allocator<std::vector<float> >; std::vector<_Tp, _Alloc>::size_type = long unsigned int; std::vector<_Tp, _Alloc>::value_type = std::vector<float>; std::vector<_Tp, _Alloc>::allocator_type = std::allocator<std::vector<float> >]
+       [01;36m[Kvector[m[K(size_type __n, const value_type& __value,
+       [01;36m[K^~~~~~[m[K
+[01m[K/usr/include/c++/7/bits/stl_vector.h:295:7:[m[K [01;36m[Knote: [m[K  no known conversion for argument 2 from ‘[01m[Kdouble[m[K’ to ‘[01m[Kconst value_type& {aka const std::vector<float>&}[m[K’
+[01m[K/usr/include/c++/7/bits/stl_vector.h:283:7:[m[K [01;36m[Knote: [m[Kcandidate: std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>::size_type, const allocator_type&) [with _Tp = std::vector<float>; _Alloc = std::allocator<std::vector<float> >; std::vector<_Tp, _Alloc>::size_type = long unsigned int; std::vector<_Tp, _Alloc>::allocator_type = std::allocator<std::vector<float> >]
+       [01;36m[Kvector[m[K(size_type __n, const allocator_type& __a = allocator_type())
+       [01;36m[K^~~~~~[m[K
+[01m[K/usr/include/c++/7/bits/stl_vector.h:283:7:[m[K [01;36m[Knote: [m[K  no known conversion for argument 2 from ‘[01m[Kdouble[m[K’ to ‘[01m[Kconst allocator_type& {aka const std::allocator<std::vector<float> >&}[m[K’
+[01m[K/usr/include/c++/7/bits/stl_vector.h:270:7:[m[K [01;36m[Knote: [m[Kcandidate: std::vector<_Tp, _Alloc>::vector(const allocator_type&) [with _Tp = std::vector<float>; _Alloc = std::allocator<std::vector<float> >; std::vector<_Tp, _Alloc>::allocator_type = std::allocator<std::vector<float> >]
+       [01;36m[Kvector[m[K(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+       [01;36m[K^~~~~~[m[K
+[01m[K/usr/include/c++/7/bits/stl_vector.h:270:7:[m[K [01;36m[Knote: [m[K  candidate expects 1 argument, 2 provided
+[01m[K/usr/include/c++/7/bits/stl_vector.h:259:7:[m[K [01;36m[Knote: [m[Kcandidate: std::vector<_Tp, _Alloc>::vector() [with _Tp = std::vector<float>; _Alloc = std::allocator<std::vector<float> >]
+       [01;36m[Kvector[m[K()
+       [01;36m[K^~~~~~[m[K
+[01m[K/usr/include/c++/7/bits/stl_vector.h:259:7:[m[K [01;36m[Knote: [m[K  candidate expects 0 arguments, 2 provided
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Aerial_Device.cpp:36:2:[m[K [01;31m[Kerror: [m[Kexpected ‘[01m[K,[m[K’ or ‘[01m[K;[m[K’ before ‘[01m[KstateActual[m[K’
+  [01;31m[KstateActual[m[K.set_matrix(default_state);
+  [01;31m[K^~~~~~~~~~~[m[K
+make[2]: *** [CMakeFiles/Aerial_Device_Test.dir/src/Aerial_Device.cpp.o] Error 1
+make[1]: *** [CMakeFiles/Aerial_Device_Test.dir/all] Error 2
+make: *** [all] Error 2

@@ -1,0 +1,7 @@
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Aerial_Device.cpp:[m[K In member function ‘[01m[Kvoid Aerial_Device::build_transformers()[m[K’:
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Aerial_Device.cpp:93:32:[m[K [01;31m[Kerror: [m[Krequest for member ‘[01m[Kname[m[K’ in ‘[01m[K((Aerial_Device*)this)->Aerial_Device::autobots.std::vector<Transformer>::operator[](((std::vector<Transformer>::size_type)(i + 1))).Transformer::parent[m[K’, which is of pointer type ‘[01m[KTransformer*[m[K’ (maybe you meant to use ‘[01m[K->[m[K’ ?)
+   cout << autobots[i+1].parent.[01;31m[Kname[m[K << endl;
+                                [01;31m[K^~~~[m[K
+make[2]: *** [CMakeFiles/Aerial_Device_Test.dir/src/Aerial_Device.cpp.o] Error 1
+make[1]: *** [CMakeFiles/Aerial_Device_Test.dir/all] Error 2
+make: *** [all] Error 2

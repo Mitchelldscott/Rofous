@@ -1,0 +1,7 @@
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Aerial_Device.cpp:7:0:[m[K [01;35m[Kwarning: [m[K"Pi" redefined
+ #define Pi 3.1415926535
+ 
+In file included from [01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Aerial_Device.cpp:6:0[m[K:
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/include/Aerial_Device.hpp:2:0:[m[K [01;36m[Knote: [m[Kthis is the location of the previous definition
+ #define Pi 3.14159
+ 

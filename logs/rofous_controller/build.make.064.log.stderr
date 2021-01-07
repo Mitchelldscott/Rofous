@@ -1,0 +1,16 @@
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Aerial_Device.cpp:[m[K In member function ‘[01m[Kstd::vector<float> Aerial_Device::get_Fnet()[m[K’:
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Aerial_Device.cpp:112:17:[m[K [01;31m[Kerror: [m[Krequest for member ‘[01m[Krotate[m[K’ in ‘[01m[K((Aerial_Device*)this)->Aerial_Device::autobots.std::vector<Transformer*>::operator[](((std::vector<Transformer*>::size_type)(i + 1)))[m[K’, which is of pointer type ‘[01m[K__gnu_cxx::__alloc_traits<std::allocator<Transformer*> >::value_type {aka Transformer*}[m[K’ (maybe you meant to use ‘[01m[K->[m[K’ ?)
+   autobots[i+1].[01;31m[Krotate[m[K(thrust*, true);
+                 [01;31m[K^~~~~~[m[K
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Aerial_Device.cpp:112:31:[m[K [01;31m[Kerror: [m[Kexpected primary-expression before ‘[01m[K,[m[K’ token
+   autobots[i+1].rotate(thrust*[01;31m[K,[m[K true);
+                               [01;31m[K^[m[K
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Aerial_Device.cpp:119:17:[m[K [01;31m[Kerror: [m[Krequest for member ‘[01m[Krotate[m[K’ in ‘[01m[K((Aerial_Device*)this)->Aerial_Device::autobots.std::vector<Transformer*>::operator[](((std::vector<Transformer*>::size_type)(i + 1)))[m[K’, which is of pointer type ‘[01m[K__gnu_cxx::__alloc_traits<std::allocator<Transformer*> >::value_type {aka Transformer*}[m[K’ (maybe you meant to use ‘[01m[K->[m[K’ ?)
+   autobots[i+1].[01;31m[Krotate[m[K(thrust*, true);
+                 [01;31m[K^~~~~~[m[K
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Aerial_Device.cpp:119:31:[m[K [01;31m[Kerror: [m[Kexpected primary-expression before ‘[01m[K,[m[K’ token
+   autobots[i+1].rotate(thrust*[01;31m[K,[m[K true);
+                               [01;31m[K^[m[K
+make[2]: *** [CMakeFiles/Aerial_Device_Test.dir/src/Aerial_Device.cpp.o] Error 1
+make[1]: *** [CMakeFiles/Aerial_Device_Test.dir/all] Error 2
+make: *** [all] Error 2

@@ -1,0 +1,8 @@
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Aerial_Device.cpp:[m[K In member function ‘[01m[Kvoid Aerial_Device::build_transformers()[m[K’:
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Aerial_Device.cpp:93:38:[m[K [01;31m[Kerror: [m[Kcannot convert ‘[01m[KTransformer**[m[K’ to ‘[01m[KTransformer*[m[K’ in assignment
+   autobots[i+1]->parent = &autobots[0[01;31m[K][m[K;
+                                      [01;31m[K^[m[K
+make[2]: *** [CMakeFiles/Aerial_Device_Test.dir/src/Aerial_Device.cpp.o] Error 1
+make[2]: *** Waiting for unfinished jobs....
+make[1]: *** [CMakeFiles/Aerial_Device_Test.dir/all] Error 2
+make: *** [all] Error 2

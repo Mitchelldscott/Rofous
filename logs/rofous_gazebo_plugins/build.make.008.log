@@ -1,0 +1,4 @@
+[35m[1mScanning dependencies of target rofous_gazebo_plugin[0m
+[ 50%] [32mBuilding CXX object CMakeFiles/rofous_gazebo_plugin.dir/src/rofous_gazebo_plugin.cpp.o[0m
+[100%] [32m[1mLinking CXX shared library /home/m_dyse/Dyse-Robotics/Projects/Rofous/devel/.private/rofous_gazebo_plugins/lib/librofous_gazebo_plugin.so[0m
+[100%] Built target rofous_gazebo_plugin

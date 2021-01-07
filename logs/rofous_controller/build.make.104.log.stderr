@@ -1,0 +1,19 @@
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Transformer_Dev.cpp:[m[K In function ‘[01m[Kvoid transformer_tests()[m[K’:
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Transformer_Dev.cpp:119:17:[m[K [01;31m[Kerror: [m[K‘[01m[Ktranslation[m[K’ was not declared in this scope
+  Transformer tf([01;31m[Ktranslation[m[K, reference, protocol, name);
+                 [01;31m[K^~~~~~~~~~~[m[K
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Transformer_Dev.cpp:138:7:[m[K [01;31m[Kerror: [m[Kconflicting declaration ‘[01m[Kauto start[m[K’
+  auto [01;31m[Kstart[m[K = chrono::high_resolution_clock::now();
+       [01;31m[K^~~~~[m[K
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Transformer_Dev.cpp:124:7:[m[K [01;36m[Knote: [m[Kprevious declaration as ‘[01m[Kstd::chrono::time_point<std::chrono::_V2::system_clock, std::chrono::duration<long int, std::ratio<1, 1000000000> > > start[m[K’
+  auto [01;36m[Kstart[m[K = chrono::high_resolution_clock::now();
+       [01;36m[K^~~~~[m[K
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Transformer_Dev.cpp:145:7:[m[K [01;31m[Kerror: [m[Kconflicting declaration ‘[01m[Kauto stop[m[K’
+  auto [01;31m[Kstop[m[K = chrono::high_resolution_clock::now();
+       [01;31m[K^~~~[m[K
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Transformer_Dev.cpp:131:7:[m[K [01;36m[Knote: [m[Kprevious declaration as ‘[01m[Kstd::chrono::time_point<std::chrono::_V2::system_clock, std::chrono::duration<long int, std::ratio<1, 1000000000> > > stop[m[K’
+  auto [01;36m[Kstop[m[K = chrono::high_resolution_clock::now();
+       [01;36m[K^~~~[m[K
+make[2]: *** [CMakeFiles/Transformer_Test.dir/src/Transformer_Dev.cpp.o] Error 1
+make[1]: *** [CMakeFiles/Transformer_Test.dir/all] Error 2
+make: *** [all] Error 2

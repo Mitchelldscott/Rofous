@@ -1,5 +1,0 @@
-[35m[1mScanning dependencies of target rofous_solver[0m
-[ 33%] [32mBuilding CXX object CMakeFiles/rofous_solver.dir/test_rofous_solver.cpp.o[0m
-[ 66%] [32mBuilding CXX object CMakeFiles/rofous_solver.dir/rofous_solver.cpp.o[0m
-[100%] [32m[1mLinking CXX executable /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/bin/rofous_solver[0m
-[100%] Built target rofous_solver

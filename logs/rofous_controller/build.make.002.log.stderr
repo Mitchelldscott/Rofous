@@ -1,0 +1,21 @@
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Transformer.cpp:[m[K In destructor ‘[01m[KTransformer::~Transformer()[m[K’:
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Transformer.cpp:22:21:[m[K [01;31m[Kerror: [m[Kexpected class-name before ‘[01m[K([m[K’ token
+   parent->~Transform[01;31m[K([m[K);
+                     [01;31m[K^[m[K
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Transformer.cpp:24:20:[m[K [01;31m[Kerror: [m[Kexpected class-name before ‘[01m[K([m[K’ token
+   child->~Transform[01;31m[K([m[K);
+                    [01;31m[K^[m[K
+make[2]: *** [CMakeFiles/Aerial_Device_Test.dir/src/Transformer.cpp.o] Error 1
+make[2]: *** Waiting for unfinished jobs....
+make[1]: *** [CMakeFiles/Aerial_Device_Test.dir/all] Error 2
+make[1]: *** Waiting for unfinished jobs....
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Transformer.cpp:[m[K In destructor ‘[01m[KTransformer::~Transformer()[m[K’:
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Transformer.cpp:22:21:[m[K [01;31m[Kerror: [m[Kexpected class-name before ‘[01m[K([m[K’ token
+   parent->~Transform[01;31m[K([m[K);
+                     [01;31m[K^[m[K
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Transformer.cpp:24:20:[m[K [01;31m[Kerror: [m[Kexpected class-name before ‘[01m[K([m[K’ token
+   child->~Transform[01;31m[K([m[K);
+                    [01;31m[K^[m[K
+make[2]: *** [CMakeFiles/Transformer_Test.dir/src/Transformer.cpp.o] Error 1
+make[1]: *** [CMakeFiles/Transformer_Test.dir/all] Error 2
+make: *** [all] Error 2
