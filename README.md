@@ -6,7 +6,7 @@ The goal is to make a sneaky companion that can be instructed to follow people o
 ## TODO:
 ### Components
 - ESC: Hobbypower 30A
-- flight controller: Arduino IOT 33
+- flight controller: Arduino IOT Nano 33
 - motors: readytosky 9700Kv BLDC
 - frame: f-450
 - camera: ???
@@ -14,18 +14,27 @@ The goal is to make a sneaky companion that can be instructed to follow people o
 - battery: ** busted, need new one **
 
 ## Control
-- (C++) accelerations -> pose
-- (python/C++) filnalize PID and auto tuner
-- (python/C++) implement filter for pose
+- (python/C++) stability control
+ - Implement a control algorithm that minimizes the roll and pitch (maintains horizontal)
+ - Cascade PID?
 
 ## Simulation
-- (C++) connect to Gazebo and make urdf/xarco
-- (python/C++) improve dynamics with BET analysis
+- (C++) Finish rofous gazebo plugins
+ - Plugin loads data from xacro model
+ - Create nodes for:
+    - Model state
+    - Throttle
+    - set Throttle
+- (C++) improve dynamics with BET
 
 ## Research
 - Battery life: how to improve it
-- gesture/verbal interfacing
-- optimize size with respect to battery life
+    - How to determine battery cycle
+    - Maybe rebuild drone to battery requirements
+- gesture interfacing
+    - Pose estimation through cv
+    - Classify gestures (svm?)
+    - Create commands for gestures
 
 ## See it yourself
 # Install
@@ -38,7 +47,7 @@ First clone the repo:
 Then cd into the project and run the setup script (pass the script the desired path to the python environment it will create) 
 
     cd Rofous
-    ./setup.bash -e ~/pyenvs
+    ./setup.bash -e <ENVIRONMENT PATH>
     
 Now the project has an alias to load the tools in .bashrc run those like 
 
@@ -50,11 +59,8 @@ Now your python enviroment is configured and your catkin_ws should be initialize
     echo $PYTHON_PATH
     catkin_make
     
-You can run the C++ unit tests with 
-
-    ./bin/main U-Test
     
 You can run the python version with 
 
-    cd src/Notebooks
+    cd Python3_Notebooks
     jupyter notebook
