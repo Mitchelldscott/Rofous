@@ -8,8 +8,6 @@
 
 # modified environment variables
 export CMAKE_PREFIX_PATH="/home/m_dyse/Dyse-Robotics/Projects/Rofous/devel/.private/rofous_gazebo_plugins:$CMAKE_PREFIX_PATH"
-export LD_LIBRARY_PATH="/home/m_dyse/Dyse-Robotics/Projects/Rofous/devel/.private/rofous_gazebo_plugins/lib:$LD_LIBRARY_PATH"
-export PKG_CONFIG_PATH="/home/m_dyse/Dyse-Robotics/Projects/Rofous/devel/.private/rofous_gazebo_plugins/lib/pkgconfig:$PKG_CONFIG_PATH"
 export PWD='/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_gazebo_plugins'
 export ROSLISP_PACKAGE_DIRECTORIES="/home/m_dyse/Dyse-Robotics/Projects/Rofous/devel/.private/rofous_gazebo_plugins/share/common-lisp:$ROSLISP_PACKAGE_DIRECTORIES"
 export ROS_PACKAGE_PATH="/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_gazebo_plugins:$ROS_PACKAGE_PATH"

@@ -4,7 +4,10 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_gazebo_plugins/src/rofous_gazebo_plugin.cpp" "/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_gazebo_plugins/CMakeFiles/rofous_gazebo_plugins.dir/src/rofous_gazebo_plugin.cpp.o"
+  "/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_gazebo_plugins/src/rofous_gazebo_plugins/Aerial_Device.cpp" "/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_gazebo_plugins/CMakeFiles/rofous_gazebo_plugins.dir/src/rofous_gazebo_plugins/Aerial_Device.cpp.o"
+  "/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_gazebo_plugins/src/rofous_gazebo_plugins/Matrix.cpp" "/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_gazebo_plugins/CMakeFiles/rofous_gazebo_plugins.dir/src/rofous_gazebo_plugins/Matrix.cpp.o"
+  "/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_gazebo_plugins/src/rofous_gazebo_plugins/Transformer.cpp" "/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_gazebo_plugins/CMakeFiles/rofous_gazebo_plugins.dir/src/rofous_gazebo_plugins/Transformer.cpp.o"
+  "/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_gazebo_plugins/src/rofous_gazebo_plugins/rofous_gazebo_plugin.cpp" "/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_gazebo_plugins/CMakeFiles/rofous_gazebo_plugins.dir/src/rofous_gazebo_plugins/rofous_gazebo_plugin.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 
@@ -12,12 +15,14 @@ set(CMAKE_CXX_COMPILER_ID "GNU")
 set(CMAKE_TARGET_DEFINITIONS_CXX
   "LIBBULLET_VERSION=2.87"
   "LIBBULLET_VERSION_GT_282"
+  "ROSCONSOLE_BACKEND_LOG4CXX"
   "ROS_BUILD_SHARED_LIBS=1"
+  "ROS_PACKAGE_NAME=\"rofous_gazebo_plugins\""
   )
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
-  "/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_gazebo_plugins/include"
+  "/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_gazebo_plugins/include/rofous_gazebo_plugins"
   "/usr/include/gazebo-9"
   "/usr/include/bullet"
   "/usr/include/simbody"
@@ -30,6 +35,8 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "/usr/include/ignition/msgs1"
   "/usr/include/ignition/common1"
   "/usr/include/ignition/fuel_tools1"
+  "/opt/ros/melodic/include"
+  "/opt/ros/melodic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp"
   "/usr/include/uuid"
   "/usr/include/x86_64-linux-gnu"
   )

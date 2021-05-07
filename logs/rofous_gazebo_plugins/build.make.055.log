@@ -1,0 +1,34 @@
+[35m[1mScanning dependencies of target rofous_gazebo_plugins[0m
+[ 26%] Built target Transformer_Test
+[ 60%] Built target Aerial_Device_Test
+[ 60%] Built target rosgraph_msgs_generate_messages_lisp
+[ 66%] [32mBuilding CXX object CMakeFiles/rofous_gazebo_plugins.dir/src/rofous_gazebo_plugins/rofous_gazebo_plugin.cpp.o[0m
+[ 66%] Built target std_msgs_generate_messages_lisp
+[ 66%] Built target rosgraph_msgs_generate_messages_py
+[ 66%] Built target std_msgs_generate_messages_py
+[ 66%] Built target rosgraph_msgs_generate_messages_nodejs
+[ 66%] Built target std_msgs_generate_messages_nodejs
+[ 66%] Built target rosgraph_msgs_generate_messages_cpp
+[ 66%] Built target std_msgs_generate_messages_cpp
+[ 66%] Built target std_msgs_generate_messages_eus
+[ 66%] Built target rosgraph_msgs_generate_messages_eus
+[ 66%] Built target rofous_gazebo_plugins_generate_messages_py
+[ 66%] Built target rofous_gazebo_plugins_generate_messages_lisp
+[ 66%] Built target rofous_gazebo_plugins_generate_messages_nodejs
+[ 73%] Built target rofous_gazebo_plugins_generate_messages_eus
+[ 73%] Built target rofous_gazebo_plugins_generate_messages_cpp
+[ 73%] Built target rofous_gazebo_plugins_generate_messages
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_gazebo_plugins/src/rofous_gazebo_plugins/rofous_gazebo_plugin.cpp:[m[K In member function ‘[01m[Kvirtual void gazebo::RofousPlugin::Load(gazebo::physics::ModelPtr, sdf::ElementPtr)[m[K’:
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_gazebo_plugins/src/rofous_gazebo_plugins/rofous_gazebo_plugin.cpp:32:7:[m[K [01;31m[Kerror: [m[K‘[01m[Klink_[m[K’ was not declared in this scope
+   if ([01;31m[Klink_[m[K == NULL)
+       [01;31m[K^~~~~[m[K
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_gazebo_plugins/src/rofous_gazebo_plugins/rofous_gazebo_plugin.cpp:32:7:[m[K [01;36m[Knote: [m[Ksuggested alternative: ‘[01m[Klink[m[K’
+   if ([01;36m[Klink_[m[K == NULL)
+       [01;36m[K^~~~~[m[K
+       [32m[Klink[m[K
+CMakeFiles/rofous_gazebo_plugins.dir/build.make:62: recipe for target 'CMakeFiles/rofous_gazebo_plugins.dir/src/rofous_gazebo_plugins/rofous_gazebo_plugin.cpp.o' failed
+make[2]: *** [CMakeFiles/rofous_gazebo_plugins.dir/src/rofous_gazebo_plugins/rofous_gazebo_plugin.cpp.o] Error 1
+CMakeFiles/Makefile2:104: recipe for target 'CMakeFiles/rofous_gazebo_plugins.dir/all' failed
+make[1]: *** [CMakeFiles/rofous_gazebo_plugins.dir/all] Error 2
+Makefile:140: recipe for target 'all' failed
+make: *** [all] Error 2

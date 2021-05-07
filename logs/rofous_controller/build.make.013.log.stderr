@@ -1,7 +1,0 @@
-[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Aerial_Device.cpp:[m[K In constructor ‘[01m[KAerial_Device::Aerial_Device(int, float, float, float, std::vector<std::vector<float> >, std::vector<int>)[m[K’:
-[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Aerial_Device.cpp:36:2:[m[K [01;31m[Kerror: [m[Kexpected ‘[01m[K,[m[K’ or ‘[01m[K;[m[K’ before ‘[01m[KstateActual[m[K’
-  [01;31m[KstateActual[m[K.set_matrix(default_state);
-  [01;31m[K^~~~~~~~~~~[m[K
-make[2]: *** [CMakeFiles/Aerial_Device_Test.dir/src/Aerial_Device.cpp.o] Error 1
-make[1]: *** [CMakeFiles/Aerial_Device_Test.dir/all] Error 2
-make: *** [all] Error 2

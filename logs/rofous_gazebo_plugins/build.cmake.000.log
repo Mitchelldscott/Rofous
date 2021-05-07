@@ -13,10 +13,19 @@ Not searching for unused variables given on the command line.
 [36m--[0m Detecting CXX compiler ABI info - done
 [36m--[0m Detecting CXX compile features
 [36m--[0m Detecting CXX compile features - done
-[36m--[0m Found PkgConfig: /usr/bin/pkg-config (found version "0.29.1")
-[36m--[0m Checking for module 'bullet>=2.82'
-[36m--[0m   Found bullet, version 2.87
-[36m--[0m Found Simbody: /usr/include/simbody
+[36m--[0m Using CATKIN_DEVEL_PREFIX: /home/m_dyse/Dyse-Robotics/Projects/Rofous/devel/.private/rofous_gazebo_plugins
+[36m--[0m Using CMAKE_PREFIX_PATH: /home/m_dyse/Dyse-Robotics/Projects/Rofous/devel;/opt/ros/melodic
+[36m--[0m This workspace overlays: /home/m_dyse/Dyse-Robotics/Projects/Rofous/devel;/opt/ros/melodic
+[36m--[0m Found PythonInterp: /home/m_dyse/pyenvs/Rofous_env/bin/python3 (found suitable version "3.6.9", minimum required is "2")
+[36m--[0m Using PYTHON_EXECUTABLE: /home/m_dyse/pyenvs/Rofous_env/bin/python3
+[36m--[0m Using Debian Python package layout
+[36m--[0m Using empy: /usr/bin/empy
+[36m--[0m Using CATKIN_ENABLE_TESTING: ON
+[36m--[0m Call enable_testing()
+[36m--[0m Using CATKIN_TEST_RESULTS_DIR: /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_gazebo_plugins/test_results
+[36m--[0m Found gtest sources under '/usr/src/googletest': gtests will be built
+[36m--[0m Found gmock sources under '/usr/src/googletest': gmock will be built
+[36m--[0m Found PythonInterp: /home/m_dyse/pyenvs/Rofous_env/bin/python3 (found version "3.6.9")
 [36m--[0m Looking for pthread.h
 [36m--[0m Looking for pthread.h - found
 [36m--[0m Looking for pthread_create
@@ -26,6 +35,14 @@ Not searching for unused variables given on the command line.
 [36m--[0m Looking for pthread_create in pthread
 [36m--[0m Looking for pthread_create in pthread - found
 [36m--[0m Found Threads: TRUE
+[36m--[0m Using Python nosetests: /usr/bin/nosetests
+[36m--[0m catkin 0.7.29
+[36m--[0m BUILD_SHARED_LIBS is on
+[36m--[0m Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
+[36m--[0m Found PkgConfig: /usr/bin/pkg-config (found version "0.29.1")
+[36m--[0m Checking for module 'bullet>=2.82'
+[36m--[0m   Found bullet, version 2.87
+[36m--[0m Found Simbody: /usr/include/simbody
 [36m--[0m Boost version: 1.65.1
 [36m--[0m Found the following Boost libraries:
 [36m--[0m   thread
@@ -59,7 +76,7 @@ CMake Warning (dev) at /usr/share/cmake-3.10/Modules/FindBoost.cmake:911 (if):
   /usr/share/cmake-3.10/Modules/FindBoost.cmake:1558 (_Boost_MISSING_DEPENDENCIES)
   /usr/share/OGRE/cmake/modules/FindOGRE.cmake:318 (find_package)
   /usr/lib/x86_64-linux-gnu/cmake/gazebo/gazebo-config.cmake:175 (find_package)
-  CMakeLists.txt:10 (find_package)
+  CMakeLists.txt:17 (find_package)
 This warning is for project developers.  Use -Wno-dev to suppress it.
 
 [36m--[0m Looking for OGRE_Paging...
@@ -116,10 +133,18 @@ This warning is for project developers.  Use -Wno-dev to suppress it.
 [36m--[0m Checking for module 'libzip'
 [36m--[0m   Found libzip, version 1.1.2
 [36m--[0m Found ZIP: TRUE
-[31m[1mCMake Error[0m at /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_gazebo_plugins/CMakeLists.txt:101 (catkin_package):
-  Unknown CMake command "catkin_package".
+[33m[1mCMake Warning[0m at /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_gazebo_plugins/cmake/rofous_gazebo_plugins-genmsg.cmake:3 (message):
+  Invoking generate_messages() without having added any message or service
+  file before.
+
+  You should either add add_message_files() and/or add_service_files() calls
+  or remove the invocation of generate_messages().
+[36mCall Stack (most recent call first):[0m
+  /opt/ros/melodic/share/genmsg/cmake/genmsg-extras.cmake:307 (include)
+  CMakeLists.txt:76 (generate_messages)
 
 
-[36m--[0m Configuring incomplete, errors occurred!
-See also "/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_gazebo_plugins/CMakeFiles/CMakeOutput.log".
-See also "/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_gazebo_plugins/CMakeFiles/CMakeError.log".
+[36m--[0m rofous_gazebo_plugins: 0 messages, 0 services
+[36m--[0m Configuring done
+[36m--[0m Generating done
+[36m--[0m Build files have been written to: /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_gazebo_plugins

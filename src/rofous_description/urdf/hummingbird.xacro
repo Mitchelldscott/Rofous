@@ -16,7 +16,7 @@
   limitations under the License.
 -->
 
-<robot name="hummingbird" xmlns:xacro="http://ros.org/wiki/xacro">
+<robot name="rofous" xmlns:xacro="http://ros.org/wiki/xacro">
   <!-- Properties (Taken from Novel Dynamic Inversion Architecture Design
 for Quadrocopter Control by Jian Wang et al.) -->
   <xacro:property name="namespace" value="$(arg namespace)" />

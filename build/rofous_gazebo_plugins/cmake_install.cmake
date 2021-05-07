@@ -129,7 +129,27 @@ file(INSTALL DESTINATION "/home/m_dyse/Dyse-Robotics/Projects/Rofous/install" TY
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/rofous_gazebo_plugins/cmake" TYPE FILE FILES "/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_gazebo_plugins/catkin_generated/installspace/rofous_gazebo_plugins-msg-paths.cmake")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/roseus/ros" TYPE DIRECTORY FILES "/home/m_dyse/Dyse-Robotics/Projects/Rofous/devel/.private/rofous_gazebo_plugins/share/roseus/ros/rofous_gazebo_plugins")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  execute_process(COMMAND "/home/m_dyse/pyenvs/Rofous_env/bin/python3" -m compileall "/home/m_dyse/Dyse-Robotics/Projects/Rofous/devel/.private/rofous_gazebo_plugins/lib/python3/dist-packages/rofous_gazebo_plugins")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/python3/dist-packages" TYPE DIRECTORY FILES "/home/m_dyse/Dyse-Robotics/Projects/Rofous/devel/.private/rofous_gazebo_plugins/lib/python3/dist-packages/rofous_gazebo_plugins")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_gazebo_plugins/catkin_generated/installspace/rofous_gazebo_plugins.pc")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/rofous_gazebo_plugins/cmake" TYPE FILE FILES "/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_gazebo_plugins/catkin_generated/installspace/rofous_gazebo_plugins-msg-extras.cmake")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)

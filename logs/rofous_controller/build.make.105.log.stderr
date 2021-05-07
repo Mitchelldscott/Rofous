@@ -1,7 +1,0 @@
-[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Transformer_Dev.cpp:[m[K In function ‘[01m[Kvoid transformer_tests()[m[K’:
-[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Transformer_Dev.cpp:119:17:[m[K [01;31m[Kerror: [m[K‘[01m[Ktranslation[m[K’ was not declared in this scope
-  Transformer tf([01;31m[Ktranslation[m[K, reference, protocol, name);
-                 [01;31m[K^~~~~~~~~~~[m[K
-make[2]: *** [CMakeFiles/Transformer_Test.dir/src/Transformer_Dev.cpp.o] Error 1
-make[1]: *** [CMakeFiles/Transformer_Test.dir/all] Error 2
-make: *** [all] Error 2

@@ -228,8 +228,6 @@ set(CMAKE_MAKEFILE_PRODUCTS
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
-  "CMakeFiles/Transformer_Test.dir/DependInfo.cmake"
-  "CMakeFiles/Aerial_Device_Test.dir/DependInfo.cmake"
   "CMakeFiles/tests.dir/DependInfo.cmake"
   "CMakeFiles/run_tests.dir/DependInfo.cmake"
   "CMakeFiles/download_extra_data.dir/DependInfo.cmake"

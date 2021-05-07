@@ -1,0 +1,36 @@
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_gazebo_plugins/src/rofous_gazebo_plugins/rofous_gazebo_plugin.cpp:[m[K In member function ‘[01m[Kvirtual void gazebo::RofousPlugin::Load(gazebo::physics::ModelPtr, sdf::ElementPtr)[m[K’:
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_gazebo_plugins/src/rofous_gazebo_plugins/rofous_gazebo_plugin.cpp:32:7:[m[K [01;31m[Kerror: [m[K‘[01m[Klink_[m[K’ was not declared in this scope
+   if ([01;31m[Klink_[m[K == NULL)
+       [01;31m[K^~~~~[m[K
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_gazebo_plugins/src/rofous_gazebo_plugins/rofous_gazebo_plugin.cpp:32:7:[m[K [01;36m[Knote: [m[Ksuggested alternative: ‘[01m[Klink[m[K’
+   if ([01;36m[Klink_[m[K == NULL)
+       [01;36m[K^~~~~[m[K
+       [32m[Klink[m[K
+In file included from [01m[K/usr/include/gazebo-9/gazebo/common/common.hh:20:0[m[K,
+                 from [01m[K/usr/include/gazebo-9/gazebo/gazebo_core.hh:19[m[K,
+                 from [01m[K/usr/include/gazebo-9/gazebo/gazebo.hh:20[m[K,
+                 from [01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_gazebo_plugins/include/rofous_gazebo_plugins/rofous_gazebo_plugin.hpp:6[m[K,
+                 from [01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_gazebo_plugins/src/rofous_gazebo_plugins/rofous_gazebo_plugin.cpp:1[m[K:
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_gazebo_plugins/src/rofous_gazebo_plugins/rofous_gazebo_plugin.cpp:33:67:[m[K [01;31m[Kerror: [m[K‘[01m[Klink_name_[m[K’ was not declared in this scope
+       gzthrow("[gazebo_plugin] Couldn't find specified link \""<< [01;31m[Kl[m[Kink_name_ << "\".");
+                                                                   [01;31m[K^[m[K
+[01m[K/usr/include/gazebo-9/gazebo/common/Exception.hh:40:22:[m[K [01;36m[Knote: [m[Kin definition of macro ‘[01m[Kgzthrow[m[K’
+       throwStream << [01;36m[Kmsg[m[K << std::endl << std::flush;\
+                      [01;36m[K^~~[m[K
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_gazebo_plugins/src/rofous_gazebo_plugins/rofous_gazebo_plugin.cpp:33:67:[m[K [01;36m[Knote: [m[Ksuggested alternative: ‘[01m[Klink_name[m[K’
+       gzthrow("[gazebo_plugin] Couldn't find specified link \""<< [01;36m[Kl[m[Kink_name_ << "\".");
+                                                                   [01;36m[K^[m[K
+[01m[K/usr/include/gazebo-9/gazebo/common/Exception.hh:40:22:[m[K [01;36m[Knote: [m[Kin definition of macro ‘[01m[Kgzthrow[m[K’
+       throwStream << [01;36m[Kmsg[m[K << std::endl << std::flush;\
+                      [01;36m[K^~~[m[K
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_gazebo_plugins/src/rofous_gazebo_plugins/rofous_gazebo_plugin.cpp:[m[K In member function ‘[01m[Kvoid gazebo::RofousPlugin::OnUpdate()[m[K’:
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_gazebo_plugins/src/rofous_gazebo_plugins/rofous_gazebo_plugin.cpp:64:87:[m[K [01;31m[Kerror: [m[K‘[01m[Kfnet[m[K’ was not declared in this scope
+   const ignition::math::Vector3d forces = ignition::math::Vector3d (fNet[0], fNet[1], [01;31m[Kfnet[m[K[2]);
+                                                                                       [01;31m[K^~~~[m[K
+[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_gazebo_plugins/src/rofous_gazebo_plugins/rofous_gazebo_plugin.cpp:64:87:[m[K [01;36m[Knote: [m[Ksuggested alternative: ‘[01m[KfNet[m[K’
+   const ignition::math::Vector3d forces = ignition::math::Vector3d (fNet[0], fNet[1], [01;36m[Kfnet[m[K[2]);
+                                                                                       [01;36m[K^~~~[m[K
+                                                                                       [32m[KfNet[m[K
+make[2]: *** [CMakeFiles/rofous_gazebo_plugins.dir/src/rofous_gazebo_plugins/rofous_gazebo_plugin.cpp.o] Error 1
+make[1]: *** [CMakeFiles/rofous_gazebo_plugins.dir/all] Error 2
+make: *** [all] Error 2

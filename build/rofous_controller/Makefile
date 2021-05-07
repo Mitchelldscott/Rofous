@@ -68,6 +68,18 @@ install/strip/fast: preinstall/fast
 	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
 .PHONY : install/strip/fast
 
+# Special rule for the target install
+install: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
+	/usr/bin/cmake -P cmake_install.cmake
+.PHONY : install
+
+# Special rule for the target install
+install/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
+	/usr/bin/cmake -P cmake_install.cmake
+.PHONY : install/fast
+
 # Special rule for the target list_install_components
 list_install_components:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"Unspecified\""
@@ -100,18 +112,6 @@ test:
 test/fast: test
 
 .PHONY : test/fast
-
-# Special rule for the target install
-install: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	/usr/bin/cmake -P cmake_install.cmake
-.PHONY : install
-
-# Special rule for the target install
-install/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	/usr/bin/cmake -P cmake_install.cmake
-.PHONY : install/fast
 
 # Special rule for the target edit_cache
 edit_cache:
@@ -166,32 +166,6 @@ preinstall/fast:
 depend:
 	$(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
-
-#=============================================================================
-# Target rules for targets named Transformer_Test
-
-# Build rule for target.
-Transformer_Test: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 Transformer_Test
-.PHONY : Transformer_Test
-
-# fast build rule for target.
-Transformer_Test/fast:
-	$(MAKE) -f CMakeFiles/Transformer_Test.dir/build.make CMakeFiles/Transformer_Test.dir/build
-.PHONY : Transformer_Test/fast
-
-#=============================================================================
-# Target rules for targets named Aerial_Device_Test
-
-# Build rule for target.
-Aerial_Device_Test: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 Aerial_Device_Test
-.PHONY : Aerial_Device_Test
-
-# fast build rule for target.
-Aerial_Device_Test/fast:
-	$(MAKE) -f CMakeFiles/Aerial_Device_Test.dir/build.make CMakeFiles/Aerial_Device_Test.dir/build
-.PHONY : Aerial_Device_Test/fast
 
 #=============================================================================
 # Target rules for targets named tests
@@ -323,147 +297,6 @@ gtest/fast:
 	$(MAKE) -f gtest/googlemock/gtest/CMakeFiles/gtest.dir/build.make gtest/googlemock/gtest/CMakeFiles/gtest.dir/build
 .PHONY : gtest/fast
 
-src/Aerial_Device.o: src/Aerial_Device.cpp.o
-
-.PHONY : src/Aerial_Device.o
-
-# target to build an object file
-src/Aerial_Device.cpp.o:
-	$(MAKE) -f CMakeFiles/Aerial_Device_Test.dir/build.make CMakeFiles/Aerial_Device_Test.dir/src/Aerial_Device.cpp.o
-.PHONY : src/Aerial_Device.cpp.o
-
-src/Aerial_Device.i: src/Aerial_Device.cpp.i
-
-.PHONY : src/Aerial_Device.i
-
-# target to preprocess a source file
-src/Aerial_Device.cpp.i:
-	$(MAKE) -f CMakeFiles/Aerial_Device_Test.dir/build.make CMakeFiles/Aerial_Device_Test.dir/src/Aerial_Device.cpp.i
-.PHONY : src/Aerial_Device.cpp.i
-
-src/Aerial_Device.s: src/Aerial_Device.cpp.s
-
-.PHONY : src/Aerial_Device.s
-
-# target to generate assembly for a file
-src/Aerial_Device.cpp.s:
-	$(MAKE) -f CMakeFiles/Aerial_Device_Test.dir/build.make CMakeFiles/Aerial_Device_Test.dir/src/Aerial_Device.cpp.s
-.PHONY : src/Aerial_Device.cpp.s
-
-src/Aerial_Device_Dev.o: src/Aerial_Device_Dev.cpp.o
-
-.PHONY : src/Aerial_Device_Dev.o
-
-# target to build an object file
-src/Aerial_Device_Dev.cpp.o:
-	$(MAKE) -f CMakeFiles/Aerial_Device_Test.dir/build.make CMakeFiles/Aerial_Device_Test.dir/src/Aerial_Device_Dev.cpp.o
-.PHONY : src/Aerial_Device_Dev.cpp.o
-
-src/Aerial_Device_Dev.i: src/Aerial_Device_Dev.cpp.i
-
-.PHONY : src/Aerial_Device_Dev.i
-
-# target to preprocess a source file
-src/Aerial_Device_Dev.cpp.i:
-	$(MAKE) -f CMakeFiles/Aerial_Device_Test.dir/build.make CMakeFiles/Aerial_Device_Test.dir/src/Aerial_Device_Dev.cpp.i
-.PHONY : src/Aerial_Device_Dev.cpp.i
-
-src/Aerial_Device_Dev.s: src/Aerial_Device_Dev.cpp.s
-
-.PHONY : src/Aerial_Device_Dev.s
-
-# target to generate assembly for a file
-src/Aerial_Device_Dev.cpp.s:
-	$(MAKE) -f CMakeFiles/Aerial_Device_Test.dir/build.make CMakeFiles/Aerial_Device_Test.dir/src/Aerial_Device_Dev.cpp.s
-.PHONY : src/Aerial_Device_Dev.cpp.s
-
-src/Matrix.o: src/Matrix.cpp.o
-
-.PHONY : src/Matrix.o
-
-# target to build an object file
-src/Matrix.cpp.o:
-	$(MAKE) -f CMakeFiles/Transformer_Test.dir/build.make CMakeFiles/Transformer_Test.dir/src/Matrix.cpp.o
-	$(MAKE) -f CMakeFiles/Aerial_Device_Test.dir/build.make CMakeFiles/Aerial_Device_Test.dir/src/Matrix.cpp.o
-.PHONY : src/Matrix.cpp.o
-
-src/Matrix.i: src/Matrix.cpp.i
-
-.PHONY : src/Matrix.i
-
-# target to preprocess a source file
-src/Matrix.cpp.i:
-	$(MAKE) -f CMakeFiles/Transformer_Test.dir/build.make CMakeFiles/Transformer_Test.dir/src/Matrix.cpp.i
-	$(MAKE) -f CMakeFiles/Aerial_Device_Test.dir/build.make CMakeFiles/Aerial_Device_Test.dir/src/Matrix.cpp.i
-.PHONY : src/Matrix.cpp.i
-
-src/Matrix.s: src/Matrix.cpp.s
-
-.PHONY : src/Matrix.s
-
-# target to generate assembly for a file
-src/Matrix.cpp.s:
-	$(MAKE) -f CMakeFiles/Transformer_Test.dir/build.make CMakeFiles/Transformer_Test.dir/src/Matrix.cpp.s
-	$(MAKE) -f CMakeFiles/Aerial_Device_Test.dir/build.make CMakeFiles/Aerial_Device_Test.dir/src/Matrix.cpp.s
-.PHONY : src/Matrix.cpp.s
-
-src/Transformer.o: src/Transformer.cpp.o
-
-.PHONY : src/Transformer.o
-
-# target to build an object file
-src/Transformer.cpp.o:
-	$(MAKE) -f CMakeFiles/Transformer_Test.dir/build.make CMakeFiles/Transformer_Test.dir/src/Transformer.cpp.o
-	$(MAKE) -f CMakeFiles/Aerial_Device_Test.dir/build.make CMakeFiles/Aerial_Device_Test.dir/src/Transformer.cpp.o
-.PHONY : src/Transformer.cpp.o
-
-src/Transformer.i: src/Transformer.cpp.i
-
-.PHONY : src/Transformer.i
-
-# target to preprocess a source file
-src/Transformer.cpp.i:
-	$(MAKE) -f CMakeFiles/Transformer_Test.dir/build.make CMakeFiles/Transformer_Test.dir/src/Transformer.cpp.i
-	$(MAKE) -f CMakeFiles/Aerial_Device_Test.dir/build.make CMakeFiles/Aerial_Device_Test.dir/src/Transformer.cpp.i
-.PHONY : src/Transformer.cpp.i
-
-src/Transformer.s: src/Transformer.cpp.s
-
-.PHONY : src/Transformer.s
-
-# target to generate assembly for a file
-src/Transformer.cpp.s:
-	$(MAKE) -f CMakeFiles/Transformer_Test.dir/build.make CMakeFiles/Transformer_Test.dir/src/Transformer.cpp.s
-	$(MAKE) -f CMakeFiles/Aerial_Device_Test.dir/build.make CMakeFiles/Aerial_Device_Test.dir/src/Transformer.cpp.s
-.PHONY : src/Transformer.cpp.s
-
-src/Transformer_Dev.o: src/Transformer_Dev.cpp.o
-
-.PHONY : src/Transformer_Dev.o
-
-# target to build an object file
-src/Transformer_Dev.cpp.o:
-	$(MAKE) -f CMakeFiles/Transformer_Test.dir/build.make CMakeFiles/Transformer_Test.dir/src/Transformer_Dev.cpp.o
-.PHONY : src/Transformer_Dev.cpp.o
-
-src/Transformer_Dev.i: src/Transformer_Dev.cpp.i
-
-.PHONY : src/Transformer_Dev.i
-
-# target to preprocess a source file
-src/Transformer_Dev.cpp.i:
-	$(MAKE) -f CMakeFiles/Transformer_Test.dir/build.make CMakeFiles/Transformer_Test.dir/src/Transformer_Dev.cpp.i
-.PHONY : src/Transformer_Dev.cpp.i
-
-src/Transformer_Dev.s: src/Transformer_Dev.cpp.s
-
-.PHONY : src/Transformer_Dev.s
-
-# target to generate assembly for a file
-src/Transformer_Dev.cpp.s:
-	$(MAKE) -f CMakeFiles/Transformer_Test.dir/build.make CMakeFiles/Transformer_Test.dir/src/Transformer_Dev.cpp.s
-.PHONY : src/Transformer_Dev.cpp.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -471,12 +304,10 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... install/strip"
+	@echo "... install"
 	@echo "... list_install_components"
 	@echo "... install/local"
 	@echo "... test"
-	@echo "... install"
-	@echo "... Transformer_Test"
-	@echo "... Aerial_Device_Test"
 	@echo "... tests"
 	@echo "... edit_cache"
 	@echo "... run_tests"
@@ -489,21 +320,6 @@ help:
 	@echo "... gmock"
 	@echo "... gtest_main"
 	@echo "... gtest"
-	@echo "... src/Aerial_Device.o"
-	@echo "... src/Aerial_Device.i"
-	@echo "... src/Aerial_Device.s"
-	@echo "... src/Aerial_Device_Dev.o"
-	@echo "... src/Aerial_Device_Dev.i"
-	@echo "... src/Aerial_Device_Dev.s"
-	@echo "... src/Matrix.o"
-	@echo "... src/Matrix.i"
-	@echo "... src/Matrix.s"
-	@echo "... src/Transformer.o"
-	@echo "... src/Transformer.i"
-	@echo "... src/Transformer.s"
-	@echo "... src/Transformer_Dev.o"
-	@echo "... src/Transformer_Dev.i"
-	@echo "... src/Transformer_Dev.s"
 .PHONY : help
 
 

@@ -1,7 +1,0 @@
-[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Aerial_Device.cpp:[m[K In member function ‘[01m[Kfloat Aerial_Device::wrap_angle(float)[m[K’:
-[01m[K/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/src/Aerial_Device.cpp:151:22:[m[K [01;31m[Kerror: [m[Kinvalid operands of types ‘[01m[Kdouble[m[K’ and ‘[01m[Kdouble[m[K’ to binary ‘[01m[Koperator%[m[K’
-  return [01;31m[K(alpha + Pi) % (Pi * 2)[m[K - Pi;
-         [01;31m[K~~~~~~~~~~~~~^~~~~~~~~~[m[K
-make[2]: *** [CMakeFiles/Aerial_Device_Test.dir/src/Aerial_Device.cpp.o] Error 1
-make[1]: *** [CMakeFiles/Aerial_Device_Test.dir/all] Error 2
-make: *** [all] Error 2

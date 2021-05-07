@@ -76,8 +76,8 @@ class Aerial_Device:
         lin_thrust, torque = self.get_net_force()
         lin_accel = lin_thrust / self.mass
         ang_accel = torque / self.mass
-        self.poseActual += (self.linearVel * t) + (lin_accel * (t**2) / 2)
-        self.refActual += (self.referenceVel * t) + (ang_accel * (t**2) / 2)
+        self.poseActual += (self.linearVel * t)
+        self.refActual += (self.referenceVel * t)
         self.linearVel += lin_accel * t
         self.referenceVel += ang_accel * t
         for i in range(len(self.refActual)):

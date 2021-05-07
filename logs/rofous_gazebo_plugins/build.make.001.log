@@ -1,5 +1,0 @@
-make[2]: *** No rule to make target 'CMakeFiles/rofous_gazebo_plugins.dir/build'.  Stop.
-CMakeFiles/Makefile2:67: recipe for target 'CMakeFiles/rofous_gazebo_plugins.dir/all' failed
-make[1]: *** [CMakeFiles/rofous_gazebo_plugins.dir/all] Error 2
-Makefile:140: recipe for target 'all' failed
-make: *** [all] Error 2

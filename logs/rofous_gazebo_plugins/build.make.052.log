@@ -1,0 +1,22 @@
+[35m[1mScanning dependencies of target rofous_gazebo_plugins[0m
+[ 26%] Built target Transformer_Test
+[ 60%] Built target Aerial_Device_Test
+[ 60%] Built target rosgraph_msgs_generate_messages_lisp
+[ 66%] [32mBuilding CXX object CMakeFiles/rofous_gazebo_plugins.dir/src/rofous_gazebo_plugins/rofous_gazebo_plugin.cpp.o[0m
+[ 66%] Built target std_msgs_generate_messages_lisp
+[ 66%] Built target rosgraph_msgs_generate_messages_py
+[ 66%] Built target std_msgs_generate_messages_py
+[ 66%] Built target rosgraph_msgs_generate_messages_nodejs
+[ 66%] Built target std_msgs_generate_messages_nodejs
+[ 66%] Built target rosgraph_msgs_generate_messages_cpp
+[ 66%] Built target std_msgs_generate_messages_cpp
+[ 66%] Built target std_msgs_generate_messages_eus
+[ 66%] Built target rosgraph_msgs_generate_messages_eus
+[ 66%] Built target rofous_gazebo_plugins_generate_messages_lisp
+[ 66%] Built target rofous_gazebo_plugins_generate_messages_py
+[ 66%] Built target rofous_gazebo_plugins_generate_messages_nodejs
+[ 66%] Built target rofous_gazebo_plugins_generate_messages_cpp
+[ 73%] Built target rofous_gazebo_plugins_generate_messages_eus
+[ 73%] Built target rofous_gazebo_plugins_generate_messages
+[ 80%] [32m[1mLinking CXX shared library /home/m_dyse/Dyse-Robotics/Projects/Rofous/devel/.private/rofous_gazebo_plugins/lib/librofous_gazebo_plugins.so[0m
+[100%] Built target rofous_gazebo_plugins

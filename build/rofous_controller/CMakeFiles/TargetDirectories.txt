@@ -1,10 +1,8 @@
 /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller/CMakeFiles/install/strip.dir
+/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller/CMakeFiles/install.dir
 /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller/CMakeFiles/list_install_components.dir
 /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller/CMakeFiles/install/local.dir
 /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller/CMakeFiles/test.dir
-/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller/CMakeFiles/install.dir
-/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller/CMakeFiles/Transformer_Test.dir
-/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller/CMakeFiles/Aerial_Device_Test.dir
 /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller/CMakeFiles/tests.dir
 /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller/CMakeFiles/edit_cache.dir
 /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller/CMakeFiles/run_tests.dir

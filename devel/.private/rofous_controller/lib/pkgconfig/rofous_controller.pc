@@ -3,6 +3,6 @@ prefix=/home/m_dyse/Dyse-Robotics/Projects/Rofous/devel/.private/rofous_controll
 Name: rofous_controller
 Description: Description of rofous_controller
 Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 
+Cflags: -I/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/include/rofous_controller
+Libs: -L${prefix}/lib -lrofous_controller
+Requires: roscpp

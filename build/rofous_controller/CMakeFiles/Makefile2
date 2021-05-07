@@ -60,80 +60,6 @@ CMAKE_SOURCE_DIR = /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_control
 CMAKE_BINARY_DIR = /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller
 
 #=============================================================================
-# Target rules for target CMakeFiles/Transformer_Test.dir
-
-# All Build rule for target.
-CMakeFiles/Transformer_Test.dir/all:
-	$(MAKE) -f CMakeFiles/Transformer_Test.dir/build.make CMakeFiles/Transformer_Test.dir/depend
-	$(MAKE) -f CMakeFiles/Transformer_Test.dir/build.make CMakeFiles/Transformer_Test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller/CMakeFiles --progress-num=6,7,8,9 "Built target Transformer_Test"
-.PHONY : CMakeFiles/Transformer_Test.dir/all
-
-# Include target in all.
-all: CMakeFiles/Transformer_Test.dir/all
-
-.PHONY : all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/Transformer_Test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller/CMakeFiles 4
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/Transformer_Test.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller/CMakeFiles 0
-.PHONY : CMakeFiles/Transformer_Test.dir/rule
-
-# Convenience name for target.
-Transformer_Test: CMakeFiles/Transformer_Test.dir/rule
-
-.PHONY : Transformer_Test
-
-# clean rule for target.
-CMakeFiles/Transformer_Test.dir/clean:
-	$(MAKE) -f CMakeFiles/Transformer_Test.dir/build.make CMakeFiles/Transformer_Test.dir/clean
-.PHONY : CMakeFiles/Transformer_Test.dir/clean
-
-# clean rule for target.
-clean: CMakeFiles/Transformer_Test.dir/clean
-
-.PHONY : clean
-
-#=============================================================================
-# Target rules for target CMakeFiles/Aerial_Device_Test.dir
-
-# All Build rule for target.
-CMakeFiles/Aerial_Device_Test.dir/all:
-	$(MAKE) -f CMakeFiles/Aerial_Device_Test.dir/build.make CMakeFiles/Aerial_Device_Test.dir/depend
-	$(MAKE) -f CMakeFiles/Aerial_Device_Test.dir/build.make CMakeFiles/Aerial_Device_Test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller/CMakeFiles --progress-num=1,2,3,4,5 "Built target Aerial_Device_Test"
-.PHONY : CMakeFiles/Aerial_Device_Test.dir/all
-
-# Include target in all.
-all: CMakeFiles/Aerial_Device_Test.dir/all
-
-.PHONY : all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/Aerial_Device_Test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller/CMakeFiles 5
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/Aerial_Device_Test.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller/CMakeFiles 0
-.PHONY : CMakeFiles/Aerial_Device_Test.dir/rule
-
-# Convenience name for target.
-Aerial_Device_Test: CMakeFiles/Aerial_Device_Test.dir/rule
-
-.PHONY : Aerial_Device_Test
-
-# clean rule for target.
-CMakeFiles/Aerial_Device_Test.dir/clean:
-	$(MAKE) -f CMakeFiles/Aerial_Device_Test.dir/build.make CMakeFiles/Aerial_Device_Test.dir/clean
-.PHONY : CMakeFiles/Aerial_Device_Test.dir/clean
-
-# clean rule for target.
-clean: CMakeFiles/Aerial_Device_Test.dir/clean
-
-.PHONY : clean
-
-#=============================================================================
 # Target rules for target CMakeFiles/tests.dir
 
 # All Build rule for target.
@@ -370,7 +296,7 @@ gtest/googlemock/preinstall: gtest/googlemock/gtest/preinstall
 gtest/googlemock/CMakeFiles/gmock_main.dir/all:
 	$(MAKE) -f gtest/googlemock/CMakeFiles/gmock_main.dir/build.make gtest/googlemock/CMakeFiles/gmock_main.dir/depend
 	$(MAKE) -f gtest/googlemock/CMakeFiles/gmock_main.dir/build.make gtest/googlemock/CMakeFiles/gmock_main.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller/CMakeFiles --progress-num=13,14,15,16 "Built target gmock_main"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller/CMakeFiles --progress-num=4,5,6,7 "Built target gmock_main"
 .PHONY : gtest/googlemock/CMakeFiles/gmock_main.dir/all
 
 # Build rule for subdir invocation for target.
@@ -402,7 +328,7 @@ clean: gtest/googlemock/CMakeFiles/gmock_main.dir/clean
 gtest/googlemock/CMakeFiles/gmock.dir/all:
 	$(MAKE) -f gtest/googlemock/CMakeFiles/gmock.dir/build.make gtest/googlemock/CMakeFiles/gmock.dir/depend
 	$(MAKE) -f gtest/googlemock/CMakeFiles/gmock.dir/build.make gtest/googlemock/CMakeFiles/gmock.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller/CMakeFiles --progress-num=10,11,12 "Built target gmock"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller/CMakeFiles --progress-num=1,2,3 "Built target gmock"
 .PHONY : gtest/googlemock/CMakeFiles/gmock.dir/all
 
 # Build rule for subdir invocation for target.
@@ -453,7 +379,7 @@ gtest/googlemock/gtest/preinstall:
 gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/all: gtest/googlemock/gtest/CMakeFiles/gtest.dir/all
 	$(MAKE) -f gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/build.make gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/depend
 	$(MAKE) -f gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/build.make gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller/CMakeFiles --progress-num=19,20 "Built target gtest_main"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller/CMakeFiles --progress-num=10,11 "Built target gtest_main"
 .PHONY : gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/all
 
 # Build rule for subdir invocation for target.
@@ -485,7 +411,7 @@ clean: gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/clean
 gtest/googlemock/gtest/CMakeFiles/gtest.dir/all:
 	$(MAKE) -f gtest/googlemock/gtest/CMakeFiles/gtest.dir/build.make gtest/googlemock/gtest/CMakeFiles/gtest.dir/depend
 	$(MAKE) -f gtest/googlemock/gtest/CMakeFiles/gtest.dir/build.make gtest/googlemock/gtest/CMakeFiles/gtest.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller/CMakeFiles --progress-num=17,18 "Built target gtest"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller/CMakeFiles --progress-num=8,9 "Built target gtest"
 .PHONY : gtest/googlemock/gtest/CMakeFiles/gtest.dir/all
 
 # Build rule for subdir invocation for target.

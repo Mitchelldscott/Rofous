@@ -73,7 +73,7 @@
 
     <!-- attach multirotor_base_plugin to the base_link -->
     <gazebo>
-      <plugin filename="rofous_gazebo_plugin.so" name="rofous_gazebo_plugin">
+      <plugin filename="librofous_gazebo_plugins.so" name="rofous_gazebo_plugins">
         <robotNamespace>${robot_namespace}</robotNamespace>
         <linkName>${robot_namespace}/base_link</linkName>
         <rotorVelocitySlowdownSim>${rotor_velocity_slowdown_sim}</rotorVelocitySlowdownSim>
