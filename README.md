@@ -11,15 +11,27 @@ First clone the repo:
 
     git clone https://github.com/mithellscott/Rofous
 
-Then cd into the project and run the setup script (pass the script the desired path to the python environment it will create) 
+Then cd into the project and run the setup script
 
     cd Rofous
-    ./setup.bash -e <ENVIRONMENT PATH>
+    ./setup.bash 
+    	Usage and Hints:
+
+      [Option]	 Description
+
+	-e	 specifies the path to the python3 environment for this project
+	-n	 decides the name of the python env
+	-p	 declares the name of the project (required)
+	-c	 specifies the path to a new project relative to this script
+	-g	 specifies the extension of a git repo to attach to the project's root (make sure to update .gitignore before)
+	-o	 specifies file path to load the above parameters from
+	-b	 will build the project with catkin build
+	-h	 prints this help message (program will exit after)
+
     
 Now the project has an alias to load the tools in .bashrc run those like 
 
     source ~/.bashrc
-    load_Rofous
     
 Now your python enviroment is configured and your catkin_ws should be initialized you can check that this was successful by 
 
