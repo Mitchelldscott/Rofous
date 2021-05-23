@@ -1,0 +1,6 @@
+[35m[1mScanning dependencies of target rofous_gazebo_plugins[0m
+[ 35%] Built target Aerial_Device_Test
+[ 64%] Built target Transformer_Test
+[ 71%] [32mBuilding CXX object CMakeFiles/rofous_gazebo_plugins.dir/src/rofous_gazebo_plugins/rofous_gazebo_plugin.cpp.o[0m
+[ 78%] [32m[1mLinking CXX shared library /home/m_dyse/Rofous/devel/.private/rofous_gazebo_plugins/lib/librofous_gazebo_plugins.so[0m
+[100%] Built target rofous_gazebo_plugins

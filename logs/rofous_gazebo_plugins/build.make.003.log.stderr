@@ -1,0 +1,4 @@
+[01m[K/home/m_dyse/Rofous/src/rofous_gazebo_plugins/src/rofous_gazebo_plugins/rofous_gazebo_plugin.cpp:[m[K In member function ‘[01m[Kint gazebo::RofousPlugin::connectRosNodes()[m[K’:
+[01m[K/home/m_dyse/Rofous/src/rofous_gazebo_plugins/src/rofous_gazebo_plugins/rofous_gazebo_plugin.cpp:63:2:[m[K [01;35m[Kwarning: [m[Kno return statement in function returning non-void [[01;35m[K-Wreturn-type[m[K]
+   63 |  [01;35m[K}[m[K
+      |  [01;35m[K^[m[K

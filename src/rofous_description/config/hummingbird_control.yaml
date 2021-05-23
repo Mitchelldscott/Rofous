@@ -1,0 +1,23 @@
+rotor_0_joint:
+  publish_rate: 1000
+  joint: rotor_0_joint
+  type: joint_state_controller/JointStateController
+
+rotor_1_joint:
+  publish_rate: 1000
+  joint: rotor_1_joint
+  type: joint_state_controller/JointStateController
+
+rotor_2_joint:
+  publish_rate: 1000
+  joint: rotor_2_joint
+  type: joint_state_controller/JointStateController
+
+rotor_3_joint:
+  publish_rate: 1000
+  joint: rotor_3_joint
+  type: joint_state_controller/JointStateController
+
+joint_state_controller:
+  publish_rate: 1000
+  type: joint_state_controller/JointStateController

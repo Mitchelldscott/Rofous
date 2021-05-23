@@ -11,7 +11,6 @@
 #include <gazebo/transport/transport.hh>
 
 #include "ros/ros.h"
-#include "Aerial_Device.hpp"
 #include "std_msgs/String.h"
 #include "rosgraph_msgs/Clock.h"
 
@@ -22,16 +21,11 @@ namespace gazebo
 	{
 		private:
 			std::string name;
-			Aerial_Device device;
 			physics::LinkPtr link;
-			vector<float> throttle;
-    		physics::ModelPtr model; // Pointer to the model
-    		ros::Subscriber sim_clock;
-    		ros::NodeHandle node_handle;
     		ros::Time elapsed_time;
-    		transport::NodePtr node;
-			transport::SubscriberPtr set_ThrottleSub;
-			event::ConnectionPtr updateConnection;// Pointer to the update event connection
+    		physics::ModelPtr model; // Pointer to the model
+    		ros::NodeHandle node_handle;
+			event::ConnectionPtr updateFunc;// Pointer to the update event connection
 		public: 
 			RofousPlugin();
 			virtual void Load(physics::ModelPtr, sdf::ElementPtr);
@@ -39,9 +33,7 @@ namespace gazebo
 			int connectRosNodes();
 			//void throttleCallBack();
 	};
-	
-	GZ_REGISTER_MODEL_PLUGIN(RofousPlugin)
+
+	GZ_REGISTER_MODEL_PLUGIN(RofousPlugin);
 }
-
-
 #endif

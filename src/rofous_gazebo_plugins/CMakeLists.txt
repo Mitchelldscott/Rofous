@@ -73,11 +73,11 @@ find_package(gazebo REQUIRED)
 # )
 
 ## Generate added messages and services with any dependencies listed here
-generate_messages(
-  DEPENDENCIES
-  std_msgs  # Or other packages containing msgs
-  rosgraph_msgs
-)
+#generate_messages(
+#  DEPENDENCIES
+#  std_msgs  # Or other packages containing msgs
+#  rosgraph_msgs
+#)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -116,7 +116,7 @@ catkin_package(
   std_msgs
   gazebo_ros
   rosgraph_msgs
-   message_runtime
+  message_runtime
 )
 
 ###########
