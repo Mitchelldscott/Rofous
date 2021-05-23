@@ -1,4 +1,4 @@
-prefix=/home/m_dyse/Dyse-Robotics/Projects/Rofous/install
+prefix=/home/m_dyse/Rofous/install
 
 Name: rofous_gazebo_plugins
 Description: Description of rofous_gazebo_plugins

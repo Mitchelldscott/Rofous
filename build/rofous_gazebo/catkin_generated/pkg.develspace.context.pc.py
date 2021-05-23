@@ -4,5 +4,5 @@ PROJECT_PKG_CONFIG_INCLUDE_DIRS = "".split(';') if "" != "" else []
 PROJECT_CATKIN_DEPENDS = "".replace(';', ' ')
 PKG_CONFIG_LIBRARIES_WITH_PREFIX = "".split(';') if "" != "" else []
 PROJECT_NAME = "rofous_gazebo"
-PROJECT_SPACE_DIR = "/home/m_dyse/Dyse-Robotics/Projects/Rofous/devel/.private/rofous_gazebo"
+PROJECT_SPACE_DIR = "/home/m_dyse/Rofous/devel/.private/rofous_gazebo"
 PROJECT_VERSION = "0.0.0"

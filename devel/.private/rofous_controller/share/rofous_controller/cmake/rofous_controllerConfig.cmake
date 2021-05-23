@@ -67,14 +67,14 @@ set(rofous_controller_CONFIG_INCLUDED TRUE)
 
 # set variables for source/devel/install prefixes
 if("TRUE" STREQUAL "TRUE")
-  set(rofous_controller_SOURCE_PREFIX /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller)
-  set(rofous_controller_DEVEL_PREFIX /home/m_dyse/Dyse-Robotics/Projects/Rofous/devel/.private/rofous_controller)
+  set(rofous_controller_SOURCE_PREFIX /home/m_dyse/Rofous/src/rofous_controller)
+  set(rofous_controller_DEVEL_PREFIX /home/m_dyse/Rofous/devel/.private/rofous_controller)
   set(rofous_controller_INSTALL_PREFIX "")
   set(rofous_controller_PREFIX ${rofous_controller_DEVEL_PREFIX})
 else()
   set(rofous_controller_SOURCE_PREFIX "")
   set(rofous_controller_DEVEL_PREFIX "")
-  set(rofous_controller_INSTALL_PREFIX /home/m_dyse/Dyse-Robotics/Projects/Rofous/install)
+  set(rofous_controller_INSTALL_PREFIX /home/m_dyse/Rofous/install)
   set(rofous_controller_PREFIX ${rofous_controller_INSTALL_PREFIX})
 endif()
 
@@ -91,9 +91,9 @@ endif()
 # flag project as catkin-based to distinguish if a find_package()-ed project is a catkin project
 set(rofous_controller_FOUND_CATKIN_PROJECT TRUE)
 
-if(NOT "/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/include/rofous_controller " STREQUAL " ")
+if(NOT " " STREQUAL " ")
   set(rofous_controller_INCLUDE_DIRS "")
-  set(_include_dirs "/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/include/rofous_controller")
+  set(_include_dirs "")
   if(NOT " " STREQUAL " ")
     set(_report "Check the issue tracker '' and consider creating a ticket if the problem has not been reported yet.")
   elseif(NOT " " STREQUAL " ")
@@ -110,7 +110,7 @@ if(NOT "/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/include
         message(FATAL_ERROR "Project 'rofous_controller' specifies '${idir}' as an include dir, which is not found.  It does not exist in '${include}'.  ${_report}")
       endif()
     else()
-      message(FATAL_ERROR "Project 'rofous_controller' specifies '${idir}' as an include dir, which is not found.  It does neither exist as an absolute directory nor in '/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_controller/${idir}'.  ${_report}")
+      message(FATAL_ERROR "Project 'rofous_controller' specifies '${idir}' as an include dir, which is not found.  It does neither exist as an absolute directory nor in '/home/m_dyse/Rofous/src/rofous_controller/${idir}'.  ${_report}")
     endif()
     _list_append_unique(rofous_controller_INCLUDE_DIRS ${include})
   endforeach()
@@ -154,7 +154,7 @@ foreach(library ${libraries})
     set(lib_path "")
     set(lib "${library}-NOTFOUND")
     # since the path where the library is found is returned we have to iterate over the paths manually
-    foreach(path /home/m_dyse/Dyse-Robotics/Projects/Rofous/devel/.private/rofous_controller/lib;/home/m_dyse/Dyse-Robotics/Projects/Rofous/devel/lib;/opt/ros/melodic/lib)
+    foreach(path /home/m_dyse/Rofous/devel/.private/rofous_controller/lib;/home/m_dyse/Rofous/devel/lib;/opt/ros/noetic/lib)
       find_library(lib ${library}
         PATHS ${path}
         NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
@@ -211,7 +211,7 @@ foreach(depend ${depends})
   _unpack_libraries_with_build_configuration(rofous_controller_LIBRARIES ${rofous_controller_LIBRARIES})
 
   _list_append_unique(rofous_controller_LIBRARY_DIRS ${${rofous_controller_dep}_LIBRARY_DIRS})
-  list(APPEND rofous_controller_EXPORTED_TARGETS ${${rofous_controller_dep}_EXPORTED_TARGETS})
+  _list_append_deduplicate(rofous_controller_EXPORTED_TARGETS ${${rofous_controller_dep}_EXPORTED_TARGETS})
 endforeach()
 
 set(pkg_cfg_extras "")

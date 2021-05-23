@@ -1,4 +1,4 @@
-prefix=/home/m_dyse/Dyse-Robotics/Projects/Rofous/devel/.private/rofous_description
+prefix=/home/m_dyse/Rofous/devel/.private/rofous_description
 
 Name: rofous_description
 Description: Description of rofous_description

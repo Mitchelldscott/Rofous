@@ -1,8 +1,8 @@
-prefix=/home/m_dyse/Dyse-Robotics/Projects/Rofous/devel/.private/rofous_gazebo_plugins
+prefix=/home/m_dyse/Rofous/devel/.private/rofous_gazebo_plugins
 
 Name: rofous_gazebo_plugins
 Description: Description of rofous_gazebo_plugins
 Version: 0.0.0
-Cflags: -I/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_gazebo_plugins/include/rofous_gazebo_plugins
+Cflags: -I/home/m_dyse/Rofous/src/rofous_gazebo_plugins/include/rofous_gazebo_plugins
 Libs: -L${prefix}/lib -lrofous_gazebo_plugins
 Requires: roscpp std_msgs gazebo_ros rosgraph_msgs message_runtime

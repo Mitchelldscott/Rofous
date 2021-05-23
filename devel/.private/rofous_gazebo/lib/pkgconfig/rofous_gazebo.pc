@@ -1,4 +1,4 @@
-prefix=/home/m_dyse/Dyse-Robotics/Projects/Rofous/devel/.private/rofous_gazebo
+prefix=/home/m_dyse/Rofous/devel/.private/rofous_gazebo
 
 Name: rofous_gazebo
 Description: Description of rofous_gazebo

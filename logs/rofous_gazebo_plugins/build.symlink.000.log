@@ -1,0 +1,8 @@
+Symlinking /home/m_dyse/Rofous/devel/share/roseus/ros/rofous_gazebo_plugins/manifest.l
+Symlinking /home/m_dyse/Rofous/devel/share/rofous_gazebo_plugins/cmake/rofous_gazebo_plugins-msg-paths.cmake
+Symlinking /home/m_dyse/Rofous/devel/share/rofous_gazebo_plugins/cmake/rofous_gazebo_plugins-msg-extras.cmake
+Symlinking /home/m_dyse/Rofous/devel/share/rofous_gazebo_plugins/cmake/rofous_gazebo_pluginsConfig.cmake
+Symlinking /home/m_dyse/Rofous/devel/share/rofous_gazebo_plugins/cmake/rofous_gazebo_pluginsConfig-version.cmake
+Symlinking /home/m_dyse/Rofous/devel/lib/librofous_gazebo_plugins.so
+Symlinking /home/m_dyse/Rofous/devel/lib/pkgconfig/rofous_gazebo_plugins.pc
+Symlinking /home/m_dyse/Rofous/devel/lib/python3/dist-packages/rofous_gazebo_plugins/__init__.py

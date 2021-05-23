@@ -67,14 +67,14 @@ set(rofous_description_CONFIG_INCLUDED TRUE)
 
 # set variables for source/devel/install prefixes
 if("FALSE" STREQUAL "TRUE")
-  set(rofous_description_SOURCE_PREFIX /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_description)
-  set(rofous_description_DEVEL_PREFIX /home/m_dyse/Dyse-Robotics/Projects/Rofous/devel/.private/rofous_description)
+  set(rofous_description_SOURCE_PREFIX /home/m_dyse/Rofous/src/rofous_description)
+  set(rofous_description_DEVEL_PREFIX /home/m_dyse/Rofous/devel/.private/rofous_description)
   set(rofous_description_INSTALL_PREFIX "")
   set(rofous_description_PREFIX ${rofous_description_DEVEL_PREFIX})
 else()
   set(rofous_description_SOURCE_PREFIX "")
   set(rofous_description_DEVEL_PREFIX "")
-  set(rofous_description_INSTALL_PREFIX /home/m_dyse/Dyse-Robotics/Projects/Rofous/install)
+  set(rofous_description_INSTALL_PREFIX /home/m_dyse/Rofous/install)
   set(rofous_description_PREFIX ${rofous_description_INSTALL_PREFIX})
 endif()
 
@@ -154,7 +154,7 @@ foreach(library ${libraries})
     set(lib_path "")
     set(lib "${library}-NOTFOUND")
     # since the path where the library is found is returned we have to iterate over the paths manually
-    foreach(path /home/m_dyse/Dyse-Robotics/Projects/Rofous/install/lib;/home/m_dyse/Dyse-Robotics/Projects/Rofous/devel/lib;/opt/ros/melodic/lib)
+    foreach(path /home/m_dyse/Rofous/install/lib;/home/m_dyse/Rofous/devel/lib;/opt/ros/noetic/lib)
       find_library(lib ${library}
         PATHS ${path}
         NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
@@ -211,7 +211,7 @@ foreach(depend ${depends})
   _unpack_libraries_with_build_configuration(rofous_description_LIBRARIES ${rofous_description_LIBRARIES})
 
   _list_append_unique(rofous_description_LIBRARY_DIRS ${${rofous_description_dep}_LIBRARY_DIRS})
-  list(APPEND rofous_description_EXPORTED_TARGETS ${${rofous_description_dep}_EXPORTED_TARGETS})
+  _list_append_deduplicate(rofous_description_EXPORTED_TARGETS ${${rofous_description_dep}_EXPORTED_TARGETS})
 endforeach()
 
 set(pkg_cfg_extras "")

@@ -67,14 +67,14 @@ set(rofous_gazebo_CONFIG_INCLUDED TRUE)
 
 # set variables for source/devel/install prefixes
 if("FALSE" STREQUAL "TRUE")
-  set(rofous_gazebo_SOURCE_PREFIX /home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_gazebo)
-  set(rofous_gazebo_DEVEL_PREFIX /home/m_dyse/Dyse-Robotics/Projects/Rofous/devel/.private/rofous_gazebo)
+  set(rofous_gazebo_SOURCE_PREFIX /home/m_dyse/Rofous/src/rofous_gazebo)
+  set(rofous_gazebo_DEVEL_PREFIX /home/m_dyse/Rofous/devel/.private/rofous_gazebo)
   set(rofous_gazebo_INSTALL_PREFIX "")
   set(rofous_gazebo_PREFIX ${rofous_gazebo_DEVEL_PREFIX})
 else()
   set(rofous_gazebo_SOURCE_PREFIX "")
   set(rofous_gazebo_DEVEL_PREFIX "")
-  set(rofous_gazebo_INSTALL_PREFIX /home/m_dyse/Dyse-Robotics/Projects/Rofous/install)
+  set(rofous_gazebo_INSTALL_PREFIX /home/m_dyse/Rofous/install)
   set(rofous_gazebo_PREFIX ${rofous_gazebo_INSTALL_PREFIX})
 endif()
 
@@ -154,7 +154,7 @@ foreach(library ${libraries})
     set(lib_path "")
     set(lib "${library}-NOTFOUND")
     # since the path where the library is found is returned we have to iterate over the paths manually
-    foreach(path /home/m_dyse/Dyse-Robotics/Projects/Rofous/install/lib;/home/m_dyse/Dyse-Robotics/Projects/Rofous/devel/lib;/opt/ros/melodic/lib)
+    foreach(path /home/m_dyse/Rofous/install/lib;/home/m_dyse/Rofous/devel/lib;/opt/ros/noetic/lib)
       find_library(lib ${library}
         PATHS ${path}
         NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
@@ -211,7 +211,7 @@ foreach(depend ${depends})
   _unpack_libraries_with_build_configuration(rofous_gazebo_LIBRARIES ${rofous_gazebo_LIBRARIES})
 
   _list_append_unique(rofous_gazebo_LIBRARY_DIRS ${${rofous_gazebo_dep}_LIBRARY_DIRS})
-  list(APPEND rofous_gazebo_EXPORTED_TARGETS ${${rofous_gazebo_dep}_EXPORTED_TARGETS})
+  _list_append_deduplicate(rofous_gazebo_EXPORTED_TARGETS ${${rofous_gazebo_dep}_EXPORTED_TARGETS})
 endforeach()
 
 set(pkg_cfg_extras "")

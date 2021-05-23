@@ -11,7 +11,7 @@
 
 # since this file is sourced either use the provided _CATKIN_SETUP_DIR
 # or fall back to the destination set at configure time
-: ${_CATKIN_SETUP_DIR:=/home/m_dyse/Dyse-Robotics/Projects/Rofous/devel/.private/rofous_gazebo}
+: ${_CATKIN_SETUP_DIR:=/home/m_dyse/Rofous/devel/.private/rofous_gazebo}
 _SETUP_UTIL="$_CATKIN_SETUP_DIR/_setup_util.py"
 unset _CATKIN_SETUP_DIR
 

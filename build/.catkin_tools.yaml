@@ -1,6 +1,6 @@
-devel_space: /home/m_dyse/Dyse-Robotics/Projects/Rofous/devel
+devel_space: /home/m_dyse/Rofous/devel
 install: false
-install_space: /home/m_dyse/Dyse-Robotics/Projects/Rofous/install
+install_space: /home/m_dyse/Rofous/install
 profile: default
-source_space: /home/m_dyse/Dyse-Robotics/Projects/Rofous/src
-workspace: /home/m_dyse/Dyse-Robotics/Projects/Rofous
+source_space: /home/m_dyse/Rofous/src
+workspace: /home/m_dyse/Rofous

@@ -4,7 +4,7 @@ message(WARNING "Invoking generate_messages() without having added any message o
 You should either add add_message_files() and/or add_service_files() calls or remove the invocation of generate_messages().")
 message(STATUS "rofous_gazebo_plugins: 0 messages, 0 services")
 
-set(MSG_I_FLAGS "-Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg;-Irosgraph_msgs:/opt/ros/melodic/share/rosgraph_msgs/cmake/../msg")
+set(MSG_I_FLAGS "-Istd_msgs:/opt/ros/noetic/share/std_msgs/cmake/../msg;-Irosgraph_msgs:/opt/ros/noetic/share/rosgraph_msgs/cmake/../msg")
 
 # Find all generators
 find_package(gencpp REQUIRED)
@@ -207,7 +207,7 @@ if(TARGET rosgraph_msgs_generate_messages_nodejs)
 endif()
 
 if(genpy_INSTALL_DIR AND EXISTS ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/rofous_gazebo_plugins)
-  install(CODE "execute_process(COMMAND \"/home/m_dyse/pyenvs/Rofous_env/bin/python3\" -m compileall \"${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/rofous_gazebo_plugins\")")
+  install(CODE "execute_process(COMMAND \"/usr/bin/python3\" -m compileall \"${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/rofous_gazebo_plugins\")")
   # install generated code
   install(
     DIRECTORY ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/rofous_gazebo_plugins

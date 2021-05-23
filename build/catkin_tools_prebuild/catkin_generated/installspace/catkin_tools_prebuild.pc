@@ -1,4 +1,4 @@
-prefix=/home/m_dyse/Dyse-Robotics/Projects/Rofous/install
+prefix=/home/m_dyse/Rofous/install
 
 Name: catkin_tools_prebuild
 Description: Description of catkin_tools_prebuild

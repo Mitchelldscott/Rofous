@@ -1,1 +1,1 @@
-/home/m_dyse/Dyse-Robotics/Projects/Rofous/devel/.private/catkin_tools_prebuild/setup.zsh
+/home/m_dyse/Rofous/devel/.private/catkin_tools_prebuild/setup.zsh

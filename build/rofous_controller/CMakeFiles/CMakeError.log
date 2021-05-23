@@ -1,55 +1,58 @@
-Determining if the pthread_create exist failed with the following output:
-Change Dir: /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller/CMakeFiles/CMakeTmp
+Performing C SOURCE FILE Test CMAKE_HAVE_LIBC_PTHREAD failed with the following output:
+Change Dir: /home/m_dyse/Rofous/build/rofous_controller/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/make" "cmTC_5e06d/fast"
-/usr/bin/make -f CMakeFiles/cmTC_5e06d.dir/build.make CMakeFiles/cmTC_5e06d.dir/build
-make[1]: Entering directory '/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_5e06d.dir/CheckSymbolExists.c.o
-/usr/bin/cc    -o CMakeFiles/cmTC_5e06d.dir/CheckSymbolExists.c.o   -c /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller/CMakeFiles/CMakeTmp/CheckSymbolExists.c
-Linking C executable cmTC_5e06d
-/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_5e06d.dir/link.txt --verbose=1
-/usr/bin/cc      -rdynamic CMakeFiles/cmTC_5e06d.dir/CheckSymbolExists.c.o  -o cmTC_5e06d 
-CMakeFiles/cmTC_5e06d.dir/CheckSymbolExists.c.o: In function `main':
-CheckSymbolExists.c:(.text+0x1b): undefined reference to `pthread_create'
+Run Build Command(s):/usr/bin/make cmTC_199bb/fast && /usr/bin/make -f CMakeFiles/cmTC_199bb.dir/build.make CMakeFiles/cmTC_199bb.dir/build
+make[1]: Entering directory '/home/m_dyse/Rofous/build/rofous_controller/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_199bb.dir/src.c.o
+/usr/bin/cc   -DCMAKE_HAVE_LIBC_PTHREAD   -o CMakeFiles/cmTC_199bb.dir/src.c.o   -c /home/m_dyse/Rofous/build/rofous_controller/CMakeFiles/CMakeTmp/src.c
+Linking C executable cmTC_199bb
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_199bb.dir/link.txt --verbose=1
+/usr/bin/cc  -DCMAKE_HAVE_LIBC_PTHREAD    -rdynamic CMakeFiles/cmTC_199bb.dir/src.c.o  -o cmTC_199bb 
+/usr/bin/ld: CMakeFiles/cmTC_199bb.dir/src.c.o: in function `main':
+src.c:(.text+0x46): undefined reference to `pthread_create'
+/usr/bin/ld: src.c:(.text+0x52): undefined reference to `pthread_detach'
+/usr/bin/ld: src.c:(.text+0x63): undefined reference to `pthread_join'
 collect2: error: ld returned 1 exit status
-CMakeFiles/cmTC_5e06d.dir/build.make:97: recipe for target 'cmTC_5e06d' failed
-make[1]: *** [cmTC_5e06d] Error 1
-make[1]: Leaving directory '/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller/CMakeFiles/CMakeTmp'
-Makefile:126: recipe for target 'cmTC_5e06d/fast' failed
-make: *** [cmTC_5e06d/fast] Error 2
+make[1]: *** [CMakeFiles/cmTC_199bb.dir/build.make:87: cmTC_199bb] Error 1
+make[1]: Leaving directory '/home/m_dyse/Rofous/build/rofous_controller/CMakeFiles/CMakeTmp'
+make: *** [Makefile:121: cmTC_199bb/fast] Error 2
 
-File /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
-/* */
+
+Source file was:
 #include <pthread.h>
 
-int main(int argc, char** argv)
+void* test_func(void* data)
 {
-  (void)argv;
-#ifndef pthread_create
-  return ((int*)(&pthread_create))[argc];
-#else
-  (void)argc;
+  return data;
+}
+
+int main(void)
+{
+  pthread_t thread;
+  pthread_create(&thread, NULL, test_func, NULL);
+  pthread_detach(thread);
+  pthread_join(thread, NULL);
+  pthread_atfork(NULL, NULL, NULL);
+  pthread_exit(NULL);
+
   return 0;
-#endif
 }
 
 Determining if the function pthread_create exists in the pthreads failed with the following output:
-Change Dir: /home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller/CMakeFiles/CMakeTmp
+Change Dir: /home/m_dyse/Rofous/build/rofous_controller/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/make" "cmTC_96f77/fast"
-/usr/bin/make -f CMakeFiles/cmTC_96f77.dir/build.make CMakeFiles/cmTC_96f77.dir/build
-make[1]: Entering directory '/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_96f77.dir/CheckFunctionExists.c.o
-/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_96f77.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.10/Modules/CheckFunctionExists.c
-Linking C executable cmTC_96f77
-/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_96f77.dir/link.txt --verbose=1
-/usr/bin/cc  -DCHECK_FUNCTION_EXISTS=pthread_create    -rdynamic CMakeFiles/cmTC_96f77.dir/CheckFunctionExists.c.o  -o cmTC_96f77 -lpthreads 
+Run Build Command(s):/usr/bin/make cmTC_6daad/fast && /usr/bin/make -f CMakeFiles/cmTC_6daad.dir/build.make CMakeFiles/cmTC_6daad.dir/build
+make[1]: Entering directory '/home/m_dyse/Rofous/build/rofous_controller/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_6daad.dir/CheckFunctionExists.c.o
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_6daad.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.16/Modules/CheckFunctionExists.c
+Linking C executable cmTC_6daad
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_6daad.dir/link.txt --verbose=1
+/usr/bin/cc  -DCHECK_FUNCTION_EXISTS=pthread_create    -rdynamic CMakeFiles/cmTC_6daad.dir/CheckFunctionExists.c.o  -o cmTC_6daad  -lpthreads 
 /usr/bin/ld: cannot find -lpthreads
 collect2: error: ld returned 1 exit status
-CMakeFiles/cmTC_96f77.dir/build.make:97: recipe for target 'cmTC_96f77' failed
-make[1]: *** [cmTC_96f77] Error 1
-make[1]: Leaving directory '/home/m_dyse/Dyse-Robotics/Projects/Rofous/build/rofous_controller/CMakeFiles/CMakeTmp'
-Makefile:126: recipe for target 'cmTC_96f77/fast' failed
-make: *** [cmTC_96f77/fast] Error 2
+make[1]: *** [CMakeFiles/cmTC_6daad.dir/build.make:87: cmTC_6daad] Error 1
+make[1]: Leaving directory '/home/m_dyse/Rofous/build/rofous_controller/CMakeFiles/CMakeTmp'
+make: *** [Makefile:121: cmTC_6daad/fast] Error 2
+
 
 

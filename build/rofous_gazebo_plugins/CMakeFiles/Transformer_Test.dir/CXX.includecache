@@ -6,15 +6,15 @@
 
 #IncludeRegexTransform: 
 
-/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_gazebo_plugins/include/rofous_gazebo_plugins/Matrix.hpp
+/home/m_dyse/Rofous/src/rofous_gazebo_plugins/include/rofous_gazebo_plugins/Matrix.hpp
 vector
 -
 
-/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_gazebo_plugins/include/rofous_gazebo_plugins/Transformer.hpp
+/home/m_dyse/Rofous/src/rofous_gazebo_plugins/include/rofous_gazebo_plugins/Transformer.hpp
 Matrix.hpp
 -
 
-/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_gazebo_plugins/src/rofous_gazebo_plugins/Matrix.cpp
+/home/m_dyse/Rofous/src/rofous_gazebo_plugins/src/rofous_gazebo_plugins/Matrix.cpp
 math.h
 -
 stdio.h
@@ -28,7 +28,7 @@ assert.h
 Matrix.hpp
 -
 
-/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_gazebo_plugins/src/rofous_gazebo_plugins/Transformer.cpp
+/home/m_dyse/Rofous/src/rofous_gazebo_plugins/src/rofous_gazebo_plugins/Transformer.cpp
 math.h
 -
 stdio.h
@@ -42,7 +42,7 @@ assert.h
 Transformer.hpp
 -
 
-/home/m_dyse/Dyse-Robotics/Projects/Rofous/src/rofous_gazebo_plugins/src/rofous_gazebo_plugins/Transformer_Dev.cpp
+/home/m_dyse/Rofous/src/rofous_gazebo_plugins/src/rofous_gazebo_plugins/Transformer_Dev.cpp
 vector
 -
 chrono
