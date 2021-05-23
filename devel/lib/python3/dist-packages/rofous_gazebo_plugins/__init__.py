@@ -1,1 +1,0 @@
-/home/m_dyse/Rofous/devel/.private/rofous_gazebo_plugins/lib/python3/dist-packages/rofous_gazebo_plugins/__init__.py

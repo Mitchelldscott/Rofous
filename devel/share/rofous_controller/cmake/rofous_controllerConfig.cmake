@@ -1,1 +1,0 @@
-/home/m_dyse/Rofous/devel/.private/rofous_controller/share/rofous_controller/cmake/rofous_controllerConfig.cmake

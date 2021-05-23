@@ -1,5 +1,0 @@
-rofous_gazebo
-/home/m_dyse/Rofous/devel/.private/rofous_gazebo/cmake.lock /home/m_dyse/Rofous/devel/./cmake.lock
-/home/m_dyse/Rofous/devel/.private/rofous_gazebo/share/rofous_gazebo/cmake/rofous_gazeboConfig.cmake /home/m_dyse/Rofous/devel/share/rofous_gazebo/cmake/rofous_gazeboConfig.cmake
-/home/m_dyse/Rofous/devel/.private/rofous_gazebo/share/rofous_gazebo/cmake/rofous_gazeboConfig-version.cmake /home/m_dyse/Rofous/devel/share/rofous_gazebo/cmake/rofous_gazeboConfig-version.cmake
-/home/m_dyse/Rofous/devel/.private/rofous_gazebo/lib/pkgconfig/rofous_gazebo.pc /home/m_dyse/Rofous/devel/lib/pkgconfig/rofous_gazebo.pc
