@@ -1,0 +1,33 @@
+<launch>
+	<arg name="sim" default="true"/>
+	<arg name="model" default="kuka"/>
+	<arg name="paused" default="false"/>
+	<arg name="verbose" default="false"/>
+	<arg name="description_type" default="urdf"/>
+	<arg name="world" default="$(find gazebo_ros)/worlds/empty.world"/>
+
+	<group if="$(eval arg('description_type')=='urdf')">
+		<include file="$(find arman_description)/launch/upload_urdf.launch">
+			<arg name="model" value="$(arg model)"/>
+		</include>
+	</group>
+
+	<group if="$(eval arg('description_type')=='xacro')">
+		<include file="$(find arman_description)/launch/upload_xacro.launch">
+			<arg name="model" value="$(arg model)"/>
+		</include>
+	</group>
+
+	<include file="$(find arman_controller)/launch/main.launch">
+		<arg name="model" value="$(arg model)"/>
+	</include>
+
+	<group if="$(arg sim)">
+		<include file="$(find arman_gazebo)/launch/main.launch">
+			<arg name="paused" value="$(arg paused)"/>
+			<arg name="verbose" value="$(arg verbose)"/>
+			<arg name="model" value="$(arg model)"/>
+			<arg name="world" value="$(arg world)"/>
+		</include>
+	</group>
+</launch>
