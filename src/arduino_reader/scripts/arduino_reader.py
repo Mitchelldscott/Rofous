@@ -21,7 +21,7 @@ def main():
 				filename = 'data/' + device.readline().decode('ascii').rstrip() + '.csv'
 				print('[Reader] Data Recieved')
 				with open(filename, '+a') as f:
-					f.write('Time,Xaccel,Yaccel,Zaccel,Xvel,Yvel,Zvel,PHIvel,THETAvel,PSIvel,X,Y,Z,PHI,THETA,PSI' + '\n')
+					f.write('Time,Xaccel,Yaccel,Zaccel,Xvel,Yvel,Zvel,PHIvel,THETAvel,PSIvel,X,Y,Z,PHI,THETA,PSI\n')
 			else:
 				msg = device.readline().decode('utf-8').rstrip()
 				if msg == 'Kill':

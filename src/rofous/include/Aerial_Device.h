@@ -1,11 +1,9 @@
 /**
 	Aerial Device class
-
 	Author  : Mitchell Scott (misc4432@colorado.edu)
 	Project : Rofous
 	Version : 0.1
 	Date    : January 31, 2020
-
 **/
 #include <Transformer.hpp>
 
