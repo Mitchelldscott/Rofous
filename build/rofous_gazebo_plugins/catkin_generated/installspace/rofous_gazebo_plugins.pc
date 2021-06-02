@@ -1,8 +1,0 @@
-prefix=/home/m_dyse/Rofous/install
-
-Name: rofous_gazebo_plugins
-Description: Description of rofous_gazebo_plugins
-Version: 0.0.0
-Cflags: -I${prefix}/include
-Libs: -L${prefix}/lib -lrofous_gazebo_plugins
-Requires: roscpp std_msgs gazebo_ros rosgraph_msgs message_runtime

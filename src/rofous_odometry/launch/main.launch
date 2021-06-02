@@ -1,0 +1,22 @@
+<launch>
+	<arg name="sim" default="true"/>
+	<arg name="baudrate" default="9600"/>
+	<arg name="parent" default="/world"/>
+	<arg name="namespace" default="Rofous"/>
+	<arg name="device_port" default="/dev/ttyACM0"/>
+
+	<group ns="$(arg namespace)">
+		<node name="Odometry" pkg="rofous_odometry" type="tf_broadcaster.py" respawn="false" output="screen"
+			args="$(arg namespace) $(arg parent)"/>
+
+		<group if="$(eval arg('sim')!='true')">
+			<include file="$(find arduino_reader)/launch/main.launch">
+				<arg name="baudrate" value="$(arg baudrate)"/>
+				<arg name="device_port" value="$(arg device_port)"/>
+			</include>
+		</group>
+	</group>
+
+	<node name="Rviz" pkg="rviz" type="rviz" respawn="false" output="screen"/>
+
+</launch>

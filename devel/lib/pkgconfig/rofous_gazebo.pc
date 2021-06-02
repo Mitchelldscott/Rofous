@@ -1,1 +1,0 @@
-/home/m_dyse/Rofous/devel/.private/rofous_gazebo/lib/pkgconfig/rofous_gazebo.pc
