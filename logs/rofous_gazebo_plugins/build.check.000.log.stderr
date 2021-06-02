@@ -1,5 +1,0 @@
-[31m[1mCMake Error[0m at /home/m_dyse/Rofous/src/rofous_gazebo_plugins/CMakeLists.txt:80:
-  Parse error.  Expected a command name, got right paren with text ")".
-
-
-make: *** [Makefile:1649: cmake_check_build_system] Error 1

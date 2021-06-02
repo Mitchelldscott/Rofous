@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(rofous_gazebo_plugins)
+project(arduino_reader)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -8,15 +8,10 @@ project(rofous_gazebo_plugins)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
+  rospy
   std_msgs
-  gazebo_ros
-  rosgraph_msgs
   message_generation
 )
-find_package(gazebo REQUIRED)
-
-
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -73,11 +68,10 @@ find_package(gazebo REQUIRED)
 # )
 
 ## Generate added messages and services with any dependencies listed here
-#generate_messages(
+# generate_messages(
 #  DEPENDENCIES
 #  std_msgs  # Or other packages containing msgs
-#  rosgraph_msgs
-#)
+# )
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -109,37 +103,29 @@ find_package(gazebo REQUIRED)
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
- INCLUDE_DIRS include/${PROJECT_NAME}
- LIBRARIES ${PROJECT_NAME}
- CATKIN_DEPENDS
-  roscpp
-  std_msgs
-  gazebo_ros
-  rosgraph_msgs
-  message_runtime
+#  INCLUDE_DIRS include
+#  LIBRARIES arduino_reader
+  CATKIN_DEPENDS
+    rospy
+    std_msgs
+    message_runtime
+#  DEPENDS system_lib
 )
 
 ###########
 ## Build ##
 ###########
 
-# link_directories(${GAZEBO_LIBRARY_DIRS})
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GAZEBO_CXX_FLAGS}")
-
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-#include_directories(
-#	include/${PROJECT_NAME}
-# 	${GAZEBO_INCLUDE_DIRS}
-# 	${catkin_INCLUDE_DIRS}
-#)
+include_directories(
+# include
+# ${catkin_INCLUDE_DIRS}
+)
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#	src/${PROJECT_NAME}/rofous_gazebo_plugin.cpp
-#	src/${PROJECT_NAME}/Aerial_Device.cpp
-#	src/${PROJECT_NAME}/Transformer.cpp
-#	src/${PROJECT_NAME}/Matrix.cpp
+#   src/${PROJECT_NAME}/arduino_reader.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -150,36 +136,21 @@ catkin_package(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(Aerial_Device_Test
-#	src/${PROJECT_NAME}/Aerial_Device_Dev.cpp
-#	src/${PROJECT_NAME}/Aerial_Device.cpp
-#	src/${PROJECT_NAME}/Transformer.cpp
-#	src/${PROJECT_NAME}/Matrix.cpp
-# )
-
-#add_executable(Transformer_Test
-#	src/${PROJECT_NAME}/Transformer_Dev.cpp
-#	src/${PROJECT_NAME}/Transformer.cpp
-#	src/${PROJECT_NAME}/Matrix.cpp
-#)
+# add_executable(${PROJECT_NAME}_node src/arduino_reader_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
 ## e.g. "rosrun someones_pkg node" instead of "rosrun someones_pkg someones_pkg_node"
-# set_target_properties(Aerial_Device_Test Transformer_Test
-#	PROPERTIES 
-#	RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
-# )
+# set_target_properties(${PROJECT_NAME}_node PROPERTIES OUTPUT_NAME node PREFIX "")
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(${PROJECT_NAME} 
-#	${GAZEBO_LIBRARIES}
-#	${catkin_LIBRARIES}
+# target_link_libraries(${PROJECT_NAME}_node
+#   ${catkin_LIBRARIES}
 # )
 
 #############
@@ -191,10 +162,10 @@ catkin_package(
 
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
-# catkin_install_python(PROGRAMS
-#   scripts/my_python_script
-#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+catkin_install_python(PROGRAMS
+	scripts/arduino_reader.py
+	DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
@@ -229,7 +200,7 @@ catkin_package(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_rofous_gazebo_plugins.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_arduino_reader.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
