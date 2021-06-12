@@ -7,10 +7,14 @@
 	<arg name="world_name" default="$(find gazebo_ros)/worlds/empty.world"/>
 
 	<include file="$(find gazebo_ros)/launch/empty_world.launch">
+		<arg name="paused" value="$(arg paused)"/>
+		<arg name="verbose" value="$(arg verbose)"/>
 		<arg name="world_name" value="$(arg world_name)"/>
 	</include>
 
-	<node name="$(arg model)_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
-	args="-urdf -model $(arg model) -param robot_description -z 0.05"/>
+	<group ns="$(arg model)">
+		<node name="spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+		args="-urdf -model $(arg model) -param robot_description"/>
+	</group>
 	
 </launch>

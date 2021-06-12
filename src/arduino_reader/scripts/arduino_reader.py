@@ -21,7 +21,7 @@ class ArduinoListener:
 	def __init__(self, baud, port):
 		"""
 		  A node that listens to an arduino sending one-liners.
-		The first element of each phrase is the id, the second is the 
+		The first element of each msg is the id, the second is the 
 		type of message. All messages are comma seperated sequences.
 		There are a few optional parameters that can change 
 		how you publish the data.
@@ -73,46 +73,46 @@ class ArduinoListener:
 		"""
 		rospy.loginfo(f'[Arduino_Reader]: {text}')
 
-	def initPublisher(self, topic, phrasetype):
+	def initPublisher(self, topic, msgType):
 		"""
 		  Create a new publisher.
 
 			Params:
 			  topic: string - destination for the publisher
-			  phraseType: string - the datatype of the phrase
+			  msgType: string - the datatype of the msg
 		"""
 		if topic == 'SUDO':
-			if phraseType == -1:
+			if msgType == -1:
 				self.log(f'Session Terminated by {topic} on Device')
 				exit(0)
 
-		msgType = self.dtype_LUT[phrasetype]
+		msgType = self.dtype_LUT[msgType]
 		self.publishers[topic] = rospy.Publisher(topic, msgType, queue_size=1)
 
 
-	def parseMsg(self, topic, phraseType, data):
+	def parseMsg(self, topic, msgType, data):
 		"""
 		  Create a new msg to publish.
 
 			Params:
 				topic: string - destination for the publisher
-				phraseType: string - the datatype of the phrase
+				msgType: string - the datatype of the msg
 				data: ??? - the data to fill msg
 
 			Returns:
 			  msg: ??? - the msg to send
 		"""
 		msg = None
-		if phraseType == '0':
+		if msgType == '0':
 			for string in data:
 				msg = String(string)
 				self.log(f'String: {string}')
 
-		elif phraseType == '1':
+		elif msgType == '1':
 			for fl in data:
 				msg = Float64(float(fl))
 
-		elif phraseType == '2':
+		elif msgType == '2':
 			msg = PoseStamped()
 			msg.header.stamp = rospy.Time.now()
 			msg.header.frame_id = topic
@@ -126,7 +126,7 @@ class ArduinoListener:
 		"""
 		  Read a line from the serial port and publish it
 		to a topic given the mode. The mode is the first 4 bytes
-		of the phrase.
+		of the msg.
 
 			ROS Publishers:
 			  - /namespace/string : String
@@ -139,27 +139,30 @@ class ArduinoListener:
 				self.tryConnect()
 
 			elif self.device.in_waiting:
-				phrase = self.device.readline().decode().rstrip().split(',')
+				msg = self.device.readline().decode().rstrip().split(',')
 
 				topic = None
-				phraseType = -1
+				msgType = -1
 
-				if len(phrase) > 2:
-					topic = phrase[0]
-					phraseType = phrase[1]
+				if len(msg) > 2:
+					topic = msg[0]
+					msgType = msg[1]
 
-				elif len(phrase) > 1:
-					topic = phrase[0]
+				elif len(msg) > 1:
+					topic = msg[0]
 					
 				if topic is None:
 					continue
 
 				if not topic in self.publishers:
-					self.initPublisher(topic, phraseType)
+					self.initPublisher(topic, msgType)
 
 				pub = self.publishers[topic]
-				msg = self.parseMsg(topic, phraseType, phrase[2:])
+				msg = self.parseMsg(topic, msgType, msg[2:])
 				pub.publish(msg)
+
+			else:
+				
 
 
 if __name__=='__main__':

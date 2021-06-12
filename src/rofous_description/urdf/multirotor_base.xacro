@@ -72,27 +72,36 @@
     </link>
 
     <!-- attach multirotor_base_plugin to the base_link -->
-    <gazebo>
+<!--     <gazebo>
       <plugin filename="librofous_gazebo_plugins.so" name="rofous_gazebo_plugins">
         <robotNamespace>${robot_namespace}</robotNamespace>
         <linkName>${robot_namespace}/base_link</linkName>
         <rotorVelocitySlowdownSim>${rotor_velocity_slowdown_sim}</rotorVelocitySlowdownSim>
       </plugin>
-    </gazebo>
+    </gazebo> -->
+  </xacro:macro>
+    <xacro:macro name="EffortTransmission" params="joint n">
+    <transmission name="transmission_${n}">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="${joint}">
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="motor${n}"/>
+    </transmission>
   </xacro:macro>
 
   <!-- Rotor joint and link -->
   <xacro:macro name="vertical_rotor"
     params="robot_namespace suffix direction motor_constant moment_constant parent mass_rotor radius_rotor time_constant_up time_constant_down max_rot_velocity motor_number rotor_drag_coefficient rolling_moment_coefficient color use_own_mesh mesh *origin *inertia">
-    <joint name="${robot_namespace}/rotor_${motor_number}_joint" type="continuous">
+    <joint name="rotor_${motor_number}_joint" type="continuous">
       <xacro:insert_block name="origin" />
       <axis xyz="0 0 1" />
       <!-- TODO(ff): not currently set because it's not yet supported -->
       <!-- <limit effort="2000" velocity="${max_rot_velocity}" /> -->
       <parent link="${parent}" />
-      <child link="${robot_namespace}/rotor_${motor_number}" />
+      <child link="rotor_${motor_number}" />
     </joint>
-    <link name="${robot_namespace}/rotor_${motor_number}">
+    <link name="rotor_${motor_number}">
       <inertial>
         <mass value="${mass_rotor}" /> <!-- [kg] -->
         <xacro:insert_block name="inertia" />
@@ -117,7 +126,8 @@
         </geometry>
       </collision>
     </link>
-    <gazebo>
+    <xacro:EffortTransmission n="${motor_number}" joint="rotor_${motor_number}_joint" />
+    <!-- <gazebo>
       <plugin name="${robot_namespace}_${suffix}_motor_model" filename="librotors_gazebo_motor_model.so">
         <robotNamespace>${robot_namespace}</robotNamespace>
         <jointName>${robot_namespace}/rotor_${motor_number}_joint</jointName>
@@ -138,6 +148,6 @@
     </gazebo>
     <gazebo reference="${robot_namespace}/rotor_${motor_number}">
       <material>Gazebo/${color}</material>
-    </gazebo>
+    </gazebo> -->
   </xacro:macro>
 </robot>

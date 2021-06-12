@@ -1,0 +1,12 @@
+Symlinking /home/m_dyse/Rofous/devel/./_setup_util.py
+Symlinking /home/m_dyse/Rofous/devel/./local_setup.bash
+Symlinking /home/m_dyse/Rofous/devel/./cmake.lock
+Symlinking /home/m_dyse/Rofous/devel/./env.sh
+Symlinking /home/m_dyse/Rofous/devel/./setup.bash
+Symlinking /home/m_dyse/Rofous/devel/./local_setup.sh
+Symlinking /home/m_dyse/Rofous/devel/./setup.zsh
+Symlinking /home/m_dyse/Rofous/devel/./setup.sh
+Symlinking /home/m_dyse/Rofous/devel/./local_setup.zsh
+Symlinking /home/m_dyse/Rofous/devel/share/catkin_tools_prebuild/cmake/catkin_tools_prebuildConfig.cmake
+Symlinking /home/m_dyse/Rofous/devel/share/catkin_tools_prebuild/cmake/catkin_tools_prebuildConfig-version.cmake
+Symlinking /home/m_dyse/Rofous/devel/lib/pkgconfig/catkin_tools_prebuild.pc

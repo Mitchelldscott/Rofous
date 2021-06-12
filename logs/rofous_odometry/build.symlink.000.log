@@ -1,0 +1,5 @@
+Symlinking /home/m_dyse/Rofous/devel/share/rofous_odometry/cmake/rofous_odometryConfig-version.cmake
+Symlinking /home/m_dyse/Rofous/devel/share/rofous_odometry/cmake/rofous_odometryConfig.cmake
+Symlinking /home/m_dyse/Rofous/devel/lib/rofous_odometry/cmake.lock
+Symlinking /home/m_dyse/Rofous/devel/lib/rofous_odometry/tf_broadcaster.py
+Symlinking /home/m_dyse/Rofous/devel/lib/pkgconfig/rofous_odometry.pc
