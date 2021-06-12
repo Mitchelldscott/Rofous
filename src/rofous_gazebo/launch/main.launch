@@ -8,6 +8,7 @@
 
 	<include file="$(find gazebo_ros)/launch/empty_world.launch">
 		<arg name="paused" value="$(arg paused)"/>
+		<arg name="physics" value="$(arg physics)"/>
 		<arg name="verbose" value="$(arg verbose)"/>
 		<arg name="world_name" value="$(arg world_name)"/>
 	</include>

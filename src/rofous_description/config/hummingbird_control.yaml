@@ -25,3 +25,4 @@ motor4:
   pid:
     {p: 1, i: 0, d: 1}
   type: effort_controllers/JointVelocityController
+

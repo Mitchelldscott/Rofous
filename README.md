@@ -35,7 +35,7 @@ Now the project has an alias to load the tools in .bashrc run those like
 Now your python enviroment is configured and your catkin_ws should be initialized you can check that this was successful by 
 
     echo $PYTHON_PATH
-    catkin build
+    catkin config
     
 The simulation is runable with roslaunch
     

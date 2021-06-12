@@ -1,7 +1,5 @@
-
 build
 devel
 Logs
-.catkin_tools
 .ipynb_checkpoints
-
+Python3_Notebooks/.ipynb_checkpoints
