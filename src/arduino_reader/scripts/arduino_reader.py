@@ -130,9 +130,9 @@ class ArduinoListener:
 		of the msg.
 
 			ROS Publishers:
-			  - /namespace/string : String
-			  - /namespace/float : Float
-			  - /namespace/floatMulti : FloatMultiArray
+			  - /***/string : String
+			  - /***/float : Float
+			  - /***/floatMulti : FloatMultiArray
 		"""
 		try:
 			while not rospy.is_shutdown():

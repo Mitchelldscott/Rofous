@@ -27,10 +27,10 @@ class tf_Broadcaster:
 		self.measurement = np.zeros(6)
 
 	def motionCallback(self, data):
+		x, y, z = (data.pose.position.x, data.pose.posisiton.y, data.pose.position.z)
+		q = data.pose.orientation
 		
-		self.broadcaster.sendTransform((data.pose.position.x, data.pose.position.y, data.pose.position.z)
-		, (data.pose.orientation.x, data.pose.orientation.y, data.pose.orientation.z, data.pose.orientation.w), 
-			rospy.Time.now(),
+		self.broadcaster.sendTransform((x, y, z), q, rospy.Time.now(), 
 			f'/{self.ns}/odometry', '/world')
 		
 
