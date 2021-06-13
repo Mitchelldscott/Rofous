@@ -6,7 +6,7 @@
 	<arg name="device_port" default="/dev/ttyACM0"/>
 
 	<group ns="$(arg namespace)">
-		<node name="Odometry" pkg="rofous_odometry" type="tf_broadcaster.py" respawn="false" output="screen"
+		<node name="odometry" pkg="rofous_odometry" type="tf_broadcaster.py" respawn="false" output="screen"
 			args="$(arg namespace) $(arg parent)"/>
 
 		<group if="$(eval arg('sim')!='true')">
@@ -18,5 +18,4 @@
 	</group>
 
 	<node name="Rviz" pkg="rviz" type="rviz" respawn="false" output="screen"/>
-
 </launch>

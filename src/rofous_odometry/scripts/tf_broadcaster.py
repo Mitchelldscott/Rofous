@@ -19,10 +19,10 @@ class tf_Broadcaster:
 		self.ns = namespace
 		self.parent = parent
 		self.rate = rospy.Rate(10)
+		self.sensor_topic = f'/{namespace}/IMU'
 		self.broadcaster = tf.TransformBroadcaster()
-		self.motion_topic = '/Rofous/IMU'
 
-		self.sub = rospy.Subscriber(self.motion_topic, PoseStamped, self.motionCallback)
+		self.sub = rospy.Subscriber(self.sensor_topic, PoseStamped, self.motionCallback)
 
 		self.measurement = np.zeros(6)
 
@@ -31,7 +31,7 @@ class tf_Broadcaster:
 		self.broadcaster.sendTransform((data.pose.position.x, data.pose.position.y, data.pose.position.z)
 		, (data.pose.orientation.x, data.pose.orientation.y, data.pose.orientation.z, data.pose.orientation.w), 
 			rospy.Time.now(),
-			"/Rofous/odom", "/world")
+			f'/{self.ns}/odometry', '/world')
 		
 
 if __name__ == '__main__':

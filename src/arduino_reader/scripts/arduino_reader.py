@@ -7,6 +7,7 @@
 """
 import os
 import sys
+import time
 import rospy
 import serial
 import numpy as np
@@ -90,7 +91,7 @@ class ArduinoListener:
 		self.publishers[topic] = rospy.Publisher(topic, msgType, queue_size=1)
 
 
-	def parseMsg(self, topic, msgType, data):
+	def parseMsg(self, topic, msgType, timestamp, data=None):
 		"""
 		  Create a new msg to publish.
 
@@ -114,8 +115,8 @@ class ArduinoListener:
 
 		elif msgType == '2':
 			msg = PoseStamped()
-			msg.header.stamp = rospy.Time.now()
 			msg.header.frame_id = topic
+			msg.header.stamp = timestamp
 			msg.pose.position = Point(float(data[0]), float(data[1]), float(data[2]))
 			q = quaternion_from_euler(float(data[3]), float(data[4]), float(data[5]))
 			msg.pose.orientation = Quaternion(q[0], q[1], q[2], q[3])
@@ -133,37 +134,42 @@ class ArduinoListener:
 			  - /namespace/float : Float
 			  - /namespace/floatMulti : FloatMultiArray
 		"""
+		try:
+			while not rospy.is_shutdown():
+				if not self.connected:
+					self.tryConnect()
 
-		while not rospy.is_shutdown():
-			if not self.connected:
-				self.tryConnect()
+				elif self.device.in_waiting:
+					msg = self.device.readline().decode().rstrip().split(',')
 
-			elif self.device.in_waiting:
-				msg = self.device.readline().decode().rstrip().split(',')
+					topic = None
+					msgType = -1
+					timestamp = 0.0
+					msgLen = len(msg)
 
-				topic = None
-				msgType = -1
+					if len(msg) > 3:
+						topic = msg[0]
+						msgType = msg[1]
+						timestamp = rospy.Time.from_sec(float(msg[2]))
+						data = msg[3:]
 
-				if len(msg) > 2:
-					topic = msg[0]
-					msgType = msg[1]
+					elif len(msg) > 1:
+						topic = msg[0]
+						
+					if topic is None:
+						continue
 
-				elif len(msg) > 1:
-					topic = msg[0]
-					
-				if topic is None:
-					continue
+					if not topic in self.publishers:
+						self.initPublisher(topic, msgType)
 
-				if not topic in self.publishers:
-					self.initPublisher(topic, msgType)
+					pub = self.publishers[topic]
+					msg = self.parseMsg(topic, msgType, timestamp, msg[3:])
+					pub.publish(msg)
 
-				pub = self.publishers[topic]
-				msg = self.parseMsg(topic, msgType, msg[2:])
-				pub.publish(msg)
-
-			else:
-				
-
+		except Exception as e:
+			self.log('Possible I/O Error: Restarting...')
+			time.sleep(2)
+			self.spin()
 
 if __name__=='__main__':
 	try:

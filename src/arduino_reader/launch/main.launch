@@ -4,7 +4,7 @@
 	<arg name="floatMulti" default="false"/>
 	<arg name="device_port" default="/dev/ttyACM0"/>
 
-	<node name="rqt_plot" pkg="rqt_plot" type="rqt_plot" respawn="false" output="screen"/> 
+	<!-- <node name="rqt_plot" pkg="rqt_plot" type="rqt_plot" respawn="false" output="screen"/>  -->
 
 	<node name="Serial_Port" pkg="arduino_reader" type ="arduino_reader.py" respawn="false" output="screen"
 		args="$(arg baudrate) $(arg device_port)"/>
