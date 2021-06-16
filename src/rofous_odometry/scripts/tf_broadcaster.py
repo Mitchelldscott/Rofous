@@ -13,28 +13,28 @@ from std_msgs.msg import Float64
 from geometry_msgs.msg import PoseStamped, Quaternion, Point
 
 class tf_Broadcaster:
-	def __init__(self, namespace, parent):
+	def __init__(self, namespace, parent, sensor):
 		rospy.init_node('tf_broadcaster')
 
 		self.ns = namespace
 		self.parent = parent
 		self.rate = rospy.Rate(10)
-		self.sensor_topic = f'/{namespace}/IMU'
+		self.sensor = sensor
 		self.broadcaster = tf.TransformBroadcaster()
 
-		self.sub = rospy.Subscriber(self.sensor_topic, PoseStamped, self.motionCallback)
+		self.sub = rospy.Subscriber(self.sensor, PoseStamped, self.motionCallback)
 
 		self.measurement = np.zeros(6)
 
 	def motionCallback(self, data):
-		x, y, z = (data.pose.position.x, data.pose.posisiton.y, data.pose.position.z)
+		pose = data.pose.position
 		q = data.pose.orientation
 		
-		self.broadcaster.sendTransform((x, y, z), q, rospy.Time.now(), 
-			f'/{self.ns}/odometry', '/world')
+		self.broadcaster.sendTransform((pose.x, pose.y, pose.z), (q.x, q.y, q.z, q.w), rospy.Time.now(), 
+			f'/odometry', self.parent)
 		
 
 if __name__ == '__main__':
 	
-	broadcaster = tf_Broadcaster(sys.argv[1], sys.argv[2])    
+	broadcaster = tf_Broadcaster(sys.argv[1], sys.argv[2], sys.argv[3])    
 	rospy.spin()

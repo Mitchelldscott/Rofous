@@ -4,15 +4,13 @@
 #define NAME "Rofous_FW"
 #define CYCLE_TIME 200l
 
-float sensor[6];
+float vel[6] = {0.0, 0.0, 0.0};
 float pose[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-float vel[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-float gyro[3];
-float accel[3];
+float sensor[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+
 unsigned long start;
 unsigned long duration;
 unsigned long birthTime;
-String asset_cmd = "";
 
 OneLiner OL;
 
@@ -37,14 +35,6 @@ void serialEvent() {
 		OL.writeMsg(NAME, NAME);
 }
 
-void readIMUFloat(float* accel, float* gyro){
-	if (IMU.accelerationAvailable())
-		IMU.readAcceleration(accel[0], accel[1], accel[2]);
-
-	if (IMU.gyroscopeAvailable())
-		IMU.readGyroscope(gyro[0], gyro[1], gyro[2]);
-}
-
 void readIMU(float* pose){
 	if (IMU.accelerationAvailable())
 		IMU.readAcceleration(pose[0], pose[1], pose[2]);
@@ -53,25 +43,16 @@ void readIMU(float* pose){
 		IMU.readGyroscope(pose[3], pose[4], pose[5]);
 }
 
-void publishIMUFloat()
-{
-	OL.writeMsg("Xaccel", accel[0]);
-	OL.writeMsg("Yaccel", accel[1]);
-	OL.writeMsg("Zaccel", accel[2]);
-	OL.writeMsg("Xgyro", gyro[0]);
-	OL.writeMsg("Ygyro", gyro[1]);
-	OL.writeMsg("Zgyro", gyro[2]);
-}
-
 void publishIMU(float* pose)
 {
 	OL.writeMsg("IMU", pose, 6);
 }
 
 void updateOdometry(float* sensor, float* pose){
-	for (int i=0; i < 6; i++){
+	for (int i=0; i < 3; i++){
 		vel[i] += sensor[i] * (CYCLE_TIME * 0.0001);
 		pose[i] += vel[i] * (CYCLE_TIME * 0.0001);
+		pose[i + 3] += sensor[i + 3] * (CYCLE_TIME * 0.0001);
 	}
 }
 
