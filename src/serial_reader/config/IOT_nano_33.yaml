@@ -1,0 +1,9 @@
+WhoAmI:
+  Arduino_IOT_nano_33
+Baudrate:
+  9600
+Timeout:
+  10
+Ports:
+  - /dev/ttyACM0
+  - /dev/ttyACM1

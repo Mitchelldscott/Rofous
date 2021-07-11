@@ -12,7 +12,10 @@ unsigned long start;
 unsigned long duration;
 unsigned long birthTime;
 
-OneLinerMessage nameCard = OneLiner.init("whoami", 0);
+char writeBack = '0';
+
+OneLiner OL;
+OneLinerMessage nameCard = OL.init("whoami", 0);
 
 bool isConnected = false;
 
@@ -22,9 +25,8 @@ void serialEvent() {
 		but it doesn't ucking work on IOT nano33!!
 				(workaround: call in loop)
 	*/
-	// 		NOT IMPLEMENTED	
-	
-		
+	while(Serial.available())
+		writeBack = Serial.read();
 }
 
 void readIMU(float* sensor){
@@ -63,6 +65,12 @@ void loop() {
 
 	if(!isConnected)
 		OL.publish(nameCard);
+
+	if(Serial.available())
+		serialEvent();
+
+	if(writeBack == 13)
+		isConnected = true;
 	
 	////////		Normalize cycle time		////////
 	duration = millis() - start;
