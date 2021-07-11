@@ -94,6 +94,12 @@ class SerialListener:
 				return self.tryConnect(alt=alt+1)
 			return False
 
+	def writeBack(self, mesg):
+		"""
+		  Write a message back to the arduino
+		"""
+		self.device.write(mesg)
+
 	def log(self, text):
 		"""
 		  Wrapper to print a value through /rosout.
@@ -136,7 +142,9 @@ class SerialListener:
 		if msgType == '0':
 			for string in data:
 				msg = String(string)
-				self.log(f'String: {string}')
+				if topic == 'whoami':
+					self.log(f'connecting to: {string} @ timestamp')
+					self.writeBack('1101')
 
 		elif msgType == '1':
 			for fl in data:
@@ -181,9 +189,6 @@ class SerialListener:
 						msgType = msg[1]
 						timestamp = rospy.Time.from_sec(float(msg[2]))
 						data = msg[3:]
-
-					elif len(msg) > 1:
-						topic = msg[0]
 						
 					if topic is None:
 						continue
