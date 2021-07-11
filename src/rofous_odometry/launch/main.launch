@@ -9,7 +9,7 @@
 		<node name="odometry" pkg="rofous_odometry" type="tf_broadcaster.py" respawn="false" output="screen"
 			args="$(arg namespace) $(arg parent)"/>
 
-		<group if="$(eval arg('sim')!='true')">
+		<group if="$(arg sim)">
 			<include file="$(find arduino_reader)/launch/main.launch">
 				<arg name="baudrate" value="$(arg baudrate)"/>
 				<arg name="device_port" value="$(arg device_port)"/>

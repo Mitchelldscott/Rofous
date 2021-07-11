@@ -107,7 +107,8 @@ class ArduinoListener:
 		if msgType == '0':
 			for string in data:
 				msg = String(string)
-				self.log(f'String: {string}')
+				if topic == 'whoami':
+					self.log(f'Connecting to: {string} @ {timestamp}')
 
 		elif msgType == '1':
 			for fl in data:
@@ -132,7 +133,7 @@ class ArduinoListener:
 			ROS Publishers:
 			  - /***/string : String
 			  - /***/float : Float
-			  - /***/floatMulti : FloatMultiArray
+			  - /***/PoseStamped : PoseStamped
 		"""
 		try:
 			while not rospy.is_shutdown():
