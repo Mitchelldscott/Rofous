@@ -1,4 +1,4 @@
-# Rofous
+# Rufous
 This repo is dedicated to the development of an autonomous quadcopter.
 
 The goal is to make a sneaky companion that can be instructed to follow people or track objects. This would be great for filming outdoor activities of all sorts, the drone must be able to move with speed and accuracy as to not loose its target. In addition the drone must be able to perform real time computer vision and make situational inferences about the task at hand. This repository is organized to help develop and test the software systems of the device as well as resources for development.
