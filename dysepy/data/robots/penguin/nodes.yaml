@@ -1,0 +1,78 @@
+##############################
+#
+#
+#       The Buff-Stuff  
+#
+#
+##############################
+
+robot_type: demo
+with_xacro: true
+
+# Specify our nodes from buffpy/lib
+# spinup perception and comms here
+buff-nodes:
+  dyse-viz:
+    files: [simulation.py]
+
+# Examle of includig ros
+# Maybe some kind of option to shut this down via cmdline
+ros-nodes:
+  jsp:
+    files: [joint_state_publisher]
+    package: joint_state_publisher
+    args: [robot_description:=/dysebot/robot_description]
+
+  rsp:
+    files: [robot_state_publisher]
+    package: robot_state_publisher
+    args: [robot_description:=/dysebot/robot_description]
+
+  viz:
+    files: ['rviz']
+    package: 'rviz'
+    args: ['-d', '${PROJECT_ROOT}/dysepy/data/robots/penguin/config.rviz']
+
+
+# The Teensy... Ti-ta-ti-ti-ta-ti-ti-ta-ta-ta-la-ba-ba-ba-ba-ba-da-la-ba-ba-ba-ba-da-la-ba-ba-baa, Ti-ta-ti-li-ta-ti-li-ti-taa, Ti-ta-ti-li... /*o*)/ (gasps) Ti-ta-ti-li-ta-ti-li-ta-ti-li-ta-ti-li-ta-ti-li-ti-ta-ti-ti-ta-ti-ti-taaaaa♪ PEPARING THE KRABBY PATTY!
+teensy_vid: 0x16C0
+teensy_pid: 0x0486
+
+# Defines the sensor index for
+# HID packets. String is the topic
+sensor_index:
+  - lsm6dsox
+
+# So HID knows what size buffer
+sensor_buffers:
+  - 9
+
+sensor_config:
+  - [0.0]
+
+
+##############################
+#
+#
+#       Motor Interface  
+#
+#
+##############################
+
+# This defines the indices of all the motors
+# on the CAN bus (index = row, starts at zero)
+motor_index:
+  - prop_1
+  - prop_2
+  - prop_3
+  - prop_4
+
+
+##############################
+#
+#
+#         Controllers
+#
+#
+##############################
+
