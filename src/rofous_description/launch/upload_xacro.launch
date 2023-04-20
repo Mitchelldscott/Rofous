@@ -1,4 +1,0 @@
-<launch>
-	<arg name="model"/>
-	<param name="robot_description" command="$(find xacro)/xacro $(find rofous_description)/urdf/$(arg model).xacro"/>
-</launch>

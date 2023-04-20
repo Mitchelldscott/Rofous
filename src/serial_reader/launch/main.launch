@@ -1,7 +1,0 @@
-<launch>
-	<arg name="device" default="IOT_nano33"/>
-
-	<node name="serial_port" pkg="serial_reader" type ="serial_reader.py" respawn="false" output="screen"
-		args="$(find serial_reader)/config/$(arg device).yaml"/>
-
-</launch>

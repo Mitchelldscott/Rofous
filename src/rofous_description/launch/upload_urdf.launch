@@ -1,4 +1,0 @@
-<launch>
-	<arg name="model"/>
-	<rosparam file="$(find rofous_description)/urdf/$(arg model).urdf" command="load"/>
-</launch>

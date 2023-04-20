@@ -1,8 +1,0 @@
-empy
-numpy
-scipy
-pyYAML
-pyserial
-catkin_pkg
-matplotlib
-opencv-python
