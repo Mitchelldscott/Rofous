@@ -155,6 +155,6 @@ class Rufous_Simulation():
 
 
 if __name__ == '__main__':
-	rospy.init_node('localization')
+	rospy.init_node('simulator')
 	sim = Rufous_Simulation()
 	sim.spin()
