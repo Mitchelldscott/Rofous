@@ -31,7 +31,7 @@ ros-nodes:
   state-viz:
     files: ['rqt_gui']
     package: 'rqt_gui'
-    args: ['-p', 'Default']
+    args: ['-p', 'dyse']
 
   urdf-viz:
     files: ['rviz']

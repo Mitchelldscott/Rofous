@@ -61,22 +61,24 @@ class Rufous_Simulation():
 		self.r = np.zeros(3)				# postion
 		self.v = np.zeros(3)				# velocity
 		self.q = np.zeros(3)				# attitude
-		self.qr = np.zeros(3)				# attitude reference
 		self.w = np.zeros(3)				# angular rate
 		self.u = np.zeros(4)				# control output, input to the plant
+		self.rr = np.zeros(3)				# attitude reference
+		self.qr = np.zeros(3)				# attitude reference
 		self.Tp = np.zeros(3)				# thrust from propellers
 		self.Taup = np.zeros(3)				# torque from propellers
 
 
 		#		Parameters
+		self.l = 0.23  								# wing length (center to prop rot axis)
 		self.g = 9.81								# gravitational constant
 		self.Kt = 0.02								# thrust constant
 		self.mass = 0.025							# quadcopter mass
-		self.l = 0.23  								# wing length (center to prop rot axis)
 		self.I = np.array([[3.2132169,  0,  0], 	# Inertia matrix (from collin)
 							[0, 5.0362409,  0], 
 							[0, 0, 7.22155076]]) * 1e-3
 
+		#		ROS setup
 		self.hz = 100
 		self.rate = rospy.Rate(self.hz)
 		self.prop_pub = rospy.Publisher('prop_speeds', std_msgs.msg.Float64MultiArray, queue_size=1)
@@ -90,7 +92,12 @@ class Rufous_Simulation():
 		self.broadcaster_ref = tf2_ros.StaticTransformBroadcaster()
 
 	def thrust(self):
-		Rnb = DCM(self.q)
+		"""
+			  Calculates the thrust from an input u.
+			Must set self.u before calling.
+			
+		"""
+		Rnb = DCM(-self.q)
 		z_hat_b = Rnb.T @ np.array([0, 0, 1]).T
 		self.Tp = self.Kt * np.sum(self.u**2) * z_hat_b
 		return self.Tp
@@ -112,6 +119,9 @@ class Rufous_Simulation():
 		self.v[2] -= self.mass * self.g * dt
 
 		self.q += self.w * dt
+		if la.norm(self.w) > 1e5:
+			rospy.logerr("Unstable result detected")
+			rospy.logerr(f"Large Omega: {self.w} {self.torque()}")
 		self.w += la.inv(self.I) @ ((-tilde(self.w) @ self.I @ self.w) + self.torque())
 		# print(self.w)
 		self.q = np.fmod(self.q, 2 * np.pi)
@@ -121,42 +131,44 @@ class Rufous_Simulation():
 			self.r[2] = 0
 			self.v[2] = max(0, self.v[2])
 
-	def demo_control_law(self, r):
+	def demo_control_law(self, update_ref=False):
 		hover_throttle = np.sqrt(self.g * self.mass / (self.Kt * len(self.u))) * abs(np.cos(self.q[0]) * np.cos(self.q[1]))
 
-		K_att = 1 * la.pinv([[1,  0, -1,  0],
+		K_att = 0.075 * la.pinv([[1,  0, -1,  0],
 						       [0, -1,  0,  1], 
 						  	  [-1,  1, -1,  1]])
 
-		K_rate = 10 * la.pinv([[1,  0, -1,  0],
+		K_rate = 0.1 * la.pinv([[1,  0, -1,  0],
 						      [0, -1,  0,  1], 
 						  	 [-1,  1, -1,  1]])
 
-		K_q = 0.0#**-(la.norm(self.v)*10)
+		K_q = 0.5#**-(la.norm(self.v)*10)
 
-		K_zp = 0.00 * np.ones(4)
+		K_zp = 4 * np.ones(4)
 		# K_zp = 0.001 * np.ones(4)
-		K_zd = 0.00 * np.ones(4)
+		K_zd = 5 * np.ones(4)
 		# K_zd = 0.002 * np.ones(4)
 
-		self.qr = np.array([0, 0, 0]) # K_q * np.array([self.r[1] - r[1], r[0] - self.r[0], 0])
-		att_comp = K_att @ (self.qr - self.q)
-		rate_comp = -K_rate @ self.w
-		alt_comp = K_zp * (r[2] - self.r[2])
-		alt_damp = -K_zd * self.v[2]
+		if update_ref:
+			self.qr = K_q * np.array([self.r[1] - self.rr[1], self.rr[0] - self.r[0], 0])
+			print(self.qr)
 
+		att_comp = K_att @ (self.qr - self.q)
+		att_damp = -K_rate @ self.w
+		alt_comp = K_zp * (self.rr[2] - self.r[2])
+		vel_damp = -K_zd * self.v[2]
 		grav_comp = np.ones(self.u.shape) * hover_throttle 
-		print(grav_comp, np.cos(self.q[0]), np.cos(self.q[1]), abs(np.cos(self.q[0]) + np.cos(self.q[1])) / 2)
-		self.u = att_comp + rate_comp + grav_comp#+ alt_comp + alt_damp + grav_comp
+		
+		self.u = att_comp + att_damp + grav_comp + alt_comp + vel_damp
 
 	def control_callback(self, msg):
 		self.sensor_flags[0] = 1
 		self.sensor_mag = np.array(msg.data)
 
-	def broadcast_data(self, r):
+	def broadcast_data(self):
 		broadcast_tf(self.r, [0, 0, 0], "map", "body_fixed", self.broadcaster_b1)
 		broadcast_tf([0, 0, 0], self.q, "body_fixed", "base_link1", self.broadcaster_b2)
-		broadcast_tf(r, self.qr, "map", "reference", self.broadcaster_ref)
+		broadcast_tf(self.rr, self.qr, "map", "reference", self.broadcaster_ref)
 
 		msg = std_msgs.msg.Float64MultiArray(data=self.u)
 		self.prop_pub.publish(msg)
@@ -178,24 +190,31 @@ class Rufous_Simulation():
 		bias_count = 0
 		bias = np.zeros(6)
 
-		r = np.array([0, 0, 0])
-		self.r = [0, 0, 1]
-		self.q = [-0.01, 0, 0]
+		self.r = np.array([0.0, 0.0, 1.0])
+		self.q = np.array([0.0, -0.0, 1.0])
+		self.w = np.array([0.0, -0.0, 0.0])
 
 		loop_ctr = 0
 
-		self.broadcast_data(r)
+		self.rr = np.array([1, 0, 1])
 
+		for i in range(150):
+			self.rate.sleep()
+
+		update_ref = False
 		while not rospy.is_shutdown():
-			self.demo_control_law(r)
-			# for i in range(10): # 10 steps per control law
-			self.step_dynamics(1/self.hz)
 	
 			if loop_ctr % 10 == 0:
-				self.broadcast_data(r)
+				update_ref = True
+				self.broadcast_data()
 
-			if la.norm(r - self.r) < 0.1:
-				r = [1, 0, 0 * abs(np.sin(time.time()))]
+			self.demo_control_law(update_ref=update_ref)
+			update_ref = False
+			# for i in range(10): # 10 steps per control law
+			self.step_dynamics(1/self.hz)
+
+			# if la.norm(self.rr - self.r) < 0.1:
+			# 	self.rr = np.array([0, 0, 1 + abs(np.sin(time.time()))])
 
 			self.rate.sleep()
 			loop_ctr += 1

@@ -153,6 +153,8 @@ Visualization Manager:
           Value: true
         base_link2:
           Value: false
+        body_fixed:
+          Value: true
         camera_link:
           Value: false
         cyl1:
@@ -187,30 +189,31 @@ Visualization Manager:
       Show Names: false
       Tree:
         map:
-          base_link1:
-            base_link2:
-              cyl1:
+          body_fixed:
+            base_link1:
+              base_link2:
+                cyl1:
+                  {}
+                cyl2:
+                  {}
+                plate1:
+                  plate2:
+                    arduino:
+                      {}
+                    camera_link:
+                      {}
+                prop_back_left:
+                  {}
+                prop_front_right:
+                  {}
+              cyl3:
                 {}
-              cyl2:
+              cyl4:
                 {}
-              plate1:
-                plate2:
-                  arduino:
-                    {}
-                  camera_link:
-                    {}
-              prop_back_left:
+              prop_back_right:
                 {}
-              prop_front_right:
+              prop_front_left:
                 {}
-            cyl3:
-              {}
-            cyl4:
-              {}
-            prop_back_right:
-              {}
-            prop_front_left:
-              {}
           reference:
             {}
       Update Interval: 0
@@ -219,7 +222,7 @@ Visualization Manager:
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: map
+    Fixed Frame: reference
     Frame Rate: 30
   Name: root
   Tools:
@@ -243,7 +246,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 2.9198453426361084
+      Distance: 2.414902925491333
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -259,9 +262,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.5703983306884766
+      Pitch: 0.09539885818958282
       Target Frame: <Fixed Frame>
-      Yaw: 4.298542499542236
+      Yaw: 1.548536777496338
     Saved: ~
 Window Geometry:
   Displays:
