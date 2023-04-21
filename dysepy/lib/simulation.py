@@ -146,7 +146,7 @@ class Rufous_Simulation():
 		alt_damp = -K_zd * self.v[2]
 
 		grav_comp = np.ones(self.u.shape) * hover_throttle 
-		print(grav_comp, np.cos(self.q[0]), np.cos(self.q[1]), abs(np.cos(self.q[0]) * np.cos(self.q[1])))
+		print(grav_comp, np.cos(self.q[0]), np.cos(self.q[1]), abs(np.cos(self.q[0]) + np.cos(self.q[1])) / 2)
 		self.u = att_comp + rate_comp + grav_comp#+ alt_comp + alt_damp + grav_comp
 
 	def control_callback(self, msg):

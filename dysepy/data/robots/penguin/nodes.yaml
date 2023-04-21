@@ -28,7 +28,12 @@ ros-nodes:
     package: robot_state_publisher
     args: [robot_description:=/dysebot/robot_description]
 
-  viz:
+  state-viz:
+    files: ['rqt_gui']
+    package: 'rqt_gui'
+    args: ['-p', 'Default']
+
+  urdf-viz:
     files: ['rviz']
     package: 'rviz'
     args: ['-d', '${PROJECT_ROOT}/dysepy/data/robots/penguin/config.rviz']
