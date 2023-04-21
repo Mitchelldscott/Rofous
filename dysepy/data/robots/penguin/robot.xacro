@@ -8,7 +8,7 @@
   <xacro:property name="mass_pr" value="0.0055" />
   <xacro:property name="pi_value" value="3.14159263" />
   <xacro:property name="radiusp" value="0.20" />
-  <xacro:property name="prop_loc" value="0.15909" />
+  <xacro:property name="prop_loc" value="0.2" />
 <!-- ======================================================== --> 
   <xacro:include filename="$(find dysepy)/data/robots/penguin/material.xacro" />
   <!-- <xacro:include filename="$(find dysepy)/data/robots/penguin/Kwad.gazebo" /> -->
@@ -25,7 +25,7 @@
 <!-- ======================================================== --> 
   <link name="base_link1">
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 ${pi_value/4}" />
+      <origin xyz="0 0 0" rpy="0 0 ${pi_value/2}" />
       
       <geometry>
         <box size="${width} ${length} ${height}" />
@@ -48,7 +48,7 @@
 <!-- ======================================================== --> 
   <link name="base_link2">
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 ${-pi_value/4}" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
       
       <geometry>
         <box size="${width} ${length} ${height}" />
@@ -58,7 +58,7 @@
     </visual>
     
     <collision>
-      <origin xyz="0 0 0" rpy="0 0 ${-pi_value/4}" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
       
       <geometry>
         <box size="${width} ${length} ${height}" />
@@ -70,7 +70,7 @@
 <!-- ======================================================== -->
   <link name="plate1">
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0" />
+      <origin xyz="0 0 0" rpy="0 0 ${pi_value}" />
       
       <geometry>
         <box size="${0.12} ${0.12} ${0.01}" />
@@ -80,7 +80,7 @@
     </visual>
     
     <collision>
-      <origin xyz="0 0 0" rpy="0 0 0" />
+      <origin xyz="0 0 0" rpy="0 0 ${pi_value}" />
       
       <geometry>
         <box size="${0.12} ${0.12} ${0.01}" />
@@ -342,7 +342,7 @@
   <joint name="joint_front_right_prop" type="continuous">
     <parent link="base_link2" />
     <child link="prop_front_right" />
-    <origin xyz="${prop_loc - 0.01} ${prop_loc - 0.01} 0.021" rpy="0 0 0"/>
+    <origin xyz="${prop_loc - 0.01} 0 0.021" rpy="0 0 0"/>
     <axis xyz="0 0 1" />
   </joint>
 <!-- ======================================================== -->
@@ -350,7 +350,7 @@
   <joint name="joint_front_left_prop" type="continuous">
     <parent link="base_link1" />
     <child link="prop_front_left" />
-    <origin xyz="${-prop_loc + 0.01} ${prop_loc - 0.01} 0.021" rpy="0 0 0" />
+    <origin xyz="0 ${prop_loc - 0.01} 0.021" rpy="0 0 0" />
     <axis xyz="0 0 1" />
   </joint>
 <!-- ======================================================== -->
@@ -358,7 +358,7 @@
   <joint name="joint_back_right_prop" type="continuous">
     <parent link="base_link1" />
     <child link="prop_back_right" />
-    <origin xyz="${prop_loc - 0.01} ${-prop_loc + 0.01} 0.021" rpy="0 0 0" />
+    <origin xyz="0 ${-prop_loc + 0.01} 0.021" rpy="0 0 0" />
     <axis xyz="0 0 1" />
   </joint>
 <!-- ======================================================== -->
@@ -366,7 +366,7 @@
   <joint name="joint_back_left_prop" type="continuous">
     <parent link="base_link2" />
     <child link="prop_back_left" />
-    <origin xyz="${-prop_loc + 0.01} ${-prop_loc + 0.01} 0.021" rpy="0 0 0" />
+    <origin xyz="${-prop_loc + 0.01} 0 0.021" rpy="0 0 0" />
     <axis xyz="0 0 1" />
   </joint>
 <!-- ======================================================== -->
@@ -390,7 +390,7 @@
   <joint name="joint_cyl1_frame" type="fixed">
     <parent link="base_link2" />
     <child link="cyl1" />
-    <origin xyz="${prop_loc - 0.01} ${prop_loc - 0.01} 0.01" rpy="0 0 0" />
+    <origin xyz="${prop_loc - 0.01} 0 0.01" rpy="0 0 0" />
     <axis xyz="0 0 1" />
   </joint>
 <!-- ======================================================== -->
@@ -398,7 +398,7 @@
   <joint name="joint_cyl2_frame" type="fixed">
     <parent link="base_link2" />
     <child link="cyl2" />
-    <origin xyz="${-prop_loc + 0.01} ${-prop_loc + 0.01} 0.01" rpy="0 0 0" />
+    <origin xyz="0 ${-prop_loc + 0.01} 0.01" rpy="0 0 0" />
     <axis xyz="0 0 1" />
   </joint>
 <!-- ======================================================== -->
@@ -406,7 +406,7 @@
   <joint name="joint_cyl3_frame" type="fixed">
     <parent link="base_link1" />
     <child link="cyl3" />
-    <origin xyz="${-prop_loc + 0.01} ${prop_loc - 0.01} 0.01" rpy="0 0 0" />
+    <origin xyz="${-prop_loc + 0.01} 0 0.01" rpy="0 0 0" />
     <axis xyz="0 0 1" />
   </joint>
 <!-- ======================================================== -->
@@ -414,7 +414,7 @@
   <joint name="joint_cyl4_frame" type="fixed">
     <parent link="base_link1" />
     <child link="cyl4" />
-    <origin xyz="${prop_loc - 0.01} ${-prop_loc + 0.01} 0.01" rpy="0 0 0" />
+    <origin xyz="0 ${prop_loc + 0.01} 0.01" rpy="0 0 0" />
     <axis xyz="0 0 1" />
   </joint>
 <!-- ======================================================== -->

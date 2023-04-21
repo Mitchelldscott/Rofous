@@ -26,13 +26,16 @@ def DCM(q):
 def tilde(v):
 	return np.array([[0, -v[2], v[1]], [v[2], 0, -v[0]], [-v[1], v[0], 0]])
 
-def euler_to_quaternion(yaw, pitch, roll):
+def euler_to_quaternion(roll, pitch, yaw):
+	# yaw = np.rad2deg(yaw)
+	# pitch = np.rad2deg(pitch)
+	# roll = np.rad2deg(roll)
 	qx = np.sin(roll/2) * np.cos(pitch/2) * np.cos(yaw/2) - np.cos(roll/2) * np.sin(pitch/2) * np.sin(yaw/2)
 	qy = np.cos(roll/2) * np.sin(pitch/2) * np.cos(yaw/2) + np.sin(roll/2) * np.cos(pitch/2) * np.sin(yaw/2)
 	qz = np.cos(roll/2) * np.cos(pitch/2) * np.sin(yaw/2) - np.sin(roll/2) * np.sin(pitch/2) * np.cos(yaw/2)
 	qw = np.cos(roll/2) * np.cos(pitch/2) * np.cos(yaw/2) + np.sin(roll/2) * np.sin(pitch/2) * np.sin(yaw/2)
 
-	return [qx, qy, qz, qw]
+	return [qw, qx, qy, qz]
 
 
 class Rufous_Simulation():
@@ -55,11 +58,12 @@ class Rufous_Simulation():
 		self.l = 0.1  						# wing length (center to prop rot axis)
 		self.I = np.array([[1, 0, 0], 		# Inertia matrix
 							[0, 1, 0], 
-							[0, 0, 0.1]])
+							[0, 0, 0.2]])
 
-		self.hz = 10
+		self.hz = 100
 		self.rate = rospy.Rate(self.hz)
 		self.broadcaster_b1 = tf2_ros.StaticTransformBroadcaster()
+		self.broadcaster_b2 = tf2_ros.StaticTransformBroadcaster()
 		self.broadcaster_ref = tf2_ros.StaticTransformBroadcaster()
 
 	def thrust(self):
@@ -76,7 +80,7 @@ class Rufous_Simulation():
 		alpha = 0
 		beta = 0
 
-		self.u = np.nan_to_num(np.clip(self.u, 0, 15), 15)	
+		self.u = np.clip(self.u, 0, 15)
 		self.r += self.v * dt
 		
 		self.v += self.thrust() * dt
@@ -86,6 +90,9 @@ class Rufous_Simulation():
 
 		self.q += self.w * dt
 		self.w += la.inv(self.I) @ ((-tilde(self.w) @ self.I @ self.w) + self.torque())
+		# print(self.w)
+		self.q = np.fmod(self.q, 2 * np.pi)
+		# print(self.q, self.u)
 
 		if self.r[2] <= 0: # ground
 			self.r[2] = 0
@@ -94,59 +101,73 @@ class Rufous_Simulation():
 	def demo_control_law(self, r):
 		hover_throttle = np.sqrt(9.81 / 4)
 
-		K_att = 75 * la.pinv([[1,  0, -1,  0],
+		K_att = 0.1 * la.pinv([[1,  0, -1,  0],
 						      [0, -1,  0,  1], 
-						  	[-10, 10,-10, 10]])
+						  	  [-1, 1,-1, 1]])
 
-		K_rate = 75 * la.pinv([[1,  0, -1,  0],
+		K_rate = 0 * la.pinv([[1,  0, -1,  0],
 						       [0, -1,  0,  1], 
 						  	 [-10, 10,-10, 10]])
 
-		K_q = 2.975e-18;
+		K_q = 0.0#**-(la.norm(self.v)*10)
 
-		K_zp = 0.001 * np.ones(4)
-		K_zd = 0.002 * np.ones(4)
+		K_zp = 0.00 * np.ones(4)
+		# K_zp = 0.001 * np.ones(4)
+		K_zd = 0.00 * np.ones(4)
+		# K_zd = 0.002 * np.ones(4)
 
-		self.qr = K_q * np.array([self.r[1] - r[1], r[0] - self.r[0], 0])
+		self.qr = np.array([0, 0, 0]) # K_q * np.array([self.r[1] - r[1], r[0] - self.r[0], 0])
 		att_comp = K_att @ (self.qr - self.q)
 		rate_comp = -K_rate @ self.w
 		alt_comp = K_zp * (r[2] - self.r[2])
 		alt_damp = -K_zd * self.v[2]
+
 		grav_comp = np.ones(self.u.shape) * np.sqrt(self.g * self.mass / (self.Kt * len(self.u))) * np.cos(self.q[2])
 
-		self.u = att_comp + rate_comp + alt_comp + alt_damp + grav_comp
+		self.u = att_comp + rate_comp #+ alt_comp + alt_damp + grav_comp
 
 	def control_callback(self, msg):
 		self.sensor_flags[0] = 1
 		self.sensor_mag = np.array(msg.data)
 
 	def broadcast_tf(self, r):
-		quaternion = euler_to_quaternion(self.q[0], self.q[1], self.q[2])
+		q = euler_to_quaternion(0, 0, 0)
 		static_transformStamped = geometry_msgs.msg.TransformStamped()
 		static_transformStamped.header.frame_id = "map"
-		static_transformStamped.child_frame_id = "base_link1" 
+		static_transformStamped.child_frame_id = "body_fixed" 
 		static_transformStamped.header.stamp = rospy.Time.now()
-			
 		static_transformStamped.transform.translation.x = self.r[0]
 		static_transformStamped.transform.translation.y = self.r[1]
 		static_transformStamped.transform.translation.z = self.r[2]
-
-		static_transformStamped.transform.rotation.w = quaternion[0]
-		static_transformStamped.transform.rotation.x = quaternion[1]
-		static_transformStamped.transform.rotation.y = quaternion[2]
-		static_transformStamped.transform.rotation.z = quaternion[3]
+		static_transformStamped.transform.rotation.w = q[0]
+		static_transformStamped.transform.rotation.x = q[1]
+		static_transformStamped.transform.rotation.y = q[2]
+		static_transformStamped.transform.rotation.z = q[3]
 		self.broadcaster_b1.sendTransform(static_transformStamped)
+
+		q = euler_to_quaternion(self.q[0], self.q[1], self.q[2])
+		static_transformStamped = geometry_msgs.msg.TransformStamped()
+		static_transformStamped.header.frame_id = "body_fixed"
+		static_transformStamped.child_frame_id = "base_link1" 
+		static_transformStamped.header.stamp = rospy.Time.now()
+		static_transformStamped.transform.translation.x = 0
+		static_transformStamped.transform.translation.y = 0
+		static_transformStamped.transform.translation.z = 0
+		static_transformStamped.transform.rotation.w = q[0]
+		static_transformStamped.transform.rotation.x = q[1]
+		static_transformStamped.transform.rotation.y = q[2]
+		static_transformStamped.transform.rotation.z = q[3]
+		self.broadcaster_b2.sendTransform(static_transformStamped)
+
 
 		q = euler_to_quaternion(self.qr[0], self.qr[1], self.qr[2])
 		static_transformStamped = geometry_msgs.msg.TransformStamped()
 		static_transformStamped.header.frame_id = "map"
 		static_transformStamped.child_frame_id = "reference" 
 		static_transformStamped.header.stamp = rospy.Time.now()
-			
 		static_transformStamped.transform.translation.x = r[0]
 		static_transformStamped.transform.translation.y = r[1]
 		static_transformStamped.transform.translation.z = r[2]
-
 		static_transformStamped.transform.rotation.w = q[0]
 		static_transformStamped.transform.rotation.x = q[1]
 		static_transformStamped.transform.rotation.y = q[2]
@@ -158,15 +179,18 @@ class Rufous_Simulation():
 		bias_count = 0
 		bias = np.zeros(6)
 
-		r = [0, 0, 10]
+		r = [0, 0, 0]
+		self.q = [0.1, 0, 0]
 
 		while not rospy.is_shutdown():
 			self.demo_control_law(r)
-			self.step_dynamics(1/self.hz)
+			# for i in range(10): # 10 steps per control law
+			self.step_dynamics(1/(self.hz))
+	
 			self.broadcast_tf(r)
 
 			if la.norm(r - self.r) < 0.1:
-				r = [0, 0, 10 * abs(np.sin(time.time()))]
+				r = [1, 0, 0 * abs(np.sin(time.time()))]
 
 			self.rate.sleep()
 
