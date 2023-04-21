@@ -41,6 +41,7 @@ class Rufous_Simulation():
 		self.r = np.zeros(3)				# postion
 		self.v = np.zeros(3)				# velocity
 		self.q = np.zeros(3)				# attitude
+		self.qr = np.zeros(3)				# attitude reference
 		self.w = np.zeros(3)				# angular rate
 		self.u = np.zeros(4)				# control output, input to the plant
 		self.Tp = np.zeros(3)				# thrust from propellers
@@ -58,7 +59,8 @@ class Rufous_Simulation():
 
 		self.hz = 10
 		self.rate = rospy.Rate(self.hz)
-		self.broadcaster = tf2_ros.StaticTransformBroadcaster()
+		self.broadcaster_b1 = tf2_ros.StaticTransformBroadcaster()
+		self.broadcaster_ref = tf2_ros.StaticTransformBroadcaster()
 
 	def thrust(self):
 		Rnb = DCM(self.q)
@@ -74,8 +76,7 @@ class Rufous_Simulation():
 		alpha = 0
 		beta = 0
 
-		self.u = np.clip(self.u, 0, 15)
-		
+		self.u = np.nan_to_num(np.clip(self.u, 0, 15), 15)	
 		self.r += self.v * dt
 		
 		self.v += self.thrust() * dt
@@ -93,25 +94,25 @@ class Rufous_Simulation():
 	def demo_control_law(self, r):
 		hover_throttle = np.sqrt(9.81 / 4)
 
-		K_att = 50 * la.pinv([[1,  0, -1,  0],
+		K_att = 75 * la.pinv([[1,  0, -1,  0],
 						      [0, -1,  0,  1], 
 						  	[-10, 10,-10, 10]])
 
-		K_rate = 35 * la.pinv([[1,  0, -1,  0],
+		K_rate = 75 * la.pinv([[1,  0, -1,  0],
 						       [0, -1,  0,  1], 
 						  	 [-10, 10,-10, 10]])
 
-		K_q = 0.00001;
+		K_q = 2.975e-18;
 
-		K_zp = 0.01 * np.ones(4)
-		K_zd = 0.02 * np.ones(4)
+		K_zp = 0.001 * np.ones(4)
+		K_zd = 0.002 * np.ones(4)
 
-		qr = K_q * np.array([self.r[1] - r[1], r[0] - self.r[0], 0])
-		att_comp = K_att @ (qr - self.q)
+		self.qr = K_q * np.array([self.r[1] - r[1], r[0] - self.r[0], 0])
+		att_comp = K_att @ (self.qr - self.q)
 		rate_comp = -K_rate @ self.w
 		alt_comp = K_zp * (r[2] - self.r[2])
 		alt_damp = -K_zd * self.v[2]
-		grav_comp = np.ones(self.u.shape) * np.sqrt(self.g / len(self.u)) * np.cos(self.q[2])
+		grav_comp = np.ones(self.u.shape) * np.sqrt(self.g * self.mass / (self.Kt * len(self.u))) * np.cos(self.q[2])
 
 		self.u = att_comp + rate_comp + alt_comp + alt_damp + grav_comp
 
@@ -119,7 +120,7 @@ class Rufous_Simulation():
 		self.sensor_flags[0] = 1
 		self.sensor_mag = np.array(msg.data)
 
-	def broadcast_tf(self):
+	def broadcast_tf(self, r):
 		quaternion = euler_to_quaternion(self.q[0], self.q[1], self.q[2])
 		static_transformStamped = geometry_msgs.msg.TransformStamped()
 		static_transformStamped.header.frame_id = "map"
@@ -134,27 +135,43 @@ class Rufous_Simulation():
 		static_transformStamped.transform.rotation.x = quaternion[1]
 		static_transformStamped.transform.rotation.y = quaternion[2]
 		static_transformStamped.transform.rotation.z = quaternion[3]
-		self.broadcaster.sendTransform(static_transformStamped)
+		self.broadcaster_b1.sendTransform(static_transformStamped)
+
+		q = euler_to_quaternion(self.qr[0], self.qr[1], self.qr[2])
+		static_transformStamped = geometry_msgs.msg.TransformStamped()
+		static_transformStamped.header.frame_id = "map"
+		static_transformStamped.child_frame_id = "reference" 
+		static_transformStamped.header.stamp = rospy.Time.now()
+			
+		static_transformStamped.transform.translation.x = r[0]
+		static_transformStamped.transform.translation.y = r[1]
+		static_transformStamped.transform.translation.z = r[2]
+
+		static_transformStamped.transform.rotation.w = q[0]
+		static_transformStamped.transform.rotation.x = q[1]
+		static_transformStamped.transform.rotation.y = q[2]
+		static_transformStamped.transform.rotation.z = q[3]
+		self.broadcaster_ref.sendTransform(static_transformStamped)
 
 
 	def spin(self):
 		bias_count = 0
 		bias = np.zeros(6)
 
-		r = [0, 0, 5]
+		r = [0, 0, 10]
 
 		while not rospy.is_shutdown():
 			self.demo_control_law(r)
 			self.step_dynamics(1/self.hz)
-			self.broadcast_tf()
+			self.broadcast_tf(r)
 
 			if la.norm(r - self.r) < 0.1:
-				r = [0, 0, 5 * abs(np.sin(time.time())) + 2]
+				r = [0, 0, 10 * abs(np.sin(time.time()))]
 
 			self.rate.sleep()
 
 
 if __name__ == '__main__':
-	rospy.init_node('localization')
+	rospy.init_node('simulator')
 	sim = Rufous_Simulation()
 	sim.spin()

@@ -12,7 +12,7 @@ export SUDO='sudo'
 if [[ -f /.dockerenv ]]; then
 	SUDO=''
 	DOCKER=True
-	PROJECT_ROOT=/home/cu-robotics/rofous
+	PROJECT_ROOT=/home/cu-robotics/rufous
 fi
 
 if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then
@@ -32,7 +32,7 @@ else
 fi
 
 if [[ "${PROJECT_ROOT}" != */rufous ]]; then
-	echo -e "running from ${PWD}, is this your project root?"
+	echo -e "running from ${PROJECT_ROOT}, is this your project root?"
 	return
 fi
 

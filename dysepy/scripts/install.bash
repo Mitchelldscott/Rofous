@@ -30,7 +30,7 @@ elif [[ "${UBUNTU_VERSION}" == "18.04" ]]; then
 	export ROS_DISTRO=melodic
 fi
 
-export ROS_PKG=desktop
+export ROS_PKG=ros-base
 
 
 #
@@ -73,7 +73,7 @@ if [[ ! -d /opt/ros/${ROS_DISTRO} ]]; then
 	
 fi
 
-$SUDO apt autoremove -y
+# $SUDO apt autoremove -y
 $SUDO apt clean
 $SUDO apt update
 
