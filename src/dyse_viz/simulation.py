@@ -119,13 +119,15 @@ class Rufous_Simulation():
 		self.v[2] -= self.mass * self.g * dt
 
 		self.q += self.w * dt
-		if la.norm(self.w) > 1e5:
+		self.w += la.inv(self.I) @ ((-tilde(self.w) @ self.I @ self.w) + self.torque())
+		self.q = np.fmod(self.q, 2 * np.pi)
+
+		# print(self.w)
+		# print(self.q, self.u)
+
+		if la.norm(self.w) > 1e5:		# instability classifier
 			rospy.logerr("Unstable result detected")
 			rospy.logerr(f"Large Omega: {self.w} {self.torque()}")
-		self.w += la.inv(self.I) @ ((-tilde(self.w) @ self.I @ self.w) + self.torque())
-		# print(self.w)
-		self.q = np.fmod(self.q, 2 * np.pi)
-		# print(self.q, self.u)
 
 		if self.r[2] <= 0: # ground
 			self.r[2] = 0
@@ -135,23 +137,20 @@ class Rufous_Simulation():
 		hover_throttle = np.sqrt(self.g * self.mass / (self.Kt * len(self.u))) * abs(np.cos(self.q[0]) * np.cos(self.q[1]))
 
 		K_att = 0.075 * la.pinv([[1,  0, -1,  0],
-						       [0, -1,  0,  1], 
-						  	  [-1,  1, -1,  1]])
+						         [0, -1,  0,  1], 
+						  	    [-1,  1, -1,  1]])
 
 		K_rate = 0.1 * la.pinv([[1,  0, -1,  0],
-						      [0, -1,  0,  1], 
-						  	 [-1,  1, -1,  1]])
+						        [0, -1,  0,  1], 
+						  	   [-1,  1, -1,  1]])
 
-		K_q = 0.5#**-(la.norm(self.v)*10)
+		K_q = 0.5
 
 		K_zp = 4 * np.ones(4)
-		# K_zp = 0.001 * np.ones(4)
 		K_zd = 5 * np.ones(4)
-		# K_zd = 0.002 * np.ones(4)
 
 		if update_ref:
 			self.qr = K_q * np.array([self.r[1] - self.rr[1], self.rr[0] - self.r[0], 0])
-			print(self.qr)
 
 		att_comp = K_att @ (self.qr - self.q)
 		att_damp = -K_rate @ self.w
