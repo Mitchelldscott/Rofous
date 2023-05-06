@@ -1,4 +1,4 @@
-function [Kref, Kfb, Kff] = Rufous_og_controller(Kt, m, g, q, gatt, grat, gq, gzp, gzd)
+function [Kref, Kfb, Kff] = Rufous_nl_controller(Kt, m, g, q, gatt, grat, gq, gdq, gzp, gzd)
 	n_inputs = 4;			% number of inputs
 	state_dim = 3;			% dimension of each state
 	tilt = abs(cos(q(1)) * cos(q(2)));
@@ -6,9 +6,10 @@ function [Kref, Kfb, Kff] = Rufous_og_controller(Kt, m, g, q, gatt, grat, gq, gz
 	         0 -1  0  1;
 		    -10 10  -10  10]; % scaled by ten to slow down the yaw control
 
-	t_k = [0 -1 0 1;
-	       -1 0 1 0;
-		   10 10 10 10]; % scaled by ten to slow down the altitude control
+% 	t_k = [0 -1 0 1;
+% 	       -1 0 1 0;
+% 		   10 10 10 10] * norm(r)^2; % scaled by ten to slow down the altitude control 
+% 								     %	and norm(r) to allow faster position control
 
 	z = [0; 0; 1];
 	Z = [z z z z];
@@ -22,12 +23,15 @@ function [Kref, Kfb, Kff] = Rufous_og_controller(Kt, m, g, q, gatt, grat, gq, gz
 	Kq = gq * [0 -1  0;
 			   1  0  0;
 			   0  0  0];
+	Kdq = gdq * [0 -1  0;
+			     1  0  0;
+			     0  0  0];
 	Kzp = gzp * Z';
-	Kzd = gzd * pinv(t_k);
-	Kref = [I  O  O  O;
-		    O  I  O  O;
-		    Kq O  I  O;
-			O  O  O  I];
+	Kzd = gzd * Z';
+	Kref = [I   O   O   O;
+		    O   I   O   O;
+		    Kq  Kdq I   O;
+			O   O   O   I];
 	Kfb = [Kzp Kzd Katt Krate];
 	Kff = hover_throttle * ones(n_inputs, 1);
 end
