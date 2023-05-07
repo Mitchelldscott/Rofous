@@ -19,14 +19,14 @@ function [Kref, Kfb, Kff] = Rufous_og_controller(Kt, m, g, q, gatt, grat, gq, gz
 	
 	Katt = gatt * pinv(tau_k);
 	Krate = grat * pinv(tau_k);
-	Kq = gq * [0 -1  0;
-			   1  0  0;
+	Kq = gq * [0  1  0;
+			  -1  0  0;
 			   0  0  0];
 	Kzp = gzp * Z';
 	Kzd = gzd * pinv(t_k);
 	Kref = [I  O  O  O;
 		    O  I  O  O;
-		    Kq O  I  O;
+		   -Kq O  I  O;
 			O  O  O  I];
 	Kfb = [Kzp Kzd Katt Krate];
 	Kff = hover_throttle * ones(n_inputs, 1);
