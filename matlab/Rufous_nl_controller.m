@@ -6,10 +6,9 @@ function [Kref, Kfb, Kff] = Rufous_nl_controller(Kt, m, g, q, gatt, grat, gq, gd
 	         0 -1  0  1;
 		    -10 10  -10  10]; % scaled by ten to slow down the yaw control
 
-% 	t_k = [0 -1 0 1;
-% 	       -1 0 1 0;
-% 		   10 10 10 10] * norm(r)^2; % scaled by ten to slow down the altitude control 
-% 								     %	and norm(r) to allow faster position control
+	t_k = [0 -1 0 1;
+	       -1 0 1 0;
+		   10 10 10 10]; % scaled by ten to slow down the altitude control 
 
 	z = [0; 0; 1];
 	Z = [z z z z];

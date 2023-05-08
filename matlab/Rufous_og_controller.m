@@ -4,7 +4,7 @@ function [Kref, Kfb, Kff] = Rufous_og_controller(Kt, m, g, q, gatt, grat, gq, gz
 	tilt = abs(cos(q(1)) * cos(q(2)));
 	tau_k = [1  0 -1  0;
 	         0 -1  0  1;
-		    -10 10  -10  10]; % scaled by ten to slow down the yaw control
+		    -1 1  -1  1]; % scaled by ten to slow down the yaw control
 
 	t_k = [0 -1 0 1;
 	       -1 0 1 0;
