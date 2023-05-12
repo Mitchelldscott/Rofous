@@ -36,7 +36,7 @@ ros-nodes:
   urdf-viz:
     files: ['rviz']
     package: 'rviz'
-    args: ['-d', '${PROJECT_ROOT}/dysepy/data/robots/penguin/config.rviz']
+    args: ['-d', '${PROJECT_ROOT}/buffpy/data/robots/penguin/config.rviz']
 
 
 # The Teensy... Ti-ta-ti-ti-ta-ti-ti-ta-ta-ta-la-ba-ba-ba-ba-ba-da-la-ba-ba-ba-ba-da-la-ba-ba-baa, Ti-ta-ti-li-ta-ti-li-ti-taa, Ti-ta-ti-li... /*o*)/ (gasps) Ti-ta-ti-li-ta-ti-li-ta-ti-li-ta-ti-li-ta-ti-li-ti-ta-ti-ti-ta-ti-ti-taaaaa♪ PEPARING THE KRABBY PATTY!

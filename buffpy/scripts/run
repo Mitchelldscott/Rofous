@@ -51,7 +51,7 @@ def parse_target(robot):
 	target_args = []
 	target_path = None
 
-	target_path = os.path.join(projectRoot, 'dysepy', 'data', 'robots', robot)
+	target_path = os.path.join(projectRoot, 'buffpy', 'data', 'robots', robot)
 
 	config = load_config(target_path)	# None if no config
 
@@ -72,10 +72,10 @@ def launch_ros_core():
 	return launch, ros_core
 
 def set_ros_params(path, robot, with_xacro=False):
-	namespace = '/dysebot'
+	namespace = '/buffbot'
 	params = {'robot_name': robot}
 	if (with_xacro):
-		command_string = f"rosrun xacro xacro {os.path.join(path, f'dysepy/data/robots/{robot}/robot.xacro')}"
+		command_string = f"rosrun xacro xacro {os.path.join(path, f'buffpy/data/robots/{robot}/robot.xacro')}"
 		robot_description = sb.check_output(command_string, shell=True, stderr=sb.STDOUT)
 		params['robot_description'] = robot_description.decode()
 
@@ -156,7 +156,7 @@ def buff_node_commands(robot, nodes, project_root):
 		# launch the process and add it to the pool
 		if 'files' in node:
 			for program in node['files']:
-				file_path = os.path.join(project_root, 'dysepy', 'lib', program)
+				file_path = os.path.join(project_root, 'buffpy', 'lib', program)
 				if '.py' == program[-3:]:
 					cmd = ['python3', file_path]
 				else:
@@ -288,12 +288,12 @@ def main(args):
 	"""
 	if len(args) < 2:
 		project_root = os.getenv("PROJECT_ROOT")
-		with open(os.path.join(project_root, 'dysepy', 'data', 'robots', 'self.txt'), 'r') as f:
+		with open(os.path.join(project_root, 'buffpy', 'data', 'robots', 'self.txt'), 'r') as f:
 			robot = f.read()
 	else: # become the thing you want to run, sometimes I hate this
 		robot = args[1]
 		project_root = os.getenv("PROJECT_ROOT")
-		with open(os.path.join(project_root, 'dysepy', 'data', 'robots', 'self.txt'), 'w') as f:
+		with open(os.path.join(project_root, 'buffpy', 'data', 'robots', 'self.txt'), 'w') as f:
 			f.write(robot)
 
 	# parse the input 

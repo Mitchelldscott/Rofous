@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-	Project: dysepy
+	Project: buffpy
 	Author: Mitchell D Scott
 	Description:
 	  This is a python3 command line tool from CU Robotics.
 	It is meant to simplify development of robotics software.
-	dysepy handles the backend of software development, which 
+	buffpy handles the backend of software development, which 
 	includes but is not limited to:
 
 	 - installing/initializing devices
@@ -15,14 +15,14 @@
 	  The goal is to eliminate any backend blockers from our
 	  development flow. This novel part of this program is 
 	  the team management capabilities. Instead of having many
-	  repositories for a group of robots, dysepy can redistribute
+	  repositories for a group of robots, buffpy can redistribute
 	  ros nodes for a variety of applications.
 
 	TODO:
 	  - Improve quality and scope of the diagnostic
-	  - Implement multi agent debug (ie dysepy --debug $HOSTNAME
+	  - Implement multi agent debug (ie buffpy --debug $HOSTNAME
 	  	will open debug dialog with HOSTNAME)
-	  - Cached install, check dysepy to see which files do not 
+	  - Cached install, check buffpy to see which files do not 
 	  	need to be installed
 	  - Parallel initialization, don't wait for install on 
 	  	each device. Instead run simultaneously while monitoring 
@@ -66,13 +66,13 @@ def clear_directory(path):
 	os.mkdir(path)
 
 
-def clean_dysepy(clean):
+def clean_buffpy(clean):
 	
 
 	project_root = os.getenv('PROJECT_ROOT')
 	data_path = os.path.join(project_root, 'data')
-	lib_path = os.path.join(project_root, 'dysepy', 'lib')
-	model_path = os.path.join(project_root, 'dysepy', 'data', 'models')
+	lib_path = os.path.join(project_root, 'buffpy', 'lib')
+	model_path = os.path.join(project_root, 'buffpy', 'data', 'models')
 
 	clear_directory(data_path)
 	clear_directory(lib_path)
@@ -82,12 +82,12 @@ def load_build_config(build):
 
 	base_config = f'{build}.yaml'
 	project_root = os.getenv('PROJECT_ROOT')
-	lib_path = os.path.join(project_root, 'dysepy', 'lib')
-	config_path = os.path.join(project_root, 'dysepy', 'data')
+	lib_path = os.path.join(project_root, 'buffpy', 'lib')
+	config_path = os.path.join(project_root, 'buffpy', 'data')
 	
 	if not os.path.exists(os.path.join(config_path, 'build', base_config)):
-		print(f'Could not find {base_config}, using default')
-		base_config = 'deploy.yaml'
+		print(f'Could not find {base_config}')
+		return None
 
 	builds = []
 	includes = [base_config]
@@ -100,25 +100,6 @@ def load_build_config(build):
 				includes += builds[-1]['include']
 
 	return builds
-
-def generate_pio_command(upload, v):
-	path = os.path.join(os.getenv('PROJECT_ROOT'), 'src', 'firmware')
-
-	pio_cmd = f'cd {path} && pio '
-
-	if len(upload) == 0 or upload == 'main':
-		pio_cmd += 'run -e release -t upload '
-		if v:
-			pio_cmd += '-v '
-
-	elif upload[:4] == 'test':
-		pio_cmd += f'test -e test -f {upload} -v '
-
-	else:
-		print(f'Invalid firmware path')
-		exit(0)
-
-	return pio_cmd
 
 def reset_directory(directory):
 	if os.path.exists(directory):
@@ -133,13 +114,6 @@ def copy_file_from_profile(src, target_path):
 	shutil.copyfile(src, os.path.join(target_path, target_file))
 
 def copy_dir_from_profile(src, target_path):
-	# for file in glob.glob(os.path.join(src, "*")):
-	# 	copy_file_from_profile(os.path.join(src, file), target_path)
-	
-	# for path in glob.glob(os.path.join(src, "*/")):
-	# 	print(path)
-	# 	reset_directory(os.path.join(target_path, path))
-	# 	copy_dir_from_profile(os.path.join(src, path), target_path)
 	target_file = src.split('/')[-1]
 	target = os.path.join(target_path, target_file)
 	reset_directory(target)
@@ -156,24 +130,15 @@ def copy_packages(dictionary, item, src_path, target_path):
 			elif os.path.isfile(file):
 				copy_file_from_profile(src, target_path)
 
-			# for file in glob.glob(os.path.join(src_path, f"{install_obj}/")):
-			# 	src = os.path.join(src_path, file)
-			# 	print(src)
-			# 	copy_dir_from_profile(src, target_path)
-
-			# for file in glob.glob(os.path.join(src_path, install_obj)):
-			# 	src = os.path.join(src_path, file)
-			# 	copy_file_from_profile(src, target_path)
-
-def build_dysepy(build):
+def build_buffpy(build):
 	"""
 		Builds the current workspace locally.
 		PARAMS:
-			profile: string, the profile to build found in dysepy/data/build
+			profile: string, the profile to build found in buffpy/data/build
 	"""
 	project_root = os.getenv('PROJECT_ROOT')
-	lib_path = os.path.join(project_root, 'dysepy', 'lib')
-	bin_path = os.path.join(project_root, 'dysepy', 'bin')
+	lib_path = os.path.join(project_root, 'buffpy', 'lib')
+	bin_path = os.path.join(project_root, 'buffpy', 'bin')
 	doc_path = os.path.join(project_root, 'documentation')
 
 	assert_directory(lib_path)
@@ -205,7 +170,7 @@ def get_devices():
 		Load all registered devices from
 		robots.yaml
 	"""
-	robots = os.path.join(os.getenv('PROJECT_ROOT'), 'dysepy', 'data', 'robots', 'robots.yaml')
+	robots = os.path.join(os.getenv('PROJECT_ROOT'), 'buffpy', 'data', 'robots', 'robots.yaml')
 	if os.path.exists(robots):
 		with open(robots, 'r') as f:
 			return yaml.safe_load(f)
@@ -244,7 +209,7 @@ def install_ssh_keys():
 
 def deploy_directory(robot_address, source, target):
 	""" 
-		Send dysepy directory to a robot with scp.
+		Send buffpy directory to a robot with scp.
 		PARAMS:
 			robot_address: string, USERNAME@<IP/HOSTNAME>
 			source: string or path like object, the target directory to copy
@@ -277,12 +242,12 @@ def load_install_params():
 
 	# Setup Parameters for install
 	project_root = os.getenv('PROJECT_ROOT')
-	source = os.path.join(project_root, 'dysepy')
+	source = os.path.join(project_root, 'buffpy')
 	target = os.path.join('/home', 'cu-robotics', 'buff-code')
-	ID = os.path.join(project_root, 'dysepy', 'data', 'robots', 'self.txt')
+	ID = os.path.join(project_root, 'buffpy', 'data', 'robots', 'self.txt')
 
 	if len(os.listdir(os.path.join(source, 'lib'))) == 0:
-		print("Workspace not built, run:\n\t \'dysepy --build <profile>\'")
+		print("Workspace not built, run:\n\t \'buffpy --build <profile>\'")
 		return
 
 	# Don't install from edge devices (robot)
@@ -296,15 +261,15 @@ def load_install_params():
 
 def initialize_devices():
 	"""
-		Deploy dysepy and run installation on
+		Deploy buffpy and run installation on
 		each registered device.
 	"""
 
 	# define the installation
 	source, target, ID, devices = load_install_params()
 
-	data_target = os.path.join(target, 'dysepy', 'data')
-	src_target = os.path.join(target, 'dysepy')
+	data_target = os.path.join(target, 'buffpy', 'data')
+	src_target = os.path.join(target, 'buffpy')
 	data_source = os.path.join(source, 'data', 'install')
 	src_source = os.path.join(source, 'scripts')
 
@@ -313,7 +278,7 @@ def initialize_devices():
 	for robot in devices:
 		# set target destination
 		robot_address = f'cu-robotics@{robot}'
-		# deploy dysepy and source the install scripts
+		# deploy buffpy and source the install scripts
 		clean_dir_result = subprocess.run(['ssh', robot_address, f'if [[ -d {target} ]]; then rm -rf {target}/; fi; mkdir -p {target}'], timeout=30)
 
 		if clean_dir_result.returncode != 0:
@@ -330,7 +295,7 @@ def initialize_devices():
 			setup_result = subprocess.run(['ssh', 
 					'-t',
 					robot_address, 
-					f'cd /home/cu-robotics/buff-code && source dysepy/scripts/install.bash'])
+					f'cd /home/cu-robotics/buff-code && source buffpy/scripts/install.bash'])
 
 		except subprocess.TimeoutExpired:
 			print(f'{robot_address} Timed out')
@@ -361,7 +326,7 @@ def deploy_all_devices():
 	
 		# if root does exist remove it
 		try:	
-			clean_dir_result = subprocess.run(['ssh', robot_address, f'if [[ -d {target}/dysepy ]]; then rm -rf {target}/dysepy; fi; mkdir -p {target}'], timeout=30)
+			clean_dir_result = subprocess.run(['ssh', robot_address, f'if [[ -d {target}/buffpy ]]; then rm -rf {target}/buffpy; fi; mkdir -p {target}'], timeout=30)
 			if clean_dir_result.returncode == 0:
 				deploy_directory(robot_address, source, target)
 
@@ -371,10 +336,10 @@ def deploy_all_devices():
 
 def diagnostic():
 	"""
-		Test the various parts of dysepy.
+		Test the various parts of buffpy.
 		currently only checks the install.
 	"""
-	print(f'\n\tdysepy Diagnostic Running...\n')
+	print(f'\n\tbuffpy Diagnostic Running...\n')
 	try:
 		import cv2			# Test opencv-python import
 		print(f'cv2 import success')
@@ -396,12 +361,12 @@ def diagnostic():
 def train_model(model):
 
 	project_root = os.getenv('PROJECT_ROOT')
-	setup_script = os.path.join(project_root, 'dysepy', 'scripts', 'yolov5_setup.bash')
+	setup_script = os.path.join(project_root, 'buffpy', 'scripts', 'yolov5_setup.bash')
 	subprocess.run([setup_script])
 	
 	if model == 'new' or model == 'scratch':
 		project_root = os.getenv('PROJECT_ROOT')
-		output_dir = os.path.join(project_root, 'dysepy', 'data', 'models', 'runs')
+		output_dir = os.path.join(project_root, 'buffpy', 'data', 'models', 'runs')
 		if os.path.exists(output_dir):
 			shutil.rmtree(output_dir)
 		os.mkdir(output_dir)
@@ -410,20 +375,20 @@ def train_model(model):
 
 	if model == 'clean':
 		project_root = os.getenv('PROJECT_ROOT')
-		output_dir = os.path.join(project_root, 'dysepy', 'data', 'models', 'runs')
+		output_dir = os.path.join(project_root, 'buffpy', 'data', 'models', 'runs')
 		if os.path.exists(output_dir):
 			shutil.rmtree(output_dir)
 		os.mkdir(output_dir)
 		return
 
-	build_dysepy('ptools')
+	build_buffpy('ptools')
 	try:
-		subprocess.run(['python3', os.path.join(project_root, 'dysepy', 'lib', 'model_trainer.py'), model])
+		subprocess.run(['python3', os.path.join(project_root, 'buffpy', 'lib', 'model_trainer.py'), model])
 
 	except KeyboardInterrupt:
 		print("user stopped training session")
 
-	subprocess.run(['python3', os.path.join(project_root, 'dysepy', 'lib', 'model_convert.py'), model])
+	subprocess.run(['python3', os.path.join(project_root, 'buffpy', 'lib', 'model_convert.py'), model])
 
 def docker_build_and_push(path, image):
 	subprocess.run(f'cd {path} && \
@@ -496,7 +461,7 @@ def parse_arguments():
 def main(ap):
 
 	if ap.clean:
-		clean_dysepy(ap.clean)
+		clean_buffpy(ap.clean)
 
 	if ap.diagnostic:
 		diagnostic()
@@ -508,7 +473,7 @@ def main(ap):
 		initialize_devices()
 
 	if ap.build:
-		build_dysepy(ap.build)
+		build_buffpy(ap.build)
 
 	if ap.train:
 		train_model(ap.train)

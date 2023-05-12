@@ -3,7 +3,7 @@
 #!/bin/bash
 set -e
 
-buffbash="/home/cu-robotics/rofous/dysepy/dyse.bash"
+buffbash="/home/cu-robotics/rofous/buffpy/buff.bash"
 echo "sourcing   	$buffbash"
 source "$buffbash"
 

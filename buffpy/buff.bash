@@ -5,7 +5,7 @@ export UBUNTU_VERSION=$(cut -f2 <<< $(lsb_release -r))
 #		Setup robot params
 export DOCKER=False
 export PROJECT_ROOT=${PWD}
-export ROBOT_PACKAGE="${PROJECT_ROOT}/dysepy"
+export ROBOT_PACKAGE="${PROJECT_ROOT}/buffpy"
 export HOSTNAME=$HOSTNAME 
 export SUDO='sudo'
 
@@ -62,7 +62,7 @@ if [[ "${PYTHONPATH}" != *"${ROBOT_PACKAGE}/lib:"* ]]; then
 	export PYTHONPATH="${ROBOT_PACKAGE}/lib:${PYTHONPATH}" 
 fi
 
-# set ROS package path to buff-code so it can see dysepy
+# set ROS package path to buff-code so it can see buffpy
 
 if [[ "${ROS_PACKAGE_PATH}" != *"rufous"* ]]; then
 	export ROS_PACKAGE_PATH="${PROJECT_ROOT}:${ROS_PACKAGE_PATH}"
@@ -81,9 +81,9 @@ else
 	# should figure out how to set it if it is on the jetson
 	# export USER_IP=$(/sbin/ip -o -4 addr list wlp3s0 | awk '{print $4}' | cut -d/ -f1) # Needs testing
 
-	alias buildr="dysepy -b rust-debug"
-	alias buildf="dysepy -b fw"
-	alias builda="dysepy -b all"
+	alias buildr="buffpy -b rust-debug"
+	alias buildf="buffpy -b fw"
+	alias builda="buffpy -b all"
 	alias buff-test="br && cargo test"
 	alias sshbot="ssh -X cu-robotics@edgek.local"
 	set-ros-master () {

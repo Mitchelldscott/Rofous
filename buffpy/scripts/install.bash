@@ -53,7 +53,7 @@ $SUDO apt upgrade -y
 #	Install BuffCode
 #
 
-source ${PROJECT_ROOT}/dysepy/scripts/install_dysepy.bash
+source ${PROJECT_ROOT}/buffpy/scripts/install_buffpy.bash
 
 $SUDO apt autoremove -y	
 $SUDO apt clean
@@ -65,10 +65,10 @@ $SUDO apt update
 
 if [[ ! -d /opt/ros/${ROS_DISTRO} ]]; then
 	if [[ "${UBUNTU_VERSION}" == "22.04" ]]; then
-		source ${PROJECT_ROOT}/dysepy/scripts/install_ros2.bash
+		source ${PROJECT_ROOT}/buffpy/scripts/install_ros2.bash
 	
 	else
-		source ${PROJECT_ROOT}/dysepy/scripts/install_ros.bash
+		source ${PROJECT_ROOT}/buffpy/scripts/install_ros.bash
 	fi
 	
 fi
@@ -82,20 +82,20 @@ $SUDO apt update
 #	Install Utilities
 #
 
-source ${PROJECT_ROOT}/dysepy/scripts/install_tytools.bash
+source ${PROJECT_ROOT}/buffpy/scripts/install_tytools.bash
 
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -sSf | sh -s -- -y
 
 if [[ "${HOSTNAME}" == "edge"* ]]; then
 	#	install startup script
-	$SUDO cp ${PROJECT_ROOT}/dysepy/scripts/buffbot.service /etc/systemd/system
+	$SUDO cp ${PROJECT_ROOT}/buffpy/scripts/buffbot.service /etc/systemd/system
 
 	# 	install realsense
-	source ${PROJECT_ROOT}/dysepy/scripts/install_realsense_source.bash
+	source ${PROJECT_ROOT}/buffpy/scripts/install_realsense_source.bash
 
 elif [[ "${DOCKER}" == "False" ]]; then
 	#	install docker
-	source ${PROJECT_ROOT}/dysepy/scripts/install_docker.bash
+	source ${PROJECT_ROOT}/buffpy/scripts/install_docker.bash
 
 	#	install gazebo
 	curl -sSL http://get.gazebosim.org | sh

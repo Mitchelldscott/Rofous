@@ -10,8 +10,8 @@
   <xacro:property name="radiusp" value="0.20" />
   <xacro:property name="prop_loc" value="0.23" />
 <!-- ======================================================== --> 
-  <xacro:include filename="$(find dysepy)/data/robots/penguin/material.xacro" />
-  <!-- <xacro:include filename="$(find dysepy)/data/robots/penguin/Kwad.gazebo" /> -->
+  <xacro:include filename="$(find buffpy)/data/robots/penguin/material.xacro" />
+  <!-- <xacro:include filename="$(find buffpy)/data/robots/penguin/Kwad.gazebo" /> -->
 <!-- ======================================================== -->
   <!-- Define inertial macro -->
   <xacro:macro name="default_inertial" params="mass p ix_value iy_value iz_value" >
@@ -204,7 +204,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://dysepy/data/robots/penguin/22V10.dae" scale="0.005 0.005 0.005" />
+        <mesh filename="package://buffpy/data/robots/penguin/22V10.dae" scale="0.005 0.005 0.005" />
       </geometry>
     </visual>
     <collision>

@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>dysepy</name>
+  <name>buffpy</name>
   <version>0.0.0</version>
-  <description>The DysePy package</description>
+  <description>The buffpy package</description>
   <maintainer email="misc4432@colorado.edu">m-dyse</maintainer>
   <license>MIT</license>
   <export>

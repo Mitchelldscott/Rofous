@@ -6,7 +6,7 @@
 
 echo -e "\n\tInstalling BuffCode Dependencies...\n"
 
-$SUDO xargs apt install -y --no-install-recommends <${PROJECT_ROOT}/dysepy/data/install/dependencies.txt
+$SUDO xargs apt install -y --no-install-recommends <${PROJECT_ROOT}/buffpy/data/install/dependencies.txt
 
 #
 #	Install pip with get-pip
@@ -27,4 +27,4 @@ rm get-pip.py
 
 echo -e "\n\tInstalling BuffCode python3 requirements\n"
 
-pip3 install -r ${PROJECT_ROOT}/dysepy/data/install/python3_requirements.txt
+pip3 install -r ${PROJECT_ROOT}/buffpy/data/install/python3_requirements.txt
