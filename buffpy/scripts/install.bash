@@ -17,7 +17,7 @@ export SUDO='sudo'
 if [[ -f /.dockerenv ]]; then
 	SUDO=''
 	DOCKER=True
-	PROJECT_ROOT=/home/cu-robotics/rufous
+	PROJECT_ROOT=/home/cu-robotics/buff-code
 fi
 
 if [[ "${UBUNTU_VERSION}" == "22.04" ]]; then
@@ -30,7 +30,7 @@ elif [[ "${UBUNTU_VERSION}" == "18.04" ]]; then
 	export ROS_DISTRO=melodic
 fi
 
-export ROS_PKG=ros-base
+export ROS_PKG=desktop
 
 
 #
@@ -73,7 +73,7 @@ if [[ ! -d /opt/ros/${ROS_DISTRO} ]]; then
 	
 fi
 
-# $SUDO apt autoremove -y
+$SUDO apt autoremove -y
 $SUDO apt clean
 $SUDO apt update
 

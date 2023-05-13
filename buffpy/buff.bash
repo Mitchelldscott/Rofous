@@ -5,14 +5,13 @@ export UBUNTU_VERSION=$(cut -f2 <<< $(lsb_release -r))
 #		Setup robot params
 export DOCKER=False
 export PROJECT_ROOT=${PWD}
-export ROBOT_PACKAGE="${PROJECT_ROOT}/buffpy"
 export HOSTNAME=$HOSTNAME 
 export SUDO='sudo'
 
 if [[ -f /.dockerenv ]]; then
 	SUDO=''
 	DOCKER=True
-	PROJECT_ROOT=/home/cu-robotics/rufous
+	PROJECT_ROOT=/home/cu-robotics/buff-code
 fi
 
 if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then
@@ -32,7 +31,7 @@ else
 fi
 
 if [[ "${PROJECT_ROOT}" != */rufous ]]; then
-	echo -e "running from ${PROJECT_ROOT}, is this your project root?"
+	echo -e "running from ${PWD}, is this your project root?"
 	return
 fi
 
@@ -51,29 +50,42 @@ if [[ "${PATH}" != *"/.cargo"*  && -f ${HOME}/.cargo/env ]]; then
 fi
 
 #		Setup python tools
-
-if [[ "${PATH}" != *"${ROBOT_PACKAGE}/scripts"* ]]; then
-	export PATH="${ROBOT_PACKAGE}/scripts:${PATH}"
+if [[ ! -f "/usr/local/bin/buffpy" ]]; then
+	${SUDO} touch "/usr/local/bin/buffpy"
+	echo "/usr/bin/env python3 $PROJECT_ROOT/buffpy/src/cli.py \$@" | ${SUDO} tee "/usr/local/bin/buffpy"
+	${SUDO} chmod +x "/usr/local/bin/buffpy"
+fi 
+if [[ ! -f "/usr/local/bin/run" ]]; then
+	${SUDO} touch "/usr/local/bin/run"
+	echo "/usr/bin/env python3 $PROJECT_ROOT/buffpy/src/robot_spawner.py \$@" | ${SUDO} tee "/usr/local/bin/run"
+	${SUDO} chmod +x "/usr/local/bin/run"
 fi 
 
-# Only export if if not already in path
 
-if [[ "${PYTHONPATH}" != *"${ROBOT_PACKAGE}/lib:"* ]]; then	
-	export PYTHONPATH="${ROBOT_PACKAGE}/lib:${PYTHONPATH}" 
+# Only export if if not already in path
+if [[ "${PYTHONPATH}" != *"${PROJECT_ROOT}/buffpy/lib:"* ]]; then	
+	export PYTHONPATH="${PROJECT_ROOT}/buffpy/lib:${PYTHONPATH}" 
+fi
+if [[ "${PYTHONPATH}" != *"${PROJECT_ROOT}/buffpy/src:"* ]]; then	
+	export PYTHONPATH="${PROJECT_ROOT}/buffpy/src:${PYTHONPATH}" 
 fi
 
 # set ROS package path to buff-code so it can see buffpy
-
 if [[ "${ROS_PACKAGE_PATH}" != *"rufous"* ]]; then
 	export ROS_PACKAGE_PATH="${PROJECT_ROOT}:${ROS_PACKAGE_PATH}"
 fi
 
+# Not totally clear but this solves an 
+# illegal instruction error with rospy.
+# Only for Jetson
+# the status of this issue needs to be double checked
 alias bc="cd ${PROJECT_ROOT}"
 alias br="cd ${PROJECT_ROOT}/src/buff_rust"
 alias fw="cd ${PROJECT_ROOT}/src/firmware"
 alias bn="cd ${PROJECT_ROOT}/src/rknn_buffnet"
 
 if [[ "${HOSTNAME}" == "edge"* ]]; then
+	export OPENBLAS_CORETYPE=ARMV8
 	export ROS_IP=$(/sbin/ip -o -4 addr list wlan0 | awk '{print $4}' | cut -d/ -f1)
 	export ROS_MASTER_URI=http://${ROS_IP}:11311
 else
@@ -86,6 +98,8 @@ else
 	alias builda="buffpy -b all"
 	alias buff-test="br && cargo test"
 	alias sshbot="ssh -X cu-robotics@edgek.local"
+	alias scp-src="scp -r ~/buff-code/src/rknn_buffnet/src cu-robotics@edgek.local:/home/cu-robotics/buff-code/src/rknn_buffnet"
+	alias scp-h="scp -r ~/buff-code/src/rknn_buffnet/include cu-robotics@edgek.local:/home/cu-robotics/buff-code/src/rknn_buffnet"
 	set-ros-master () {
 		export ROS_MASTER_URI=http://$1:11311
 	}

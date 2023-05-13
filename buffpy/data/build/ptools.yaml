@@ -1,2 +1,0 @@
-project: 'dyse_viz'
-install: ['simulation.py', 'sim_test.py']

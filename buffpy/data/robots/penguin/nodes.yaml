@@ -6,37 +6,20 @@
 #
 ##############################
 
-robot_type: demo
-with_xacro: true
+robot-type: demo
 
 # Specify our nodes from buffpy/lib
 # spinup perception and comms here
 buff-nodes:
-  dyse-viz:
-    files: [simulation.py]
+  buff_rust:
+    files: [comms_node]
 
 # Examle of includig ros
 # Maybe some kind of option to shut this down via cmdline
-ros-nodes:
-  jsp:
-    files: [joint_state_publisher]
-    package: joint_state_publisher
-    args: [robot_description:=/dysebot/robot_description]
-
-  rsp:
-    files: [robot_state_publisher]
-    package: robot_state_publisher
-    args: [robot_description:=/dysebot/robot_description]
-
-  state-viz:
-    files: ['rqt_gui']
-    package: 'rqt_gui'
-    args: ['-p', 'dyse']
-
-  urdf-viz:
-    files: ['rviz']
-    package: 'rviz'
-    args: ['-d', '${PROJECT_ROOT}/buffpy/data/robots/penguin/config.rviz']
+#ros-nodes:
+#   rqt_plot:
+#     files: [rqt_plot]
+#     package: rqt_plot
 
 
 # The Teensy... Ti-ta-ti-ti-ta-ti-ti-ta-ta-ta-la-ba-ba-ba-ba-ba-da-la-ba-ba-ba-ba-da-la-ba-ba-baa, Ti-ta-ti-li-ta-ti-li-ti-taa, Ti-ta-ti-li... /*o*)/ (gasps) Ti-ta-ti-li-ta-ti-li-ta-ti-li-ta-ti-li-ta-ti-li-ti-ta-ti-ti-ta-ti-ti-taaaaa♪ PEPARING THE KRABBY PATTY!
@@ -48,7 +31,7 @@ teensy_pid: 0x0486
 sensor_index:
   - lsm6dsox
 
-# So HID knows what size buffer
+# So HID knows what size buffer, the row corresponds to the rows in sensor index
 sensor_buffers:
   - 9
 
@@ -59,18 +42,19 @@ sensor_config:
 ##############################
 #
 #
-#       Motor Interface  
+#         Estimators
 #
 #
 ##############################
 
-# This defines the indices of all the motors
-# on the CAN bus (index = row, starts at zero)
-motor_index:
-  - prop_1
-  - prop_2
-  - prop_3
-  - prop_4
+estimator_index:
+  - attitude
+
+estimator_configs: 
+  - [1.0]
+
+estimator_dimensions:
+  - [9, 3, 6]
 
 
 ##############################
