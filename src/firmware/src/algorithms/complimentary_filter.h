@@ -1,8 +1,7 @@
 #include "algorithms/linear_algebra.h"
 
-#ifndef Complimentary_FILTER_H
-#define Complimentary_FILTER_H
-
+#ifndef COMP_FILTER_H
+#define COMP_FILTER_H
 
 class ComplimentaryFilter {
 private:
@@ -23,15 +22,16 @@ public:
     void filter(float* accel, float* gyro, float* mag, float dt, float* estimate) {
         float q_accel[3];
         float q_omega[3];
-        float a_norm = norm(accel, 3);
-        float mag_norm = norm(mag, 3);
-
-        float opposite = ((mag[2]*sin(estimate[1])) - (mag[1]*cos(estimate[1]))) / mag_norm;
-        float hypotenuse = ((mag[2]*cos(estimate[0])) + (mag[1]*sin(estimate[0])*sin(estimate[1])) + (mag[2]*sin(estimate[0])*cos(estimate[1]))) / mag_norm;
+        float axy_norm = nd_norm(accel, 2);
+        float mag_norm = nd_norm(mag, 3);
 
         // Calulate attitude using accelerations + magnetometer and trig
-        q_accel[0] = atan2(accel[1], a_norm);
-        q_accel[1] = atan2(accel[0], a_norm);
+        q_accel[0] = atan2(accel[1], axy_norm);
+        q_accel[1] = atan2(-accel[0], accel[1]);
+
+        float opposite = ((mag[2]*sin(q_accel[0])) - (mag[1]*cos(q_accel[0]))) / mag_norm;
+        float hypotenuse = (mag[0]*cos(q_accel[1])) + (sin(q_accel[1]) * (mag[1]*cos(q_accel[0])) + (mag[2]*sin(q_accel[0]))) / mag_norm;
+
         q_accel[2] = atan2(opposite, hypotenuse);
 
         // integrate omegas over time

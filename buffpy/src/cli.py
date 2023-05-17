@@ -2,11 +2,17 @@
 
 import os
 import sys
+import yaml
+import glob
+import shutil
 import argparse
-import subprocess as sb 
+import subprocess
+from buffpy_tools import *
+from robot_installer import *
+from build_profile import Build_Profile
 
-from tools import *
-from build_profile import Build_Profile, Buffpy_Path_LUT
+
+# This is BuffPy
 
 def clean_profile(profile):
 	bp = Build_Profile();
@@ -44,14 +50,17 @@ def main():
 	ap = parser.parse_args(sys.argv[1:])
 
 	if ap.clean:
-		if ap.clean in Buffpy_Path_LUT: # clean the workspace
-			reset_directory(Buffpy_Path_LUT[ap.clean])
-			buff_log(f"Reset directory {Buffpy_Path_LUT[ap.clean]}", 0)
+		if ap.clean in BuffPy_LOC_LUT: # clean the workspace
+			reset_directory(BuffPy_LOC_LUT[ap.clean])
+			buff_log(f"Reset directory {BuffPy_LOC_LUT[ap.clean]}", 0)
 		else:	# clean a profile
 			clean_profile(ap.clean)
 
 	if ap.build:
 		build_profile(ap.build)
+
+	if ap.deploy:
+		deploy_all_devices()
 
 
 if __name__ == '__main__':

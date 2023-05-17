@@ -1,25 +1,5 @@
-
-
 #ifndef BUFF_LOGGERS
 #define BUFF_LOGGERS
-
-
-// #define IS_EQ(a, b) (a = b) ? 1 : 0
-// #define ASSERT_EQ(a, b, message) IS_EQ(a, b)
-
-
-// Data types 
-// dr16		float[7]
-/*	Basic serial print functions */
-
-// template<typename T>
-// int assert_eq(T, T , String);
-
-// template<typename T>
-// int assert_arr_eq(T*, T*, int, String);
-
-// template<typename T>
-// int assert_arr_eq(T, T*, int, String);
 
 int int_eq(int, int, String);
 int ints_eq(int, int*, int, String);

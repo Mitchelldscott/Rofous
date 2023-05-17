@@ -51,7 +51,7 @@ estimator_index:
   - attitude
 
 estimator_configs: 
-  - [1.0]
+  - [0.0]
 
 estimator_dimensions:
   - [9, 3, 6]

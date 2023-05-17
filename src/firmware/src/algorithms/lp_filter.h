@@ -1,5 +1,3 @@
-
-
 #ifndef LP_FILTER_H
 #define LP_FILTER_H
 

@@ -114,8 +114,8 @@ class Rufous_Simulation():
 		self.r += self.v * dt
 		
 		self.v += self.thrust() * dt
-		self.v[0] += alpha * dt
-		self.v[1] += beta * dt
+		# self.v[0] += alpha * dt
+		# self.v[1] += beta * dt
 		self.v[2] -= self.mass * self.g * dt
 
 		self.q += self.w * dt
@@ -157,7 +157,7 @@ class Rufous_Simulation():
 		alt_comp = K_zp * (self.rr[2] - self.r[2])
 		vel_damp = -K_zd * self.v[2]
 		grav_comp = np.ones(self.u.shape) * hover_throttle 
-		
+
 		self.u = att_comp + att_damp + grav_comp + alt_comp + vel_damp
 
 	def control_callback(self, msg):
@@ -183,7 +183,6 @@ class Rufous_Simulation():
 
 		msg.data = self.w
 		self.ang_pub.publish(msg)
-
 
 	def spin(self):
 		bias_count = 0
