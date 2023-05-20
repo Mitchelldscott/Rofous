@@ -30,7 +30,10 @@ G = ss(A, B, C, D);
 
 freq_range = [1e-10 1e4];
 
-WP = makeweight(0.5, [1, 1], 2) * eye(RUFOUS_N_STATES);
+O = zeros(RUFOUS_N_STATES / 2, RUFOUS_N_STATES / 2);
+Wq = makeweight(1e4, [1e4, 1], 1e-5) * eye(RUFOUS_N_STATES / 2);
+Wdq = makeweight(1e1, [1e7, 1], 1e-5) * eye(RUFOUS_N_STATES / 2);
+WP = [Wq O; O Wdq];
 
 systemnames = 'G WP';
 inputvar = '[qr(6); u(4)]';
@@ -49,13 +52,17 @@ P_nominal = minreal(ss(P));
 % Warning: GAM=Inf because the closed-loop system has a nonzero feedthrough from w to z.
 % Returning the optimal H2 controller K when ignoring this feedthrough. 
 
-% Z is error for tracking problem? maybe move this to the output
+% Z is error, for tracking problem, maybe move this to the output
 
 [K, ~, ~] = h2syn(P, 6, 4);
 
+L = K * G;
+Si = (eye(RUFOUS_N_INPUTS) + L)^-1;
+Ti = L * Si;
+
 L = G * K;
-S = 1 / (eye(RUFOUS_N_STATES) + L);
-T = L * S;
+So = (eye(RUFOUS_N_STATES) + L)^-1;
+To = L * So;
 
 figure, hold on
 h = sigmaplot(G, 'b', L, 'r');
@@ -65,16 +72,27 @@ title("Open loop")
 legend("G", "L")
 
 figure, hold on
-h = sigmaplot(T, 'b', WP^-1, 'r--');
+h = sigmaplot(Ti, 'b', WP, 'r--');
 plot(freq_range, [1, 1], 'k');
 setoptions(h, 'MagUnits', 'abs', 'MagScale', 'log');
-title("T vs WP^{-1}")
+title("T vs WP")
 
 figure, hold on
-h = sigmaplot(S, 'b', K * S, 'r--');
+h = sigmaplot(Si, 'b', Si * K, 'g', WP^-1, 'r--');
 plot(freq_range, [1, 1], 'k');
 setoptions(h, 'MagUnits', 'abs', 'MagScale', 'log');
 title("S vs KS")
+legend("S", "KS", "WP")
+
+figure, hold on
+h = sigmaplot(Ti);
+setoptions(h, 'MagUnits', 'abs', 'MagScale', 'log');
+title("Robust Stability")
+
+figure, hold on
+h = sigmaplot(WP * (eye(RUFOUS_N_STATES) - To));
+setoptions(h, 'MagUnits', 'abs', 'MagScale', 'log');
+title("Robust Performance")
 
 figure
 step(T(:, 1))
@@ -95,3 +113,8 @@ title("Step pitch angle disturbance")
 figure
 step(S(:, 3))
 title("Step yaw angle disturbance")
+
+
+% the solver throws some warnings but seems fine,
+% Achieves good performance using the same weights
+% as the Hinf controller. Almost identical to Hinf

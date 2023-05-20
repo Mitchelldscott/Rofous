@@ -32,15 +32,18 @@ G = ss(A, B, C, D);
 freq_range = [1e-10 1e4];
 
 
-Katt = 75 * pinv(tau_k);
-Krate = 100 * pinv(tau_k);
+Katt = 150 * pinv(tau_k);
+Krate = 25 * pinv(tau_k);
 K = [Katt Krate];
 
 L = G * K;
 S = 1 / (eye(RUFOUS_N_STATES) + L);
 T = L * S;
 
-WP = makeweight(0.001, [100, 1], 10) * eye(RUFOUS_N_STATES);
+O = zeros(RUFOUS_N_STATES / 2, RUFOUS_N_STATES / 2);
+Wq = makeweight(1e4, [1e4, 1], 1e-5) * eye(RUFOUS_N_STATES / 2);
+Wdq = makeweight(1e1, [1e7, 1], 1e-5) * eye(RUFOUS_N_STATES / 2);
+WP = [Wq O; O Wdq];
 
 figure, hold on
 h = sigmaplot(G(1, :), G(2, :), G(3, :), L(1, :), L(2, :), L(3, :), linspace(freq_range(1), freq_range(2))); 
@@ -56,6 +59,14 @@ plot(freq_range, [1, 1], 'k');
 title("Singular value of Decoupled OL system (inputs -> angular rate)")
 legend("\omega_xG", "\omega_yG", "\omega_zG", "\omega_xL", "\omega_yL", "\omega_zL")
 
+L = K * G;
+Si = (eye(RUFOUS_N_INPUTS) + L)^-1;
+Ti = L * Si;
+
+L = G * K;
+So = (eye(RUFOUS_N_STATES) + L)^-1;
+To = L * So;
+
 figure, hold on
 h = sigmaplot(G, 'b', L, 'r');
 plot(freq_range, [1, 1], 'k');
@@ -64,16 +75,27 @@ title("Open loop")
 legend("G", "L")
 
 figure, hold on
-h = sigmaplot(T, 'b', WP^-1, 'r--');
+h = sigmaplot(Ti, 'b', WP, 'r--');
 plot(freq_range, [1, 1], 'k');
 setoptions(h, 'MagUnits', 'abs', 'MagScale', 'log');
-title("T vs WP^{-1}")
+title("T vs WP")
 
 figure, hold on
-h = sigmaplot(S, 'b', K * S, 'r--');
+h = sigmaplot(Si, 'b', Si * K, 'g', WP^-1, 'r--');
 plot(freq_range, [1, 1], 'k');
 setoptions(h, 'MagUnits', 'abs', 'MagScale', 'log');
 title("S vs KS")
+legend("S", "KS", "WP")
+
+figure, hold on
+h = sigmaplot(Ti);
+setoptions(h, 'MagUnits', 'abs', 'MagScale', 'log');
+title("Robust Stability")
+
+figure, hold on
+h = sigmaplot(WP * (eye(RUFOUS_N_STATES) - To));
+setoptions(h, 'MagUnits', 'abs', 'MagScale', 'log');
+title("Robust Performance")
 
 figure
 step(T(:, 1))

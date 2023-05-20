@@ -236,24 +236,6 @@ void Device_Manager::read_sensors() {
 	is coming from. This will need to be relayed to HID.
 	Do this from the controller report handler and HIDLayer
 
-
-	TODO:
-		Add different controllers,
-			- Gravity compensated
-			- Power limited
-
-		These two can inherit or replace
-		the feedback controller object. The first two
-		feedback values should remain unchanged (position, velocity)
-		The third will be dependant on the controller type (maybe handled by each controller)
-			power = i * V = v * F (current * Voltage/velocity * torque/rotational velocity * force)
-			grav compensation = mglsin(theta), assume params have been identified
-			and come from an initializer report.
-
-		We can disscuss removing the velocity reference, this will make the velocity feedack
-		a very strong damper i.e. Kd * (Rv - v) -> Kd * v (any non zero v will cause an opposing control force)
-		(currently is used to help track velocity, should always have small gain ~< 1 due to noise)
-
 	Author: Mitchell Scott
 */
 void Device_Manager::step_controllers(float dt) {

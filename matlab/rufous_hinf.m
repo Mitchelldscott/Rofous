@@ -30,8 +30,10 @@ D = 0;
 G = ss(A, B, C, D);
 
 freq_range = [1e-10 1e4];
-
-WP = makeweight(0.001, [100, 1], 10) * eye(RUFOUS_N_STATES);
+O = zeros(RUFOUS_N_STATES / 2, RUFOUS_N_STATES / 2);
+Wq = makeweight(1e4, [1e4, 1], 1e-5) * eye(RUFOUS_N_STATES / 2);
+Wdq = makeweight(1e1, [1e7, 1], 1e-5) * eye(RUFOUS_N_STATES / 2);
+WP = [Wq O; O Wdq];
 
 systemnames = 'G WP';
 inputvar = '[qr(6); u(4)]';
@@ -44,9 +46,13 @@ P_nominal = minreal(ss(P));
 
 [K, ~, ~] = hinfsyn(P_nominal, 6, 4);
 
+L = K * G;
+Si = (eye(RUFOUS_N_INPUTS) + L)^-1;
+Ti = L * Si;
+
 L = G * K;
-S = 1 / (eye(RUFOUS_N_STATES) + L);
-T = L * S;
+So = (eye(RUFOUS_N_STATES) + L)^-1;
+To = L * So;
 
 figure, hold on
 h = sigmaplot(G, 'b', L, 'r');
@@ -56,41 +62,68 @@ title("Open loop")
 legend("G", "L")
 
 figure, hold on
-h = sigmaplot(T, 'b', WP^-1, 'r--');
+h = sigmaplot(Ti, 'b', WP, 'r--');
 plot(freq_range, [1, 1], 'k');
 setoptions(h, 'MagUnits', 'abs', 'MagScale', 'log');
-title("T vs WP^{-1}")
+title("T vs WP")
 
 figure, hold on
-h = sigmaplot(S, 'b', K * S, 'r--');
+h = sigmaplot(Si, 'b', Si * K, 'g', WP^-1, 'r--');
 plot(freq_range, [1, 1], 'k');
 setoptions(h, 'MagUnits', 'abs', 'MagScale', 'log');
 title("S vs KS")
-legend("S", "KS")
+legend("S", "KS", "WP")
+
+figure, hold on
+h = sigmaplot(Ti);
+setoptions(h, 'MagUnits', 'abs', 'MagScale', 'log');
+title("Robust Stability")
+
+figure, hold on
+h = sigmaplot(WP * (eye(RUFOUS_N_STATES) - To));
+setoptions(h, 'MagUnits', 'abs', 'MagScale', 'log');
+title("Robust Performance")
 
 figure
-step(T(:, 1))
+step(To(:, 1))
 title("Step roll angle reference")
 figure
-step(T(:, 2))
+step(To(:, 2))
 title("Step pitch angle reference")
 figure
-step(T(:, 3))
+step(To(:, 3))
 title("Step yaw angle reference")
 
 figure
-step(S(:, 1))
+step(So(:, 1))
 title("Step roll angle disturbance")
 figure
-step(S(:, 2))
+step(So(:, 2))
 title("Step pitch angle disturbance")
 figure
-step(S(:, 3))
+step(So(:, 3))
 title("Step yaw angle disturbance")
 
-% This controller is crazy conservative, might make sense that slowing down
-% the system stabilizes it. Also in reality this is an unstable operating
-% point, being slow is much safer. Though this controller is so slow it
-% would be unsusable in practice. Next time use mixsyn and have a better
+%   Iteration 1
+% This controller is crazy conservative, might make sense that a slower
+% system is easier to stabilize. Also in reality this is an unstable operating
+% point, being slow is much safer. This controller is so slow it
+% would be unsusable in practice. Next time try using mixsyn and have a better
 % plan for what the 'loop' needs to look like (i.e. what channels and frequencies the
 % controller should slow down/speed up).
+
+%   Iteration 2
+% Update to the above, the controller is now very quick and from the scale
+% of the plot always appears to reach the reference (no steady state error). 
+% The changes I made to acheive this was a more specific weighting function. 
+% The new weighting function uses a different weight for attitudes and angular 
+% rates. We want the angular rate channels to be faster than the attitude 
+% channels (larger crossover).
+
+
+
+
+
+
+
+
