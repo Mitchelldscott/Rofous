@@ -1,8 +1,8 @@
 extern crate yaml_rust;
 
+use crate::utilities::data_structures::*;
 use std::{env, fs};
 use yaml_rust::{yaml::Yaml, YamlLoader};
-use crate::utilities::data_structures::*;
 
 // Define a struct that can clean up the way we load things
 // from ros param server
@@ -24,30 +24,39 @@ impl BuffYamlUtil {
         let robot_name = bot_name;
         let project_root = env::var("PROJECT_ROOT").expect("Project root not set");
 
-        let yaml_path = format!(
-            "{}/buffpy/data/robots/{}",
-            project_root, robot_name
+        let yaml_path = format!("{}/buffpy/data/robots/{}", project_root, robot_name);
+
+        let node_string = BuffYamlUtil::read_yaml_as_string(
+            format!(
+                "{}/buffpy/data/robots/{}/nodes.yaml",
+                project_root, robot_name
+            )
+            .as_str(),
         );
 
-        let node_string = BuffYamlUtil::read_yaml_as_string(format!(
-            "{}/buffpy/data/robots/{}/nodes.yaml",
-            project_root, robot_name
-        ).as_str());
+        let motor_string = BuffYamlUtil::read_yaml_as_string(
+            format!(
+                "{}/buffpy/data/robots/{}/motors.yaml",
+                project_root, robot_name
+            )
+            .as_str(),
+        );
 
-        let motor_string = BuffYamlUtil::read_yaml_as_string(format!(
-            "{}/buffpy/data/robots/{}/motors.yaml",
-            project_root, robot_name
-        ).as_str());
+        let sensor_string = BuffYamlUtil::read_yaml_as_string(
+            format!(
+                "{}/buffpy/data/robots/{}/sensors.yaml",
+                project_root, robot_name
+            )
+            .as_str(),
+        );
 
-        let sensor_string = BuffYamlUtil::read_yaml_as_string(format!(
-            "{}/buffpy/data/robots/{}/sensors.yaml",
-            project_root, robot_name
-        ).as_str());
-
-        let process_string = BuffYamlUtil::read_yaml_as_string(format!(
-            "{}/buffpy/data/robots/{}/process.yaml",
-            project_root, robot_name
-        ).as_str());
+        let process_string = BuffYamlUtil::read_yaml_as_string(
+            format!(
+                "{}/buffpy/data/robots/{}/process.yaml",
+                project_root, robot_name
+            )
+            .as_str(),
+        );
 
         BuffYamlUtil {
             yaml_path: yaml_path,
@@ -66,7 +75,8 @@ impl BuffYamlUtil {
     }
 
     pub fn default() -> BuffYamlUtil {
-        let robot_name = env::var("ROBOT_NAME").expect("Not sure which robot to load, set ROBOT_NAME and retry");
+        let robot_name =
+            env::var("ROBOT_NAME").expect("Not sure which robot to load, set ROBOT_NAME and retry");
 
         BuffYamlUtil::new(&robot_name.as_str())
     }
@@ -132,83 +142,112 @@ impl BuffYamlUtil {
     }
 
     pub fn parse_device_items(data: &Yaml) -> Vec<EmbeddedDevice> {
-        data.as_hash().unwrap().iter().map(|(key, value)| {
-            // println!("new device: {:?}", key.as_str().unwrap());
-            let name = key.as_str().unwrap();
-            let mut buffer_size = 0;
-            let mut config = vec![0];
-            let mut driver = "UNKNOWN".to_string();
-            value.as_vec().unwrap().iter().for_each(|item| {
-                item.as_hash().unwrap().iter().for_each(|(k, v)| {
-                    match k.as_str().unwrap() {
-                        "buffer" => {
-                            buffer_size = v.as_i64().unwrap() as usize;
-                            // println!("\tbuffer: {}", v.as_i64().unwrap() as usize);
+        data.as_hash()
+            .unwrap()
+            .iter()
+            .map(|(key, value)| {
+                // println!("new device: {:?}", key.as_str().unwrap());
+                let name = key.as_str().unwrap();
+                let mut buffer_size = 0;
+                let mut config = vec![0];
+                let mut driver = "UNKNOWN".to_string();
+                value.as_vec().unwrap().iter().for_each(|item| {
+                    item.as_hash().unwrap().iter().for_each(|(k, v)| {
+                        match k.as_str().unwrap() {
+                            "buffer" => {
+                                buffer_size = v.as_i64().unwrap() as usize;
+                                // println!("\tbuffer: {}", v.as_i64().unwrap() as usize);
+                            }
+                            "driver" => {
+                                driver = v.as_str().unwrap().to_string();
+                                // println!("\tdriver: {:?}", v.as_str().unwrap());
+                            }
+                            "config" => {
+                                config = v
+                                    .as_vec()
+                                    .unwrap()
+                                    .iter()
+                                    .map(|x| x.as_i64().unwrap() as u8)
+                                    .collect::<Vec<u8>>();
+                                // println!("\tconfig: {:?}", config);
+                            }
+                            _ => {}
                         }
-                        "driver" => {
-                            driver = v.as_str().unwrap().to_string();
-                            // println!("\tdriver: {:?}", v.as_str().unwrap());
-                        }
-                        "config" => {
-                            config = v.as_vec().unwrap().iter().map(|x| x.as_i64().unwrap() as u8).collect::<Vec<u8>>();
-                            // println!("\tconfig: {:?}", config);
-                        }
-                        _ => {}
-                    }
+                    });
                 });
-            });
-            EmbeddedDevice::named(name.to_string(), driver, buffer_size, config)
-        }).collect()
+                EmbeddedDevice::named(name.to_string(), driver, buffer_size, config)
+            })
+            .collect()
     }
 
     pub fn parse_processes(data: &Yaml) -> Vec<EmbeddedProcess> {
-        data.as_hash().unwrap().iter().map(|(key, value)| {
-            // println!("new process: {:?}", key.as_str().unwrap());
-            let name = key.as_str().unwrap();
-            let mut inputs = vec![];
-            let mut outputs = vec![];
-            let mut config = vec![];
-            let mut input_shapes = vec![];
-            let mut output_shapes = vec![];
-            let mut process_type = "UNKNOWN".to_string();
+        data.as_hash()
+            .unwrap()
+            .iter()
+            .map(|(key, value)| {
+                // println!("new process: {:?}", key.as_str().unwrap());
+                let name = key.as_str().unwrap();
+                let mut inputs = vec![];
+                let mut outputs = vec![];
+                let mut config = vec![];
+                let mut input_shapes = vec![];
+                let mut output_shapes = vec![];
+                let mut driver = "UNKNOWN".to_string();
 
-            value.as_vec().unwrap().iter().for_each(|item| {
-                item.as_hash().unwrap().iter().for_each(|(k, v)| {
-                    match k.as_str().unwrap() {
-                        "inputs" => {
-                            inputs = v.as_vec().unwrap().to_vec();
-                            // println!("\tinputs: {:?}", v.as_vec().unwrap());
-                        }
-                        "outputs" => {
-                            outputs = v.as_vec().unwrap().to_vec();                            
-                            // println!("\toutputs: {:?}", v.as_vec().unwrap());
-                        }
-                        "config" => {
-                            v.as_vec().unwrap().iter().for_each(|x| {
-                                match x {
+                value.as_vec().unwrap().iter().for_each(|item| {
+                    item.as_hash().unwrap().iter().for_each(|(k, v)| {
+                        match k.as_str().unwrap() {
+                            "inputs" => {
+                                inputs = v.as_vec().unwrap().to_vec();
+                                // println!("\tinputs: {:?}", v.as_vec().unwrap());
+                            }
+                            "outputs" => {
+                                outputs = v.as_vec().unwrap().to_vec();
+                                // println!("\toutputs: {:?}", v.as_vec().unwrap());
+                            }
+                            "config" => {
+                                v.as_vec().unwrap().iter().for_each(|x| match x {
                                     Yaml::Real(_) => config.push(x.as_f64().unwrap()),
-                                    Yaml::Array(a) => a.iter().for_each(|n| config.push(n.as_f64().unwrap())),
+                                    Yaml::Array(a) => {
+                                        a.iter().for_each(|n| config.push(n.as_f64().unwrap()))
+                                    }
                                     _ => {}
-                                }
-                            });
-                            // println!("\tconfig: {:?}", config);
+                                });
+                                // println!("\tconfig: {:?}", config);
+                            }
+                            "input_shapes" => {
+                                input_shapes = v
+                                    .as_vec()
+                                    .unwrap()
+                                    .iter()
+                                    .map(|x| x.as_i64().unwrap() as usize)
+                                    .collect();
+                            }
+                            "output_shapes" => {
+                                output_shapes = v
+                                    .as_vec()
+                                    .unwrap()
+                                    .iter()
+                                    .map(|x| x.as_i64().unwrap() as usize)
+                                    .collect();
+                            }
+                            "driver" => {
+                                driver = v.as_str().unwrap().to_string();
+                                // println!("\ttype: {:?}", v.as_str().unwrap());
+                            }
+                            _ => {}
                         }
-                        "input_shapes" => {
-                            input_shapes = v.as_vec().unwrap().iter().map(|x| x.as_i64().unwrap() as usize).collect();
-                        }
-                        "output_shapes" => {
-                            output_shapes = v.as_vec().unwrap().iter().map(|x| x.as_i64().unwrap() as usize).collect();
-                        }
-                        "type" => {
-                            process_type = v.as_str().unwrap().to_string();
-                            // println!("\ttype: {:?}", v.as_str().unwrap());
-                        }
-                        _ => {}
-                    }
+                    });
                 });
-            });
-            EmbeddedProcess::named(name.to_string(), process_type, input_shapes, output_shapes, config)
-        }).collect()
+                EmbeddedProcess::named(
+                    name.to_string(),
+                    driver,
+                    input_shapes,
+                    output_shapes,
+                    config,
+                )
+            })
+            .collect()
     }
 
     pub fn load_sensors(&self) -> Vec<EmbeddedDevice> {

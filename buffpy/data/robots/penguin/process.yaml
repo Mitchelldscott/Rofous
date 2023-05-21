@@ -13,7 +13,7 @@ attitude_estimator:
    - attitude_controller
  - input_shapes: [9]
  - output_shapes: [3]
- - type: complimentary
+ - driver: CMF
 
 ##############################
 #
@@ -38,4 +38,4 @@ attitude_controller:
    - prop4
  - input_shapes: [3, 3]
  - output_shapes: [1, 1, 1, 1]
- - type: static_fsb
+ - driver: SFB

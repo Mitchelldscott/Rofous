@@ -17,7 +17,6 @@ use std::{
 #[allow(dead_code)]
 const VERBOSITY: usize = 1;
 
-
 #[cfg(test)]
 pub mod robot_status_tests {
     use super::*;
@@ -28,6 +27,10 @@ pub mod robot_status_tests {
         rs.get_initializers().iter().for_each(|packet| {
             println!("{:?}", packet);
         });
+
+        rs.get_reports().iter().for_each(|packet| {
+            println!("{:?}", packet);
+        })
     }
 }
 
@@ -330,7 +333,6 @@ pub mod robot_status_tests {
 //         /*
 //             Attempt to connect and read/write from teensy
 //         */
-
 //         let byu = BuffYamlUtil::new("penguin");
 
 //         let vid = byu.load_u16("teensy_vid");

@@ -1,4 +1,4 @@
 lsm6dsox:
   - buffer: 9
-  - driver: lsm6dsox
+  - driver: lsm
   - config: [0]

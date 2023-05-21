@@ -2,4 +2,5 @@
 buffpy/lib/**
 buffpy/bin/**
 **/__pycache__
-src/firmware/build/**
+src/firmware/build/
+src/buff_rust/target/

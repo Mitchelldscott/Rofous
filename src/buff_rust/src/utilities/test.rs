@@ -1,7 +1,5 @@
 #![allow(unused_imports)]
-use crate::{
-    utilities::{buffers::*, loaders::*},
-};
+use crate::utilities::{buffers::*, loaders::*};
 use rand::Rng;
 use std::env;
 
