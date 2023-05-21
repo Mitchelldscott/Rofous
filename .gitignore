@@ -1,3 +1,5 @@
 **/.DS_Store
 buffpy/lib/**
 buffpy/bin/**
+**/__pycache__
+src/firmware/build/**

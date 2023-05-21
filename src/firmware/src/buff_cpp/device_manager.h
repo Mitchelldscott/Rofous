@@ -5,7 +5,8 @@
 #ifndef BUFF_DEVICE_MANAGER_H
 #define BUFF_DEVICE_MANAGER_H
 
-#define ATTITUDE_SIZE 3
+#define NUM_PROPS 4
+#define ATTITUDE_DIM 3
 
 /*
 	An organizer for all the pipelines with the firmware.
@@ -18,13 +19,13 @@
 
 struct Data_Store {
 	float imu_measurement[LSM6DSOX_DOF];
-	float attitude[ATTITUDE_SIZE];
-	float angular_rate[ATTITUDE_SIZE];
-	float position[ATTITUDE_SIZE];
-	float velocity[ATTITUDE_SIZE];
-	float prop_speeds[4];
-	float pwm_out[4];
-	float pwm_pins[4];
+	float attitude[ATTITUDE_DIM];
+	float angular_rate[ATTITUDE_DIM];
+	float position[ATTITUDE_DIM];
+	float velocity[ATTITUDE_DIM];
+	float prop_speeds[NUM_PROPS];
+	float pwm_out[NUM_PROPS];
+	float pwm_pins[NUM_PROPS];
 };
 
 struct Device_Manager {	

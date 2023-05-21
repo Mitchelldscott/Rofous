@@ -110,13 +110,6 @@ class LSM6DSOX{
 		float phi;
 		float psi;
 
-		//degree angles
-		float pitch;
-		float roll;
-		float yaw;
-
-
-
 	private:
 		// Adafruit_I2CDevice *i2c_dev = NULL; ///< Pointer to I2C bus interface
 		// Adafruit_SPIDevice *spi_dev = NULL; ///< Pointer to SPI bus interface

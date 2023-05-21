@@ -31,6 +31,9 @@ void Device_Manager::initializer_report_handle() {
 			}
 			break;
 
+		case 1:
+			
+
 		default:
 			break;
 	}
@@ -54,7 +57,7 @@ void Device_Manager::feedback_request_handle() {
 	switch (request_mode) {
 		case 1:
 			output_report.put(2, 0);
-			for (int i = 0; i < ATTITUDE_SIZE; i++){
+			for (int i = 0; i < ATTITUDE_DIM; i++){
 				output_report.put_float((4 * i) + 3, ds.attitude[i]);
 			}
 			break;

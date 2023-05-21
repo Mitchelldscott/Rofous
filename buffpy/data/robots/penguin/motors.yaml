@@ -1,0 +1,15 @@
+prop1:
+ - driver: pwm
+ - config: [0]
+
+prop2:
+ - driver: pwm
+ - config: [0]
+
+prop3:
+ - driver: pwm
+ - config: [0]
+ 
+prop4:
+ - driver: pwm
+ - config: [0]

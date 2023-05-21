@@ -6,62 +6,23 @@
 #
 ##############################
 
-robot-type: demo
-
-# Specify our nodes from buffpy/lib
-# spinup perception and comms here
-buff-nodes:
-  buff_rust:
-    files: [comms_node]
-
-# Examle of includig ros
-# Maybe some kind of option to shut this down via cmdline
-#ros-nodes:
-#   rqt_plot:
-#     files: [rqt_plot]
-#     package: rqt_plot
-
+robot_type: demo
 
 # The Teensy... Ti-ta-ti-ti-ta-ti-ti-ta-ta-ta-la-ba-ba-ba-ba-ba-da-la-ba-ba-ba-ba-da-la-ba-ba-baa, Ti-ta-ti-li-ta-ti-li-ti-taa, Ti-ta-ti-li... /*o*)/ (gasps) Ti-ta-ti-li-ta-ti-li-ta-ti-li-ta-ti-li-ta-ti-li-ti-ta-ti-ti-ta-ti-ti-taaaaa♪ PEPARING THE KRABBY PATTY!
 teensy_vid: 0x16C0
 teensy_pid: 0x0486
 
-# Defines the sensor index for
-# HID packets. String is the topic
-sensor_index:
-  - lsm6dsox
+# Specify our nodes from buffpy/lib
+# spinup perception and comms here
+buff_nodes:
+  buff_rust:
+    files: [comms_node]
 
-# So HID knows what size buffer, the row corresponds to the rows in sensor index
-sensor_buffers:
-  - 9
-
-sensor_config:
-  - [0.0]
-
-
-##############################
-#
-#
-#         Estimators
-#
-#
-##############################
-
-estimator_index:
-  - attitude
-
-estimator_configs: 
-  - [0.0]
-
-estimator_dimensions:
-  - [9, 3, 6]
-
-
-##############################
-#
-#
-#         Controllers
-#
-#
-##############################
+# Examle of includig ros
+# Maybe some kind of option to shut this down via cmdline
+ros_nodes:
+  rqt_plot:
+    files: [rqt_gui]
+    package: rqt_gui
+    args: ['--perspective-file', '${PROJECT_ROOT}/buffpy/data/robots/dyse.perspective']
 

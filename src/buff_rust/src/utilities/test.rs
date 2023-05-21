@@ -1,6 +1,5 @@
 #![allow(unused_imports)]
 use crate::{
-    teensy_comms::data_structures::*,
     utilities::{buffers::*, loaders::*},
 };
 use rand::Rng;
@@ -19,25 +18,13 @@ pub mod byu_tests {
 
         let byu = BuffYamlUtil::new("penguin");
 
-        assert_eq!(byu.load_string("robot_type"), "infantry");
+        assert_eq!(byu.load_string("robot_type"), "demo");
 
-        assert_eq!(
-            byu.load_string_list("motor_index"),
-            vec!["xn_drive", "xp_drive", "yn_drive", "yp_drive", "pitch", "yaw", "feeder"]
-        );
+        byu.load_sensors();
 
-        assert_eq!(
-            byu.load_integer_matrix("motor_can_index"),
-            vec![
-                vec![0, 0, 0],
-                vec![0, 0, 0],
-                vec![0, 0, 0],
-                vec![0, 0, 0],
-                vec![2, 1, 5],
-                vec![1, 1, 0],
-                vec![2, 0, 2]
-            ]
-        );
+        byu.load_motors();
+
+        byu.load_processes();
     }
 }
 
@@ -181,16 +168,5 @@ pub mod buffer_tests {
             3.1415927410125732,
             buffer.get_float(2)
         );
-    }
-}
-
-pub mod report_tests {
-    use super::*;
-
-    #[test]
-    pub fn status_report() {
-        let report = RobotStatus::from_byu(BuffYamlUtil::new("penguin"));
-        env::set_var("ROBOT_NAME", "penguin");
-        report.save();
     }
 }

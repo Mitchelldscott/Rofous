@@ -1,0 +1,41 @@
+##############################
+#
+#
+#         Estimators
+#
+#
+##############################
+attitude_estimator:
+ - config: [1.0]
+ - inputs: 
+   - lsm6dsox
+ - outputs: 
+   - attitude_controller
+ - input_shapes: [9]
+ - output_shapes: [3]
+ - type: complimentary
+
+##############################
+#
+#
+#         Controllers
+#
+#
+##############################
+attitude_controller:
+ - config: 
+   - [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+   - [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+   - [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+   - [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+ - inputs:
+   - attitude_planner
+   - attitude_estimator
+ - outputs:
+   - prop1
+   - prop2
+   - prop3
+   - prop4
+ - input_shapes: [3, 3]
+ - output_shapes: [1, 1, 1, 1]
+ - type: static_fsb
