@@ -198,11 +198,23 @@ impl BuffYamlUtil {
                     item.as_hash().unwrap().iter().for_each(|(k, v)| {
                         match k.as_str().unwrap() {
                             "inputs" => {
-                                inputs = v.as_vec().unwrap().to_vec();
+                                inputs = v
+                                    .as_vec()
+                                    .unwrap()
+                                    .to_vec()
+                                    .iter()
+                                    .map(|name| name.as_str().unwrap().to_string())
+                                    .collect();
                                 // println!("\tinputs: {:?}", v.as_vec().unwrap());
                             }
                             "outputs" => {
-                                outputs = v.as_vec().unwrap().to_vec();
+                                outputs = v
+                                    .as_vec()
+                                    .unwrap()
+                                    .to_vec()
+                                    .iter()
+                                    .map(|name| name.as_str().unwrap().to_string())
+                                    .collect();
                                 // println!("\toutputs: {:?}", v.as_vec().unwrap());
                             }
                             "config" => {
@@ -244,6 +256,8 @@ impl BuffYamlUtil {
                     driver,
                     input_shapes,
                     output_shapes,
+                    inputs,
+                    outputs,
                     config,
                 )
             })

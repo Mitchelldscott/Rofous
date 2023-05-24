@@ -72,6 +72,24 @@ impl EmbeddedDevice {
             .collect()
     }
 
+    pub fn get_initializers(&self, id: u8, mode: u8, dev_num: u8) -> Vec<Vec<u8>> {
+        self.config
+            .chunks(14)
+            .enumerate()
+            .map(|(i, chunk)| {
+                vec![id, mode, dev_num, i as u8]
+                    .into_iter()
+                    .chain(
+                        chunk
+                            .into_iter()
+                            .map(|x| (*x as f32).to_be_bytes())
+                            .flatten(),
+                    )
+                    .collect()
+            })
+            .collect()
+    }
+
     pub fn name(&self) -> String {
         self.name.clone()
     }
@@ -108,6 +126,8 @@ pub struct EmbeddedProcess {
     input_shapes: Vec<usize>,
     state_shape: usize,
     output_shapes: Vec<usize>,
+    input_names: Vec<String>,
+    output_names: Vec<String>,
     timestamp: f64,
 }
 
@@ -123,6 +143,8 @@ impl EmbeddedProcess {
             input_shapes: vec![0],
             state_shape: 0,
             output_shapes: vec![0],
+            input_names: vec![],
+            output_names: vec![],
             timestamp: 0.0,
         }
     }
@@ -139,6 +161,8 @@ impl EmbeddedProcess {
         driver: String,
         input_shapes: Vec<usize>,
         output_shapes: Vec<usize>,
+        input_names: Vec<String>,
+        output_names: Vec<String>,
         config: Vec<f64>,
     ) -> EmbeddedProcess {
         EmbeddedProcess {
@@ -151,6 +175,8 @@ impl EmbeddedProcess {
             input_shapes: input_shapes,
             state_shape: 0,
             output_shapes: output_shapes,
+            input_names: input_names,
+            output_names: output_names,
             timestamp: 0.0,
         }
     }
@@ -163,11 +189,15 @@ impl EmbeddedProcess {
             .collect()
     }
 
-    pub fn update_io(&mut self, data: Vec<f64>, time: f64) {
+    pub fn update_input(&mut self, data: Vec<f64>, time: f64) {
         let n_inputs: usize = self.input_shapes.iter().sum();
-        let n_outputs: usize = self.output_shapes.iter().sum();
         self.inputs = data[0..n_inputs].to_vec();
-        self.outputs = data[n_inputs..n_inputs + n_outputs].to_vec();
+        self.timestamp = time;
+    }
+
+    pub fn update_output(&mut self, data: Vec<f64>, time: f64) {
+        let n_outputs: usize = self.output_shapes.iter().sum();
+        self.outputs = data[0..n_outputs].to_vec();
         self.timestamp = time;
     }
 
@@ -175,6 +205,24 @@ impl EmbeddedProcess {
         self.state_shape = length;
         self.states = data[0..length].to_vec();
         self.timestamp = time;
+    }
+
+    pub fn get_initializers(&self, id: u8, mode: u8, dev_num: u8) -> Vec<Vec<u8>> {
+        self.config
+            .chunks(14)
+            .enumerate()
+            .map(|(i, chunk)| {
+                vec![id, mode, dev_num, i as u8]
+                    .into_iter()
+                    .chain(
+                        chunk
+                            .into_iter()
+                            .map(|x| (*x as f32).to_be_bytes())
+                            .flatten(),
+                    )
+                    .collect()
+            })
+            .collect()
     }
 
     pub fn name(&self) -> String {
@@ -193,12 +241,28 @@ impl EmbeddedProcess {
         self.outputs.clone()
     }
 
+    pub fn input_shape(&self) -> Vec<usize> {
+        self.input_shapes.clone()
+    }
+
+    pub fn output_shape(&self) -> Vec<usize> {
+        self.output_shapes.clone()
+    }
+
     pub fn n_inputs(&self) -> usize {
         self.input_shapes.iter().sum()
     }
 
     pub fn n_outputs(&self) -> usize {
         self.output_shapes.iter().sum()
+    }
+
+    pub fn input_names(&self) -> Vec<String> {
+        self.input_names.clone()
+    }
+
+    pub fn output_names(&self) -> Vec<String> {
+        self.output_names.clone()
     }
 
     pub fn driver(&self) -> Vec<u8> {

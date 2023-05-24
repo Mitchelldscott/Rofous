@@ -6,6 +6,7 @@ LSM6DSOX::LSM6DSOX() {
 		but that can change to use a more global definition.
 	*/	
 
+	sensor_index = 0;
 	// LSM6DSOX Setup
 	lsm6dsox.begin_I2C();
 	lsm6dsox.setAccelRange(IMU_A_RANGE);
@@ -53,7 +54,7 @@ LSM6DSOX::LSM6DSOX() {
 											true); // enabled!
 }
 
-void LSM6DSOX::read_lsm6dsox_accel(float* data){
+void LSM6DSOX::read_lsm6dsox_accel(){
 	/*
 		Get the jawns from the jimmys
 	*/
@@ -62,19 +63,63 @@ void LSM6DSOX::read_lsm6dsox_accel(float* data){
 	// Serial.print("LSM6DSOX accel read time: "); Serial.println(micros() - read_start);
 }
 
-void LSM6DSOX::read_lsm6dsox_gyro(float* data){
+void LSM6DSOX::read_lsm6dsox_gyro(){
 	/*
 		Get the jawns from the jimmys
 	*/
-	lsm6dsox.readGyroscope(data[0], data[1], data[2]);
+	lsm6dsox.readGyroscope(data[3], data[4], data[5]);
 	// Serial.print("LSM6DSOX gyro read time: "); Serial.println(micros() - read_start);
 }
 
-void LSM6DSOX::read_lis3mdl(float* data){
+void LSM6DSOX::read_lis3mdl(){
 	/*
 		Get the jawns from the jimmys
 	*/
-	lis3mdl.readMagneticField(data[0], data[1], data[2]);
+	lis3mdl.readMagneticField(data[6], data[7], data[8]);
 
 	// Serial.print("LIS3MDL mag read time: "); Serial.println(micros() - read_start);
+}
+
+void LSM6DSOX::setup() {
+	Serial.println("LSM6DSOX setup");
+		
+}
+
+void LSM6DSOX::reset() {
+	Serial.println("LSM6DSOX reset");
+}
+
+void LSM6DSOX::clear() {
+	Serial.println("LSM6DSOX clear");
+}
+
+float* LSM6DSOX::state() {
+	float state = float(sensor_index);
+	return &state;
+}
+
+float* LSM6DSOX::run(float*) {
+	switch (sensor_index) {
+		case 0:
+			read_lsm6dsox_accel();
+			sensor_index ++;
+
+		case 1:
+			read_lsm6dsox_gyro();
+			sensor_index ++;
+
+		case 2:
+			read_lis3mdl();
+			sensor_index = 0;
+	}
+
+	return data;
+}
+
+void LSM6DSOX::print() {
+	Serial.println("LSM6DSOX");
+	Serial.printf("\tsensor_index: %i\n", sensor_index);
+	Serial.printf("\taccel: [%f, %f, %f]\n", data[0], data[1], data[2]);
+	Serial.printf("\tgyro: [%f, %f, %f]\n", data[3], data[4], data[5]);
+	Serial.printf("\tmag: [%f, %f, %f]\n", data[6], data[7], data[8]);
 }

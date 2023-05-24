@@ -144,8 +144,14 @@ class Robot_Description:
 
 		self.data['robot_name'] = name
 		os.environ['ROBOT_NAME'] = name					# for BYU
-		self.data['sensor_index'] = contents['sensor_index']
-		self.data['motor_index'] = contents['motor_index']
+		data_files = [os.path.join(BuffPy_LOC_LUT['robots'], name, 'sensors.yaml'),
+						os.path.join(BuffPy_LOC_LUT['robots'], name, 'motors.yaml'),
+						os.path.join(BuffPy_LOC_LUT['robots'], name, 'process.yaml')]
+
+		for file in data_files:
+			with open(file, 'r') as f:
+				data = yaml.safe_load(f)
+				self.data[file.split('/')[-1]] = data
 
 		print(f'System Description:\n{yaml.dump(self.data, allow_unicode=True)}\n')
 

@@ -5,6 +5,8 @@
 #define BUFF_LSM6DSOX_H
 
 #define LSM6DSOX_DOF 9
+#define MAG_START_INDEX 6
+#define GYRO_START_INDEX 3
 
 /** The accelerometer data range 
 typedef enum accel_range {
@@ -95,27 +97,24 @@ typedef enum {
 } lis3mdl_operationmode_t; */
 #define IMU_M_OP_MODE LIS3MDL_CONTINUOUSMODE
 
-class LSM6DSOX{
+class LSM6DSOX {
+	private:
+		int sensor_index;
+		float data[LSM6DSOX_DOF];
+		Adafruit_LIS3MDL lis3mdl;
+		Adafruit_LSM6DSOX lsm6dsox;
 
 	public:
 		LSM6DSOX();
-		void read_lis3mdl(float* data);
-		void read_lsm6dsox_accel(float* data);
-		void read_lsm6dsox_gyro(float* data);
-		void pretty_print_data();
-		// void update_eulers();
-
-		//rad angles, theta(pitch), phi(roll), psi(yaw)
-		float theta;
-		float phi;
-		float psi;
-
-	private:
-		// Adafruit_I2CDevice *i2c_dev = NULL; ///< Pointer to I2C bus interface
-		// Adafruit_SPIDevice *spi_dev = NULL; ///< Pointer to SPI bus interface
-
-		Adafruit_LIS3MDL lis3mdl;
-		Adafruit_LSM6DSOX lsm6dsox;
+		void read_lis3mdl();
+		void read_lsm6dsox_accel();
+		void read_lsm6dsox_gyro();
+		void setup();
+		void reset();
+		void clear();
+		float* state();
+		float* run(float*);
+		void print();
 };
 
 #endif
