@@ -1,10 +1,7 @@
 use crate::utilities::{data_structures::*, loaders::*};
 use std::sync::{Arc, RwLock};
 
-pub static MAX_PROCESS_IO: usize = 14;
-pub static MAX_CONFIG_SIZE: usize = 10;
-pub static MAX_PROCESS_STATES: usize = 10;
-pub static MAX_SENSOR_BUFFER_SIZE: usize = 10;
+/// helpful constants to use
 pub static P: u8 = 0x50;
 pub static W: u8 = 0x57;
 pub static M: u8 = 0x4D;
@@ -13,30 +10,55 @@ pub static I: u8 = 0x4C;
 pub static C: u8 = 0x53;
 pub static DELIM: u8 = 0x3A;
 
-// first HID value
+/// HID laws
+pub static MAX_PROCESS_IO: usize = 14;
+pub static MAX_CONFIG_SIZE: usize = 10;
+pub static MAX_PROCESS_STATES: usize = 10;
+pub static MAX_SENSOR_BUFFER_SIZE: usize = 10;
+
+/// first HID identifier
+/// determines which report handler to use
+/// # Usage 
+/// ''' 
+///     packet.put(0, REPORT_ID);
+/// '''
 pub static INIT_REPORT_ID: u8 = 255;
 pub static PROC_REPORT_ID: u8 = 1;
 pub static MOTOR_REPORT_ID: u8 = 2;
 pub static SENSOR_REPORT_ID: u8 = 3;
 
-// second HID value
-pub static PROC_INIT_MODE: u8 = 0; // only use with INIT_REPORT_ID
+/// second HID identifier
+/// specifies the report hanlder mode
+/// # Usage 
+/// ''' 
+///     packet.put(1, REPORT_MODE);
+/// '''
+
+// initializer report modes
+pub static PROC_INIT_MODE: u8 = 0;
 pub static MOTOR_INIT_MODE: u8 = 1;
 pub static SENSOR_INIT_MODE: u8 = 2;
 
-pub static READ_MODE: u8 = 0; // only use with MOTOR/SENSOR_REPORT_ID
+// sensors/motor report modes
+pub static READ_MODE: u8 = 0; 
 pub static WRITE_MODE: u8 = 1;
 
-pub static READ_INPUT_MODE: u8 = 0; // only use with PROC_REPORT_ID
-pub static READ_STATE_MODE: u8 = 1; // only use with PROC_REPORT_ID
+// process report modes
+pub static READ_INPUT_MODE: u8 = 0; 
+pub static READ_STATE_MODE: u8 = 1; 
 pub static READ_OUTPUT_MODE: u8 = 2;
 pub static WRITE_INPUT_MODE: u8 = 3;
 pub static WRITE_STATE_MODE: u8 = 4;
 pub static WRITE_OUTPUT_MODE: u8 = 5;
 
-//
+/// third HID identifier
+/// specifies the report hanlder mode
+/// # Usage 
+/// ''' 
+///     packet.put(1, REPORT_MODE);
+/// '''
 
-pub static INIT_MEM_MODE: u8 = 0; // only use with INIT_REPORT_ID
+pub static INIT_MEM_MODE: u8 = 0;
 pub static INIT_DRIVER_MODE: u8 = 1;
 pub static INIT_CONNECT_MODE: u8 = 2;
 
