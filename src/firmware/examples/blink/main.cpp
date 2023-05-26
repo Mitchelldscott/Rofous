@@ -1,6 +1,6 @@
 // #include "unity.h"
-#include "buff_cpp/timing.h"
-#include "buff_cpp/blink.h"
+#include "utilities/timing.h"
+#include "utilities/blink.h"
 
 int test_setup_blink(void) {
 	// test stuff

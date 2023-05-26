@@ -24,10 +24,6 @@ struct PIDFilter {
         if (fabs(output) > 1.0) output /= fabs(output);
         return output;
     }
-
-    // void applyVariableFeedForward(float var) {
-    //     float variableFeedForward = var;
-    // }
 };
 
 #endif

@@ -1,4 +1,4 @@
-#include "buff_cpp/timing.h"
+#include "timing.h"
 
 uint32_t timers[NUM_BUFF_TIMERS];
 

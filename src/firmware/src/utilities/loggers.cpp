@@ -1,36 +1,5 @@
 #include <Arduino.h>
-#include "buff_cpp/loggers.h"
-
-// template<typename T>
-// int assert_eq(T a, T b, String message){
-// 	if (a != b) {
-// 		Serial.println(message);
-// 		Serial.printf("%i != %i\n", a, b);
-// 		return 1;
-// 	}
-
-// 	return 0;
-// }
-
-// template<typename T>
-// int assert_arr_eq(T* a, T* b, int n, String message){
-// 	int e = 0;
-// 	for (int i = 0; i < n; i++) {
-// 		e += assert_equal(a[i], b[i], message);
-// 	}
-	
-// 	return e;
-// }
-
-// template<typename T>
-// int assert_arr_eq(T a, T* b, int n, String message){
-// 	int e = 0;
-// 	for (int i = 0; i < n; i++) {
-// 		e += assert_equal(a, b[i], message);
-// 	}
-	
-// 	return e;
-// }
+#include "loggers.h"
 
 int int_eq(int a, int b, String message){
 	if (a != b) {

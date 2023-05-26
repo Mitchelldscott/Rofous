@@ -1,24 +1,16 @@
 #include <Arduino.h>
 #include "algorithms/linear_algebra.h"
 
+/*
+	Vector ops
+*/
+
 float nd_norm(float* v, int n) {
 	float sum = 0;
 	for (int i = 0; i < n; i++) {
 		sum += v[i] * v[i];
 	}
 	return sqrt(sum);
-}
-
-float wrap_angle(float angle) {
-	while (angle >= PI) {
-		angle -= 2 * PI;
-	}
-
-	while (angle < -PI) {
-		angle += 2 * PI;
-	}
-
-	return angle;
 }
 
 float cross_product2D(float* a, float* b) {
@@ -43,4 +35,20 @@ void weighted_vector_addition(float* a, float* b, float k1, float k2, int n, flo
 	for (int i = 0; i < n; i++) {
 		output[i] = (k1 * a[i]) + (k2 * b[i]);
 	}
+}
+
+/*
+	Angular ops
+*/
+
+float wrap_angle(float angle) {
+	while (angle >= PI) {
+		angle -= 2 * PI;
+	}
+
+	while (angle < -PI) {
+		angle += 2 * PI;
+	}
+
+	return angle;
 }

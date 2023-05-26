@@ -42,3 +42,4 @@ template <typename T> void Vector<T>::print() {
 }
 
 template class Vector<float>; // need this so the linker will have a compiled version of Vector<float> (otherwise undefined reference)
+template class Vector<Vector<float>>;
