@@ -1,5 +1,7 @@
 #include <Adafruit_LIS3MDL.h>
 #include <Adafruit_LSM6DSOX.h>
+#include "system_graph/vector.h"
+
 
 #ifndef BUFF_LSM6DSOX_H
 #define BUFF_LSM6DSOX_H
@@ -109,11 +111,11 @@ class LSM6DSOX {
 		void read_lis3mdl();
 		void read_lsm6dsox_accel();
 		void read_lsm6dsox_gyro();
-		void setup();
+		void setup(Vector<float>);
 		void reset();
 		void clear();
-		float* state();
-		float* run(float*);
+		Vector<float> state();
+		Vector<float> run(Vector<Vector<float>>);
 		void print();
 };
 

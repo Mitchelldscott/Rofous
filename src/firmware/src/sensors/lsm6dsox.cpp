@@ -80,9 +80,8 @@ void LSM6DSOX::read_lis3mdl(){
 	// Serial.print("LIS3MDL mag read time: "); Serial.println(micros() - read_start);
 }
 
-void LSM6DSOX::setup() {
+void LSM6DSOX::setup(Vector<float> config) {
 	Serial.println("LSM6DSOX setup");
-		
 }
 
 void LSM6DSOX::reset() {
@@ -93,12 +92,13 @@ void LSM6DSOX::clear() {
 	Serial.println("LSM6DSOX clear");
 }
 
-float* LSM6DSOX::state() {
-	float state = float(sensor_index);
-	return &state;
+Vector<float> LSM6DSOX::state() {
+	Vector<float> state(1);
+	state.push(float(sensor_index));
+	return state;
 }
 
-float* LSM6DSOX::run(float*) {
+Vector<float> LSM6DSOX::run(Vector<Vector<float>> unused) {
 	switch (sensor_index) {
 		case 0:
 			read_lsm6dsox_accel();
@@ -113,7 +113,8 @@ float* LSM6DSOX::run(float*) {
 			sensor_index = 0;
 	}
 
-	return data;
+	Vector<float> ret(data, LSM6DSOX_DOF);
+	return ret;
 }
 
 void LSM6DSOX::print() {
