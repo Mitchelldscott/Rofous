@@ -4,20 +4,24 @@
 template <typename T> class Vector {
 	private:
 		int ptr;
+		int dim;
 		int length;
 		T* buffer;
 
 	public:
 		Vector<T>();
 		Vector<T>(int);
+		Vector<T>(int, int);
 		Vector<T>(T*, int);
-		~Vector<T>();
 		void reset(int);
+		void reset(int, int);
 		void clear();
 		int size();
 		void push(T);
 		T& operator[](int);
-		void from_vec(Vector<T>);
+		void operator=(Vector<T>&);
+		void from_vec(T*, int);
+		void append(T*, int);
 		void print();
 };
 

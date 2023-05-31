@@ -5,49 +5,37 @@
 // Drivers
 #include "sensors/lsm6dsox.h"
 
-template <class T> Process<T>::Process() {
-	driver = new T();
+Process::Process() {
+	Serial.println("Constructing PBO");
 }
 
-template <class T> Process<T>::Process(Vector<float> config) {
-	driver = new T();
-	driver->setup(config);
+void Process::reset() {
+	Serial.println("Resetting PBO");
 }
 
-template <class T> Process<T>::~Process() {
-	free(driver);
+void Process::clear() {
+	Serial.println("Clearing PBO");
 }
 
-template <class T> void Process<T>::setup(Vector<float> config) {
-	driver->setup(config);
+void Process::print() {
+	Serial.println("Printing PBO");
 }
 
-template <class T> void Process<T>::reset() {
-	driver->reset();
+Vector<float> Process::context() {
+	Serial.println("Acessing PBO context");
+	Vector<float> v(1, 1);
+	return v;
 }
 
-template <class T> void Process<T>::clear() {
-	driver->clear();
+void Process::setup(Vector<float> config) {
+	Serial.println("Initalizing PBO");
+	config.print();
 }
 
-template <class T> Vector<float> Process<T>::state() {
-	return driver->state();
+Vector<Vector<float>> Process::run(Vector<Vector<float>> input) {
+	Serial.println("Running PBO");
+	return input;
 }
-
-template <class T> Vector<float> Process<T>::run(Vector<Vector<float>> input) {
-	return driver->run(input);
-}
-
-template <class T> void Process<T>::print() {
-	driver->print();
-}
-
-// enum class DriverTypes {
-// 	LSM6DSOX,
-// };
-
-template class Process<DriverTypes::LSM6DSOX>;
-
 
 
 

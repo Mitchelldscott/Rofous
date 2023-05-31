@@ -1,14 +1,15 @@
 #include <Adafruit_LIS3MDL.h>
 #include <Adafruit_LSM6DSOX.h>
 #include "system_graph/vector.h"
+#include "system_graph/process.h"
 
 
 #ifndef BUFF_LSM6DSOX_H
 #define BUFF_LSM6DSOX_H
 
 #define LSM6DSOX_DOF 9
-#define MAG_START_INDEX 6
-#define GYRO_START_INDEX 3
+#define LSM6DSOX_N_SENSORS 3
+#define LSM6DSOX_SENSOR_DOF 3
 
 /** The accelerometer data range 
 typedef enum accel_range {
@@ -99,10 +100,13 @@ typedef enum {
 } lis3mdl_operationmode_t; */
 #define IMU_M_OP_MODE LIS3MDL_CONTINUOUSMODE
 
-class LSM6DSOX {
+class LSM6DSOX: Process {
 	private:
 		int sensor_index;
-		float data[LSM6DSOX_DOF];
+		float accel[LSM6DSOX_SENSOR_DOF];
+		float gyro[LSM6DSOX_SENSOR_DOF];
+		float mag[LSM6DSOX_SENSOR_DOF];
+
 		Adafruit_LIS3MDL lis3mdl;
 		Adafruit_LSM6DSOX lsm6dsox;
 
@@ -111,12 +115,12 @@ class LSM6DSOX {
 		void read_lis3mdl();
 		void read_lsm6dsox_accel();
 		void read_lsm6dsox_gyro();
-		void setup(Vector<float>);
 		void reset();
 		void clear();
-		Vector<float> state();
-		Vector<float> run(Vector<Vector<float>>);
 		void print();
+		Vector<float> context();
+		void setup(Vector<float>);
+		Vector<Vector<float>> run(Vector<Vector<float>>);
 };
 
 #endif

@@ -7,21 +7,49 @@
 int main() {
 	while(!Serial){}
 
-	Serial.println("=== Starting Process tests ===");
+	Serial.println("=== Starting PBO tests ===");
 
-	Process<LSM6DSOX> p;
+	Process p;
 
 	p.clear();
 	p.reset();
 	p.print();
 
-	float inputs[1] = {0};
+	Vector<Vector<float>> inputs(1, 1);
+
 	p.run(inputs);
 	p.run(inputs);
-	p.run(inputs);
-	p.state();
+	Vector<Vector<float>> output = p.run(inputs);
+
+	Serial.println("Process outputs:");
+	output.print();
+
+	Serial.println("Process State:");
+	Vector<float> state = p.context();
+	state.print();
 
 	p.print();
 
-	Serial.println("=== Finished Process tests ===");	
+	Serial.println("=== Starting LSM6DSOX tests ===");
+
+	LSM6DSOX imu;
+
+	imu.clear();
+	imu.reset();
+	imu.print();
+
+	imu.run(inputs);
+	imu.run(inputs);
+	Vector<Vector<float>> output1 = imu.run(inputs);
+
+	Serial.println("LSM6DSOX outputs:");
+	output1.print();
+
+	Serial.println("Process State:");
+	Vector<float> state1 = imu.context();
+	state1.print();
+
+	imu.print();
+
+	Serial.println("=== Finished Process tests ===");
 }

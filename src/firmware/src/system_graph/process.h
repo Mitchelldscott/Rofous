@@ -3,24 +3,15 @@
 
 #include "system_graph/vector.h"
 
-enum class DriverTypes {
-	LSM6DSOX,
-};
-
-template <class T> class Process {
-	private:
-		T* driver;
-
+class Process {
 	public:
-		Process<T>();
-		Process<T>(Vector<float>);
-		~Process<T>();
-		void setup(Vector<float>);
+		Process();
 		void reset();
 		void clear();
-		Vector<float> state();
-		Vector<float> run(Vector<Vector<float>>);
 		void print();
+		Vector<float> context();
+		void setup(Vector<float>);
+		Vector<Vector<float>> run(Vector<Vector<float>>);
 };
 
 #endif

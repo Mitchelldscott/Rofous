@@ -7,6 +7,7 @@ LSM6DSOX::LSM6DSOX() {
 	*/	
 
 	sensor_index = 0;
+
 	// LSM6DSOX Setup
 	lsm6dsox.begin_I2C();
 	lsm6dsox.setAccelRange(IMU_A_RANGE);
@@ -58,16 +59,14 @@ void LSM6DSOX::read_lsm6dsox_accel(){
 	/*
 		Get the jawns from the jimmys
 	*/
-	lsm6dsox.readAcceleration(data[0], data[1], data[2]);
-
-	// Serial.print("LSM6DSOX accel read time: "); Serial.println(micros() - read_start);
+	lsm6dsox.readAcceleration(accel[0], accel[1], accel[2]);
 }
 
 void LSM6DSOX::read_lsm6dsox_gyro(){
 	/*
 		Get the jawns from the jimmys
 	*/
-	lsm6dsox.readGyroscope(data[3], data[4], data[5]);
+	lsm6dsox.readGyroscope(gyro[0], gyro[1], gyro[2]);
 	// Serial.print("LSM6DSOX gyro read time: "); Serial.println(micros() - read_start);
 }
 
@@ -75,52 +74,66 @@ void LSM6DSOX::read_lis3mdl(){
 	/*
 		Get the jawns from the jimmys
 	*/
-	lis3mdl.readMagneticField(data[6], data[7], data[8]);
-
+	lis3mdl.readMagneticField(mag[0], mag[1], mag[2]);
 	// Serial.print("LIS3MDL mag read time: "); Serial.println(micros() - read_start);
 }
 
-void LSM6DSOX::setup(Vector<float> config) {
-	Serial.println("LSM6DSOX setup");
-}
-
 void LSM6DSOX::reset() {
-	Serial.println("LSM6DSOX reset");
+	for (int i = 0; i < LSM6DSOX_SENSOR_DOF; i++) {
+		accel[i] = 0;
+		gyro[i] = 0;
+		mag[i] = 0;
+	}
 }
 
 void LSM6DSOX::clear() {
-	Serial.println("LSM6DSOX clear");
-}
-
-Vector<float> LSM6DSOX::state() {
-	Vector<float> state(1);
-	state.push(float(sensor_index));
-	return state;
-}
-
-Vector<float> LSM6DSOX::run(Vector<Vector<float>> unused) {
-	switch (sensor_index) {
-		case 0:
-			read_lsm6dsox_accel();
-			sensor_index ++;
-
-		case 1:
-			read_lsm6dsox_gyro();
-			sensor_index ++;
-
-		case 2:
-			read_lis3mdl();
-			sensor_index = 0;
-	}
-
-	Vector<float> ret(data, LSM6DSOX_DOF);
-	return ret;
+	reset();
 }
 
 void LSM6DSOX::print() {
 	Serial.println("LSM6DSOX");
 	Serial.printf("\tsensor_index: %i\n", sensor_index);
-	Serial.printf("\taccel: [%f, %f, %f]\n", data[0], data[1], data[2]);
-	Serial.printf("\tgyro: [%f, %f, %f]\n", data[3], data[4], data[5]);
-	Serial.printf("\tmag: [%f, %f, %f]\n", data[6], data[7], data[8]);
+	Serial.printf("\taccel: [%f, %f, %f]\n", accel[0], accel[1], accel[2]);
+	Serial.printf("\tgyro: [%f, %f, %f]\n", gyro[0], gyro[1], gyro[2]);
+	Serial.printf("\tmag: [%f, %f, %f]\n", mag[0], mag[1], mag[2]);
+	// data.print();
+}
+
+Vector<float> LSM6DSOX::context() {
+	Vector<float> state(1);
+	state[0] = sensor_index;
+	return state;
+}
+
+void LSM6DSOX::setup(Vector<float> config) {
+	reset();
+}
+
+Vector<Vector<float>> LSM6DSOX::run(Vector<Vector<float>> unused) {
+	switch (sensor_index) {
+		case 0:
+			read_lsm6dsox_accel();
+			sensor_index ++;
+			break;
+
+		case 1:
+			read_lsm6dsox_gyro();
+			sensor_index ++;
+			break;
+
+		case 2:
+			read_lis3mdl();
+			sensor_index = 0;
+			break;
+
+		default:
+			sensor_index = 0;
+			break;
+	}
+
+	Vector<Vector<float>> v(LSM6DSOX_N_SENSORS, LSM6DSOX_SENSOR_DOF);
+	v[0].from_vec(accel, LSM6DSOX_SENSOR_DOF);
+	v[1].from_vec(gyro, LSM6DSOX_SENSOR_DOF);
+	v[2].from_vec(mag, LSM6DSOX_SENSOR_DOF);
+	return v;
 }
