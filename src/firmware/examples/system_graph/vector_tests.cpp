@@ -1,16 +1,15 @@
 #include <Arduino.h>
-#include "system_graph/vector.h"
+#include "utilities/vector.h"
 
 
-Vector<Vector<float>> test_return() {
+Vector<float> test_return() {
 
-	float accel[3] = {1.0, 2.0, 3.0};
-	float gyro[3] = {-1.0, -2.0, -3.0};
-	float mag[3] = {1.0, 1.0, 1.0};
-	Vector<Vector<float>> v(3, 3);
-	v[0].from_vec(accel, 3);
-	v[1].from_vec(gyro, 3);
-	v[2].from_vec(mag, 3);
+	// float accel[3] = {1.0, 2.0, 3.0};
+	// float gyro[3] = {-1.0, -2.0, -3.0};
+	// float mag[3] = {1.0, 1.0, 1.0};
+	float tmp[9] = {1.0, 2.0, 3.0, -1.0, -2.0, -3.0, 1.0, 1.0, 1.0};
+	Vector<float> v(9);
+	v.from_vec(tmp, 9);
 	return v;
 }
 
@@ -39,8 +38,6 @@ int main() {
 	v.clear();
 	v.print();
 
-
-
 	n = int(n * 1.5);
 
 	Serial.printf("====\nInitializing %i\n", n);
@@ -57,23 +54,6 @@ int main() {
 
 	n = 2;
 	int m = 5;
-
-	Vector<Vector<float>> v2(n, m);
-
-	Serial.printf("====\nInitializing %ix%i\n", n, m);
-	v2.print();
-
-	Serial.println("Adding 0-N");
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < m; j++) {
-			v2[i][j] = i;
-		}
-	}
-	
-	v2.print();
-	Serial.println("Clearing");
-	v2.clear();
-	v2.print();
 
 	Serial.printf("====\nInitializing %i from float*\n", m);
 	Vector<float> v3(1);
@@ -92,8 +72,9 @@ int main() {
 	v3.print();
 
 	Serial.println("Testing From return");
-	Vector<Vector<float>> v4 = test_return();
+	Vector<float> v4 = test_return();
 	v4.print();
+
 
 	Serial.println("=== Finished Vector tests ===");
 }

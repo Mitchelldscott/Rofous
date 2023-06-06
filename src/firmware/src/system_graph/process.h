@@ -1,17 +1,16 @@
 #ifndef SYS_GRAPH_PROCESS
 #define SYS_GRAPH_PROCESS
 
-#include "system_graph/vector.h"
+#include "utilities/vector.h"
 
 class Process {
 	public:
-		Process();
-		void reset();
-		void clear();
-		void print();
-		Vector<float> context();
-		void setup(Vector<float>);
-		Vector<Vector<float>> run(Vector<Vector<float>>);
+		virtual void reset();
+		virtual void clear();
+		virtual void print();
+		virtual void context(Vector<float>*);
+		virtual void setup(Vector<float>);
+		virtual void run(Vector<float>*, Vector<float>*);
 };
 
 #endif

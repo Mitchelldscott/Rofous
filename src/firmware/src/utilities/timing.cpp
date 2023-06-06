@@ -1,12 +1,5 @@
 #include "timing.h"
 
-uint32_t timers[NUM_BUFF_TIMERS];
-
-void init_timers() {
-	for (size_t i = 0; i < NUM_BUFF_TIMERS; i++) {
-		timers[i] = ARM_DWT_CYCCNT;
-	}
-}
 
 uint32_t duration_info(uint32_t start, uint32_t stop){
 	/*
@@ -19,47 +12,68 @@ uint32_t duration_info(uint32_t start, uint32_t stop){
 	  delta_ns: (uint32_t) duration in nanoseconds
 	*/
 	uint32_t delta_cycles = stop - start;
-	uint32_t delta_ns = CYCLES_TO_NS(delta_cycles); 
+	uint32_t delta_ns = CYCLES_2_NS(delta_cycles); 
 	Serial.printf( "\t%1lu cycles, %1lu ns\n", delta_cycles, delta_ns);
 	return delta_ns;
 }
 
-void timer_set(int idx) {
+FTYK::FTYK() {
+	for (size_t i = 0; i < MAX_NUM_TIMERS; i++) {
+		timers[i] = ARM_DWT_CYCCNT;
+	}
+}
+
+
+void FTYK::set(int idx) {
 	timers[idx] = ARM_DWT_CYCCNT;
 }
 
-void timer_mark(int idx) {
+void FTYK::mark(int idx) {
 	duration_info(timers[idx], ARM_DWT_CYCCNT);
 }
 
-uint32_t timer_info_us(int idx) {
-	return DURATION_US(timers[idx], ARM_DWT_CYCCNT);
+uint32_t FTYK::cycles(int idx) {
+	return ARM_DWT_CYCCNT - timers[idx];
 }
 
-uint32_t timer_info_ms(int idx) {
-	return DURATION_MS(timers[idx], ARM_DWT_CYCCNT);
+float FTYK::nanos(int idx) {
+	return CYCLES_2_NS(cycles(idx)); 
 }
 
-void timer_wait_us(int idx, uint32_t duration){
+float FTYK::micros(int idx) {
+	return NS_2_US(CYCLES_2_NS(cycles(idx))); 
+}
+
+float FTYK::millis(int idx) {
+	return NS_2_MS(CYCLES_2_NS(cycles(idx)));
+}
+
+float FTYK::secs(int idx) {
+	return NS_2_S(CYCLES_2_NS(cycles(idx)));
+}
+
+float FTYK::delay_micros(int idx, float duration){
 	/*
 	  Helper to pause for a duration. Duration starts
-	when timer_set() is called.
+	when set() is called.
 	@param
-	  duration: (uint32_t) microseconds to wait (from when timer_set() was called)
+	  duration: (uint32_t) microseconds to wait (from when set() was called)
 	@return
 		None
 	*/
-	while(DURATION_US(timers[idx], ARM_DWT_CYCCNT) < duration) {}
+	while(CYCLES_2_US(cycles(idx)) < duration) {}
+	return micros(idx);
 }
 
-void timer_wait_ms(int idx, uint32_t duration){
+float FTYK::delay_millis(int idx, float duration){
 	/*
 	  Helper to pause for a duration. Duration starts
-	when timer_set() is called.
+	when set() is called.
 	@param
-	  duration: (uint32_t) milliseconds to wait (from when timer_set() was called)
+	  duration: (uint32_t) milliseconds to wait (from when set() was called)
 	@return
 		None
 	*/
-	while(DURATION_MS(timers[idx], ARM_DWT_CYCCNT) < duration) {}
+	while(CYCLES_2_MS(cycles(idx)) < duration) {}
+	return millis(idx);
 }

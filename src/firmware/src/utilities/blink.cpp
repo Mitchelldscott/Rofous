@@ -13,7 +13,7 @@ void setup_blink() {
 }
 
 void blink(){
-	if ((1E6/F_CPU)*(ARM_DWT_CYCCNT - blinker_timer_mark) > BLINK_RATE_US){
+	if ((1E6/float(F_CPU))*(ARM_DWT_CYCCNT - blinker_timer_mark) > BLINK_RATE_US){
 		blinker_status = !blinker_status;
 		blinker_timer_mark = ARM_DWT_CYCCNT;
 		digitalWrite(BLINK_PIN, blinker_status);

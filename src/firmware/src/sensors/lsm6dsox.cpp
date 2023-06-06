@@ -99,17 +99,16 @@ void LSM6DSOX::print() {
 	// data.print();
 }
 
-Vector<float> LSM6DSOX::context() {
-	Vector<float> state(1);
-	state[0] = sensor_index;
-	return state;
+void LSM6DSOX::context(Vector<float>* state) {
+	state->reset(0);
+	state->push(sensor_index);
 }
 
 void LSM6DSOX::setup(Vector<float> config) {
 	reset();
 }
 
-Vector<Vector<float>> LSM6DSOX::run(Vector<Vector<float>> unused) {
+void LSM6DSOX::run(Vector<float>* unused, Vector<float>* output) {
 	switch (sensor_index) {
 		case 0:
 			read_lsm6dsox_accel();
@@ -131,9 +130,17 @@ Vector<Vector<float>> LSM6DSOX::run(Vector<Vector<float>> unused) {
 			break;
 	}
 
-	Vector<Vector<float>> v(LSM6DSOX_N_SENSORS, LSM6DSOX_SENSOR_DOF);
-	v[0].from_vec(accel, LSM6DSOX_SENSOR_DOF);
-	v[1].from_vec(gyro, LSM6DSOX_SENSOR_DOF);
-	v[2].from_vec(mag, LSM6DSOX_SENSOR_DOF);
-	return v;
+	float tmp[LSM6DSOX_DOF];
+	for (int i = 0; i < LSM6DSOX_SENSOR_DOF; i++) {
+		tmp[i] = accel[i];
+		tmp[i+3] = gyro[i];
+		tmp[i+6] = mag[i];
+	}
+
+	output->from_vec(tmp, LSM6DSOX_DOF);
 }
+
+
+
+
+

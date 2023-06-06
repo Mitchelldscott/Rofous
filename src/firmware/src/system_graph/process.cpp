@@ -1,13 +1,9 @@
 #include <Arduino.h>
-#include "system_graph/vector.h"
+#include "utilities/vector.h"
 #include "system_graph/process.h"
 
 // Drivers
 #include "sensors/lsm6dsox.h"
-
-Process::Process() {
-	Serial.println("Constructing PBO");
-}
 
 void Process::reset() {
 	Serial.println("Resetting PBO");
@@ -21,10 +17,8 @@ void Process::print() {
 	Serial.println("Printing PBO");
 }
 
-Vector<float> Process::context() {
+void Process::context(Vector<float>* state) {
 	Serial.println("Acessing PBO context");
-	Vector<float> v(1, 1);
-	return v;
 }
 
 void Process::setup(Vector<float> config) {
@@ -32,9 +26,8 @@ void Process::setup(Vector<float> config) {
 	config.print();
 }
 
-Vector<Vector<float>> Process::run(Vector<Vector<float>> input) {
+void Process::run(Vector<float>* input, Vector<float>* output) {
 	Serial.println("Running PBO");
-	return input;
 }
 
 

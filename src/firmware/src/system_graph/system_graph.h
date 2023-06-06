@@ -1,23 +1,38 @@
-// #ifndef SYS_GRAPH_OBJ
-// #define SYS_GRAPH_OBJ
+#ifndef SYS_GRAPH_OBJ
+#define SYS_GRAPH_OBJ
 
-// #include "system_graph/vector.h"
-// #include "system_graph/process.h"
-// #include "system_graph/graph_node.h"
+#include "utilities/timing.h"
+#include "utilities/vector.h"
+#include "system_graph/process.h"
+#include "robot_comms/hid_report.h"
+#include "system_graph/graph_node.h"
+#include "system_graph/process_factory.h"
 
-// #define MAXIMUM_GRAPH_NODES 10
+#define MAXIMUM_GRAPH_NODES 10
 
-// class SystemGraph {
-// 	private:
-// 		GraphNode<DriverTypes> nodes[MAXIMUM_GRAPH_NODES];
-// 		Vector<Vector<int>> inputs;
-// 		Vector<Vector<int>> outputs;
+class SystemGraph {
+	private:
+		HidReport report;
+		Process_Factory factory;
 
-// 	public:
-// 		SystemGraph();
-// 		// ~SystemGraph();
-// 		void add(GraphNode<DriverTypes>, Vector<int>, Vector<int>);
-// 		void add(int, int, Vector<float>, Vector<int>, Vector<int>);
-// };
+		FTYK watch;		// timer0 = hid write timer
+		float lifetime;
 
-// #endif
+		Vector<int> status;
+		Vector<int> node_ids;
+		Vector<GraphNode*> nodes;
+
+	public:
+		SystemGraph();
+		// ~SystemGraph();
+		void collect_outputs(int, Vector<float>*);
+		void add(String, int, int, int, Vector<int>);
+		void update_config(int, int, Vector<float>);
+		void spin();
+		void dump_all();
+		void handle_hid();
+		void init_process_hid();
+		void config_process_hid();
+};
+
+#endif

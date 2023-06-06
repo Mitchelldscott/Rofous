@@ -1,6 +1,6 @@
 #include "hid_report.h"
 
-void Hid_Report::print(){
+void HidReport::print(){
 	/*
 		  Display function for HID packets
 		@param:
@@ -9,7 +9,7 @@ void Hid_Report::print(){
 			None
 	*/
 	Serial.println("\n\t=====");
-	for (int i = 0; i < HID_REPORT_SIZE_BYTES - 15; i += 16){
+	for (int i = 0; i < HIDREPORT_SIZE_BYTES - 15; i += 16){
 		Serial.printf("\t[%d]\t\t%X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X\n", 
 						i,
 						data[i], data[i+1], data[i+2], data[i+3],
@@ -19,12 +19,12 @@ void Hid_Report::print(){
 	}
 }
 
-Hid_Report::Hid_Report() {
+HidReport::HidReport() {
 	clear();
 	put(0, 255);
 }
 
-void Hid_Report::clear(){
+void HidReport::clear(){
 	/*
 		  Clear the HID packet (set all indices = 0)
 		@param:
@@ -32,12 +32,10 @@ void Hid_Report::clear(){
 		@return:
 			None
 	*/
-	for (int i = 0; i < HID_REPORT_SIZE_BYTES; i++){
-		data[i] = 0;
-	}
+	memset(data, 0, HIDREPORT_SIZE_BYTES);
 }
 
-byte Hid_Report::get(int idx){
+byte HidReport::get(int idx){
 	/*
 		  Get the byte at packet[idx]
 		@param:
@@ -48,7 +46,7 @@ byte Hid_Report::get(int idx){
 	return data[idx];
 }
 
-void Hid_Report::put(int idx, byte value){
+void HidReport::put(int idx, byte value){
 	/*
 		  Set the byte at packet[idx]
 		@param:
@@ -60,7 +58,7 @@ void Hid_Report::put(int idx, byte value){
 	data[idx] = value;
 }
 
-int32_t Hid_Report::get_int32(int idx){
+int32_t HidReport::get_int32(int idx){
 	/*
 		  Get the int32_t at packet[idx]
 		@param:
@@ -74,7 +72,7 @@ int32_t Hid_Report::get_int32(int idx){
 				 int32_t(data[idx+3]);
 }
 
-void Hid_Report::put_int32(int idx, int32_t value){
+void HidReport::put_int32(int idx, int32_t value){
 	/*
 		  Set the int32_t at packet[idx]
 		@param:
@@ -89,7 +87,7 @@ void Hid_Report::put_int32(int idx, int32_t value){
 	data[idx+3] = byte(value);
 }
 
-float Hid_Report::get_float(int idx){
+float HidReport::get_float(int idx){
 	/*
 		  Get the float at packet[idx], floats are converted into
 		byte* arrays for compressed storage, atm we use unions
@@ -109,7 +107,7 @@ float Hid_Report::get_float(int idx){
 	return fb_union.number;
 }
 
-void Hid_Report::put_float(int idx, float value){
+void HidReport::put_float(int idx, float value){
 	/*
 		  Set float at packet[idx], use union to
 		turn float to byte* and insert at index 0.
@@ -128,7 +126,7 @@ void Hid_Report::put_float(int idx, float value){
 	data[idx+3] = fb_union.bytes[0];
 }
 
-void Hid_Report::get_chars(int idx, int n, char* s){
+void HidReport::get_chars(int idx, int n, char* s){
 	/*
 		  Get the char* at packet[idx]
 		@param:
@@ -143,7 +141,7 @@ void Hid_Report::get_chars(int idx, int n, char* s){
 	}
 }
 
-void Hid_Report::put_chars(int idx, char* value){
+void HidReport::put_chars(int idx, char* value){
 	/*
 		Set the int32_t at packet[idx]
 		@param:
@@ -157,7 +155,7 @@ void Hid_Report::put_chars(int idx, char* value){
 	}
 }
 
-void Hid_Report::rgets(byte* out_data, int offset, int bytes){
+void HidReport::rgets(byte* out_data, int offset, int bytes){
 	/*
 		  Recursively Get the bytes at packet[offset:offset + bytes]
 		@param:
@@ -174,7 +172,7 @@ void Hid_Report::rgets(byte* out_data, int offset, int bytes){
 	}
 }
 
-void Hid_Report::rputs(byte* in_data, int offset, int bytes){
+void HidReport::rputs(byte* in_data, int offset, int bytes){
 	/*
 		Recursively Set the bytes at packet[offset:offset + bytes]
 		@param:
@@ -192,7 +190,7 @@ void Hid_Report::rputs(byte* in_data, int offset, int bytes){
 }
 
 #ifdef USB_RAWHID
-int8_t Hid_Report::write(){
+int8_t HidReport::write(){
 	/*
 		  Write the packet's bytes to usb
 		@param:
@@ -203,7 +201,7 @@ int8_t Hid_Report::write(){
 	return usb_rawhid_send(&data, 0);
 }
 
-int8_t Hid_Report::read(){
+int8_t HidReport::read(){
 	/*
 		  Read the usb bytes to the packet.
 		@param:
@@ -217,7 +215,7 @@ int8_t Hid_Report::read(){
 
 
 #ifndef USB_RAWHID
-int8_t Hid_Report::write(){
+int8_t HidReport::write(){
 	/*
 		  Write the packet's bytes to usb
 		@param:
@@ -228,7 +226,7 @@ int8_t Hid_Report::write(){
 	return usb_serial_write(&data, 64);
 }
 
-int8_t Hid_Report::read(){
+int8_t HidReport::read(){
 	/*
 		  Read the usb bytes to the packet.
 		@param:

@@ -1,6 +1,7 @@
 #include <Adafruit_LIS3MDL.h>
 #include <Adafruit_LSM6DSOX.h>
-#include "system_graph/vector.h"
+
+#include "utilities/vector.h"
 #include "system_graph/process.h"
 
 
@@ -100,7 +101,7 @@ typedef enum {
 } lis3mdl_operationmode_t; */
 #define IMU_M_OP_MODE LIS3MDL_CONTINUOUSMODE
 
-class LSM6DSOX: Process {
+class LSM6DSOX: public Process {
 	private:
 		int sensor_index;
 		float accel[LSM6DSOX_SENSOR_DOF];
@@ -118,9 +119,9 @@ class LSM6DSOX: Process {
 		void reset();
 		void clear();
 		void print();
-		Vector<float> context();
+		void context(Vector<float>*);
 		void setup(Vector<float>);
-		Vector<Vector<float>> run(Vector<Vector<float>>);
+		void run(Vector<float>*, Vector<float>*);
 };
 
 #endif
