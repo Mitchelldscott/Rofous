@@ -3,7 +3,7 @@
 #ifndef BUFF_HIDREPORT_H
 #define BUFF_HIDREPORT_H
 
-#define HIDREPORT_SIZE_BYTES 64
+#define HID_REPORT_SIZE_BYTES 64
 
 typedef union
 {
@@ -12,33 +12,13 @@ typedef union
 } FLOATBYTE_t;
 
 /*
-	A Packet struct to clean up the inserts and reads.
-	The goal is to have an hid.fill_report_xxx(data),
-	that will put the data in our HID report structure and
-	send it to serial. Similarly hid.read() should decompose
-	the recieved report into smaller data.
-	
-	the main priority is putting data in and out of the packet.
-	There is some discussion to be had on whose job it is to
-	determine indexing, for now it will be the developers responsibility.
-
-	Get/Set requirements:
-		IMU:  			float[9]
-		
-		DR16: 			byte[18]
-
-		CAN:  			int16[i][3] (feedback)
-			  			int16[i]    (command)
-
-		Teensy clock:	int32
-
-	HIDREPORT also has quick functions to
+	HID specific buffer of 64 bytes
 	read and write its data.
 */
 
 class HidReport {
 	private:
-		byte data[HIDREPORT_SIZE_BYTES];
+		byte data[HID_REPORT_SIZE_BYTES];
 
 	public:
 		// constructor

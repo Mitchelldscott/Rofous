@@ -119,8 +119,8 @@ class LSM6DSOX: public Process {
 		void reset();
 		void clear();
 		void print();
+		void setup(Vector<float>*);
 		void context(Vector<float>*);
-		void setup(Vector<float>);
 		void run(Vector<float>*, Vector<float>*);
 };
 

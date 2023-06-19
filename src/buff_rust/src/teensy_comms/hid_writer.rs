@@ -1,29 +1,46 @@
 extern crate hidapi;
 
-use crate::teensy_comms::hid_common::*;
+use crate::teensy_comms::hid_layer::*;
 use crate::utilities::buffers::*;
-use hidapi::{HidApi, HidDevice};
-use std::{
-    sync::{mpsc::Receiver, Arc, RwLock},
-    time::Instant,
-};
+use hidapi::HidDevice;
+use std::{sync::mpsc::Receiver, time::Instant};
 
 pub struct HidWriter {
-    pub shutdown: Arc<RwLock<bool>>,
-    pub output: ByteBuffer,
-    pub teensy: HidDevice,
+    writer_rx: Receiver<ByteBuffer>,
+    output: ByteBuffer,
+    teensy: HidDevice,
+    layer: HidLayer,
 }
 
 impl HidWriter {
-    pub fn new(hidapi: &mut HidApi, vid: u16, pid: u16) -> HidWriter {
-        let device = init_hid_device(hidapi, vid, pid); // not two teensys, just two instances
-
+    pub fn new(layer: HidLayer, writer_rx: Receiver<ByteBuffer>) -> HidWriter {
         HidWriter {
-            // shutdown will be replaced by a variable shared between several HidWriters
-            shutdown: Arc::new(RwLock::new(false)),
-            output: ByteBuffer::new(64),
-            teensy: device,
+            writer_rx: writer_rx,
+            output: ByteBuffer::hid(),
+            teensy: layer.device(),
+            layer: layer,
         }
+    }
+
+    pub fn print(&self) {
+        println!(
+            "Writer Dump\n\ttimer: {} us\n\tpackets: {}",
+            self.output.timestamp.elapsed().as_micros(),
+            self.layer.get_packets_sent(),
+        );
+        self.output.print();
+    }
+
+    pub fn buffer(&self) -> ByteBuffer {
+        self.output.clone()
+    }
+
+    pub fn silent_channel_default(&mut self) -> ByteBuffer {
+        let mut report = ByteBuffer::hid();
+        report.put_float(56, self.layer.get_packets_sent());
+        report.put_float(60, self.layer.lifetime());
+
+        report
     }
 
     /// Write the bytes from the output buffer to the teensy, then clear the buffer.
@@ -39,10 +56,20 @@ impl HidWriter {
             Ok(_) => {
                 // println!("Write time {}", t.elapsed().as_micros());
                 // self.output.print_data();
+                // *self.connected.unwrap().write() = true;
                 self.output.reset();
+                self.layer.packet_sent();
             }
             _ => {
-                *self.shutdown.write().unwrap() = true;
+                println!("HID Writer error");
+                if self.output.timestamp.elapsed().as_millis() > MCU_NO_COMMS_RESET {
+                    println!("HID Writer hasn't written for {} ms", self.output.timestamp.elapsed().as_millis());
+                    if self.layer.is_connected() {
+                        println!("HID Writer disconnecting");
+                        self.layer.disconnect();
+                        self.teensy = self.layer.device();
+                    }
+                }
             }
         }
     }
@@ -59,48 +86,31 @@ impl HidWriter {
         self.write();
     }
 
-    /// Main function to spin and connect the teensy to ROS.
-    /// Cycles through `reports` and sends a report to the teensy every millisecond.
-    /// Only use in testing.
-    pub fn spin(&mut self, reports: Vec<Vec<u8>>) {
-        let mut report_request = 0;
-        println!("HID-writer Live");
-
-        while !*self.shutdown.read().unwrap() && self.output.timestamp.elapsed().as_millis() < 50 {
-            let loopt = Instant::now();
-
-            self.output.puts(0, reports[report_request].clone());
-            self.write();
-            report_request = (report_request + 1) % reports.len();
-            if loopt.elapsed().as_micros() > TEENSY_CYCLE_TIME_US as u128 {
-                println!("HID writer over cycled {}", loopt.elapsed().as_micros());
-            }
-            while loopt.elapsed().as_micros() < TEENSY_CYCLE_TIME_US as u128 {}
-        }
-        *self.shutdown.write().unwrap() = true;
-    }
-
-    /// Continually sends data from [HidROS] (or whatever owns the other end of `control_rx`) to the teensy.
+    /// Continually sends data from [HidROS] (or whatever owns the other end of `writer_rx`) to the teensy.
     ///
     /// # Arguments
     /// * `shutdown` - The function stops when this is true.
     /// Used so that HidLayer threads, all running pipeline() at the same time, can be shutdown at the same time (by passing them the same variable)
-    /// * `control_rx` - Receives the data from [HidROS].
+    /// * `writer_rx` - Receives the data from [HidROS].
     ///
     /// # Example
     /// See [`HidLayer::pipeline()`] source
-    pub fn pipeline(&mut self, shutdown: Arc<RwLock<bool>>, control_rx: Receiver<Vec<u8>>) {
-        self.shutdown = shutdown;
-
-        // let mut status = RobotStatus::load_robot();
-
-        // self.send_report(255, status.load_initializers()[0].clone());
-
+    pub fn pipeline(&mut self) {
         println!("HID-writer Live");
 
-        while !*self.shutdown.read().unwrap() {
-            self.output.puts(0, control_rx.recv().unwrap_or(vec![0]));
+        while !self.layer.is_shutdown() {
+            let t = Instant::now();
+
+            // let default_report = ;
+            self.output = self
+                .writer_rx
+                .try_recv()
+                .unwrap_or(self.silent_channel_default());
+            // self.output.print();
             self.write();
+            self.layer.delay(t);
         }
+
+        println!("HID-writer Shutdown");
     }
 }

@@ -10,8 +10,6 @@ use yaml_rust::{yaml::Yaml, YamlLoader};
 pub struct BuffYamlUtil {
     pub yaml_path: String,
     pub node_data: Yaml,
-    pub motor_data: Yaml,
-    pub sensor_data: Yaml,
     pub process_data: Yaml,
 }
 
@@ -34,22 +32,6 @@ impl BuffYamlUtil {
             .as_str(),
         );
 
-        let motor_string = BuffYamlUtil::read_yaml_as_string(
-            format!(
-                "{}/buffpy/data/robots/{}/motors.yaml",
-                project_root, robot_name
-            )
-            .as_str(),
-        );
-
-        let sensor_string = BuffYamlUtil::read_yaml_as_string(
-            format!(
-                "{}/buffpy/data/robots/{}/sensors.yaml",
-                project_root, robot_name
-            )
-            .as_str(),
-        );
-
         let process_string = BuffYamlUtil::read_yaml_as_string(
             format!(
                 "{}/buffpy/data/robots/{}/process.yaml",
@@ -61,8 +43,6 @@ impl BuffYamlUtil {
         BuffYamlUtil {
             yaml_path: yaml_path,
             node_data: YamlLoader::load_from_str(node_string.as_str()).unwrap()[0].clone(),
-            motor_data: YamlLoader::load_from_str(motor_string.as_str()).unwrap()[0].clone(),
-            sensor_data: YamlLoader::load_from_str(sensor_string.as_str()).unwrap()[0].clone(),
             process_data: YamlLoader::load_from_str(process_string.as_str()).unwrap()[0].clone(),
         }
     }
@@ -141,44 +121,44 @@ impl BuffYamlUtil {
             .collect()
     }
 
-    pub fn parse_device_items(data: &Yaml) -> Vec<EmbeddedDevice> {
-        data.as_hash()
-            .unwrap()
-            .iter()
-            .map(|(key, value)| {
-                // println!("new device: {:?}", key.as_str().unwrap());
-                let name = key.as_str().unwrap();
-                let mut buffer_size = 0;
-                let mut config = vec![0];
-                let mut driver = "UNKNOWN".to_string();
-                value.as_vec().unwrap().iter().for_each(|item| {
-                    item.as_hash().unwrap().iter().for_each(|(k, v)| {
-                        match k.as_str().unwrap() {
-                            "buffer" => {
-                                buffer_size = v.as_i64().unwrap() as usize;
-                                // println!("\tbuffer: {}", v.as_i64().unwrap() as usize);
-                            }
-                            "driver" => {
-                                driver = v.as_str().unwrap().to_string();
-                                // println!("\tdriver: {:?}", v.as_str().unwrap());
-                            }
-                            "config" => {
-                                config = v
-                                    .as_vec()
-                                    .unwrap()
-                                    .iter()
-                                    .map(|x| x.as_i64().unwrap() as u8)
-                                    .collect::<Vec<u8>>();
-                                // println!("\tconfig: {:?}", config);
-                            }
-                            _ => {}
-                        }
-                    });
-                });
-                EmbeddedDevice::named(name.to_string(), driver, buffer_size, config)
-            })
-            .collect()
-    }
+    // pub fn parse_device_items(data: &Yaml) -> Vec<EmbeddedDevice> {
+    //     data.as_hash()
+    //         .unwrap()
+    //         .iter()
+    //         .map(|(key, value)| {
+    //             // println!("new device: {:?}", key.as_str().unwrap());
+    //             let name = key.as_str().unwrap();
+    //             let mut buffer_size = 0;
+    //             let mut config = vec![0];
+    //             let mut driver = "UNKNOWN".to_string();
+    //             value.as_vec().unwrap().iter().for_each(|item| {
+    //                 item.as_hash().unwrap().iter().for_each(|(k, v)| {
+    //                     match k.as_str().unwrap() {
+    //                         "buffer" => {
+    //                             buffer_size = v.as_i64().unwrap() as usize;
+    //                             // println!("\tbuffer: {}", v.as_i64().unwrap() as usize);
+    //                         }
+    //                         "driver" => {
+    //                             driver = v.as_str().unwrap().to_string();
+    //                             // println!("\tdriver: {:?}", v.as_str().unwrap());
+    //                         }
+    //                         "config" => {
+    //                             config = v
+    //                                 .as_vec()
+    //                                 .unwrap()
+    //                                 .iter()
+    //                                 .map(|x| x.as_i64().unwrap() as u8)
+    //                                 .collect::<Vec<u8>>();
+    //                             // println!("\tconfig: {:?}", config);
+    //                         }
+    //                         _ => {}
+    //                     }
+    //                 });
+    //             });
+    //             EmbeddedDevice::named(name.to_string(), driver, buffer_size, config)
+    //         })
+    //         .collect()
+    // }
 
     pub fn parse_processes(data: &Yaml) -> Vec<EmbeddedProcess> {
         data.as_hash()
@@ -264,13 +244,13 @@ impl BuffYamlUtil {
             .collect()
     }
 
-    pub fn load_sensors(&self) -> Vec<EmbeddedDevice> {
-        BuffYamlUtil::parse_device_items(&self.sensor_data)
-    }
+    // pub fn load_sensors(&self) -> Vec<EmbeddedDevice> {
+    //     BuffYamlUtil::parse_device_items(&self.sensor_data)
+    // }
 
-    pub fn load_motors(&self) -> Vec<EmbeddedDevice> {
-        BuffYamlUtil::parse_device_items(&self.motor_data)
-    }
+    // pub fn load_motors(&self) -> Vec<EmbeddedDevice> {
+    //     BuffYamlUtil::parse_device_items(&self.motor_data)
+    // }
 
     pub fn load_processes(&self) -> Vec<EmbeddedProcess> {
         BuffYamlUtil::parse_processes(&self.process_data)

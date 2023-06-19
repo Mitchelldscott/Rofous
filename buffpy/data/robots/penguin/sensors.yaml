@@ -1,4 +1,0 @@
-lsm6dsox:
-  - buffer: 9
-  - driver: IIC
-  - config: [0]

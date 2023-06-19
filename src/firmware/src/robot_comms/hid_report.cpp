@@ -3,13 +3,9 @@
 void HidReport::print(){
 	/*
 		  Display function for HID packets
-		@param:
-			None
-		@return:
-			None
 	*/
 	Serial.println("\n\t=====");
-	for (int i = 0; i < HIDREPORT_SIZE_BYTES - 15; i += 16){
+	for (int i = 0; i < HID_REPORT_SIZE_BYTES - 15; i += 16){
 		Serial.printf("\t[%d]\t\t%X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X\n", 
 						i,
 						data[i], data[i+1], data[i+2], data[i+3],
@@ -27,12 +23,8 @@ HidReport::HidReport() {
 void HidReport::clear(){
 	/*
 		  Clear the HID packet (set all indices = 0)
-		@param:
-			None
-		@return:
-			None
 	*/
-	memset(data, 0, HIDREPORT_SIZE_BYTES);
+	memset(data, 0, HID_REPORT_SIZE_BYTES);
 }
 
 byte HidReport::get(int idx){
@@ -52,8 +44,6 @@ void HidReport::put(int idx, byte value){
 		@param:
 			idx: index of the byte to set
 			value: the byte to write
-		@return:
-			None
 	*/
 	data[idx] = value;
 }
@@ -78,8 +68,6 @@ void HidReport::put_int32(int idx, int32_t value){
 		@param:
 			idx: index of the data to write to
 			value: the value to write
-		@return:
-			None
 	*/
 	data[idx]   = byte(value >> 24);
 	data[idx+1] = byte(value >> 16);
@@ -90,7 +78,7 @@ void HidReport::put_int32(int idx, int32_t value){
 float HidReport::get_float(int idx){
 	/*
 		  Get the float at packet[idx], floats are converted into
-		byte* arrays for compressed storage, atm we use unions
+		byte* arrays for storage, atm we use unions
 		to do this (should be safe on this arm processor, but 
 		definitely warrants inspection). No-Endian
 		@param:
@@ -115,8 +103,6 @@ void HidReport::put_float(int idx, float value){
 		@param:
 			idx: index to insert at
 			value: the float value to insert
-		@return:
-			None
 	*/
 	FLOATBYTE_t fb_union;
 	fb_union.number = value;
@@ -147,8 +133,6 @@ void HidReport::put_chars(int idx, char* value){
 		@param:
 			idx: index to begin inserting
 			value: list of chars to insert
-		@return:
-			None
 	*/
 	for (size_t i = 0; i < strlen(value); i++) {
 		data[idx + i] = value[i];
@@ -162,8 +146,6 @@ void HidReport::rgets(byte* out_data, int offset, int bytes){
 			out_data: a byte buffer to fill with data
 			offset: the index to begin reading from
 			bytes: the number of bytes to get
-		@return:
-			None
 	*/
 	out_data[bytes - 1] = data[offset + (bytes - 1)];
 
@@ -179,8 +161,6 @@ void HidReport::rputs(byte* in_data, int offset, int bytes){
 			in_data: a byte buffer to copy data from
 			offset: the index to begin writing at
 			bytes: the number of bytes to write
-		@return:
-			None
 	*/
 	data[offset + (bytes - 1)] = in_data[bytes - 1];
 
@@ -193,8 +173,6 @@ void HidReport::rputs(byte* in_data, int offset, int bytes){
 int8_t HidReport::write(){
 	/*
 		  Write the packet's bytes to usb
-		@param:
-			None
 		@return:
 			n: number of bytes written
 	*/
@@ -204,8 +182,6 @@ int8_t HidReport::write(){
 int8_t HidReport::read(){
 	/*
 		  Read the usb bytes to the packet.
-		@param:
-			None
 		@return:
 			n: number of bytes read
 	*/
@@ -218,8 +194,6 @@ int8_t HidReport::read(){
 int8_t HidReport::write(){
 	/*
 		  Write the packet's bytes to usb
-		@param:
-			None
 		@return:
 			n: number of bytes written
 	*/
@@ -229,8 +203,6 @@ int8_t HidReport::write(){
 int8_t HidReport::read(){
 	/*
 		  Read the usb bytes to the packet.
-		@param:
-			None
 		@return:
 			n: number of bytes read
 	*/

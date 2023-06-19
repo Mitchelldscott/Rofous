@@ -6,7 +6,7 @@ LSM6DSOX::LSM6DSOX() {
 		but that can change to use a more global definition.
 	*/	
 
-	sensor_index = 0;
+	reset();
 
 	// LSM6DSOX Setup
 	lsm6dsox.begin_I2C();
@@ -49,8 +49,8 @@ LSM6DSOX::LSM6DSOX() {
 	lis3mdl.setPerformanceMode(IMU_M_PERFORMANCE);
 	lis3mdl.setOperationMode(IMU_M_OP_MODE);
 	
-	lis3mdl.configInterrupt(false, false, false, // enable z axis
-											true, // polarity
+	lis3mdl.configInterrupt(false, false, false,   // enable z axis
+											true,  // polarity
 											false, // don't latch
 											true); // enabled!
 }
@@ -79,6 +79,7 @@ void LSM6DSOX::read_lis3mdl(){
 }
 
 void LSM6DSOX::reset() {
+	sensor_index = 0;
 	for (int i = 0; i < LSM6DSOX_SENSOR_DOF; i++) {
 		accel[i] = 0;
 		gyro[i] = 0;
@@ -90,22 +91,13 @@ void LSM6DSOX::clear() {
 	reset();
 }
 
-void LSM6DSOX::print() {
-	Serial.println("LSM6DSOX");
-	Serial.printf("\tsensor_index: %i\n", sensor_index);
-	Serial.printf("\taccel: [%f, %f, %f]\n", accel[0], accel[1], accel[2]);
-	Serial.printf("\tgyro: [%f, %f, %f]\n", gyro[0], gyro[1], gyro[2]);
-	Serial.printf("\tmag: [%f, %f, %f]\n", mag[0], mag[1], mag[2]);
-	// data.print();
-}
-
-void LSM6DSOX::context(Vector<float>* state) {
-	state->reset(0);
-	state->push(sensor_index);
-}
-
-void LSM6DSOX::setup(Vector<float> config) {
+void LSM6DSOX::setup(Vector<float>* config) {
 	reset();
+}
+
+void LSM6DSOX::context(Vector<float>* context) {
+	context->reset(0);
+	context->push(sensor_index);
 }
 
 void LSM6DSOX::run(Vector<float>* unused, Vector<float>* output) {
@@ -137,10 +129,17 @@ void LSM6DSOX::run(Vector<float>* unused, Vector<float>* output) {
 		tmp[i+6] = mag[i];
 	}
 
-	output->from_vec(tmp, LSM6DSOX_DOF);
+	output->from_array(tmp, LSM6DSOX_DOF);
 }
 
 
-
+void LSM6DSOX::print() {
+	Serial.println("LSM6DSOX");
+	Serial.printf("\tsensor_index: %i\n", sensor_index);
+	Serial.printf("\taccel: [%f, %f, %f]\n", accel[0], accel[1], accel[2]);
+	Serial.printf("\tgyro: [%f, %f, %f]\n", gyro[0], gyro[1], gyro[2]);
+	Serial.printf("\tmag: [%f, %f, %f]\n", mag[0], mag[1], mag[2]);
+	// data.print();
+}
 
 

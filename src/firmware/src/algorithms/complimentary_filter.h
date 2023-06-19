@@ -23,10 +23,12 @@ private:
 public:
     ComplimentaryFilter() {
         watches.set(0);
+        reset();
+        clear();
     }
 
-    void setup(Vector<float> config) {
-        K = config[0];
+    void setup(Vector<float>* config) {
+        K = (*config)[0];
         watches.set(0);
         for (int i = 0; i < ATTITUDE_DIM; i++) {
             q_accel[i] = 0;
@@ -34,10 +36,10 @@ public:
         }
     }
 
-    void context(Vector<float>* state) {
-        state->reset(0);
-        state->append(q_gyro, ATTITUDE_DIM);
-        state->append(q_accel, ATTITUDE_DIM);
+    void context(Vector<float>* context) {
+        context->reset(6);
+        context->insert(q_gyro, 0, ATTITUDE_DIM);
+        context->insert(q_accel, 3, ATTITUDE_DIM);
     }
 
     void filter(float* accel, float* gyro, float* mag, float dt, float* estimate) {

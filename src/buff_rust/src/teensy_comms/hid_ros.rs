@@ -1,4 +1,4 @@
-use crate::teensy_comms::{data_structures::*, hid_common::*};
+use crate::{teensy_comms::data_structures::*, utilities::buffers::ByteBuffer};
 use rosrust_msg::std_msgs;
 use std::{
     sync::{
@@ -13,7 +13,6 @@ pub struct HidROS {
     pub robot_status: RobotStatus,
     pub control_flag: Arc<RwLock<i32>>,
 
-    pub sensor_pubs: Vec<rosrust::Publisher<std_msgs::Float64MultiArray>>,
     pub proc_state_pubs: Vec<rosrust::Publisher<std_msgs::Float64MultiArray>>,
     pub proc_output_pubs: Vec<rosrust::Publisher<std_msgs::Float64MultiArray>>,
 }
@@ -29,16 +28,10 @@ impl HidROS {
     /// ```
     pub fn new() -> HidROS {
         let robot_status = RobotStatus::from_self();
-        let sensor_names = robot_status.get_sensor_names();
         let proc_names = robot_status.get_process_names();
 
         env_logger::init();
         rosrust::init("buffpy_hid");
-
-        let sensor_pubs = sensor_names
-            .iter()
-            .map(|name| rosrust::publish(name, 1).unwrap())
-            .collect();
 
         let proc_state_pubs = proc_names
             .iter()
@@ -55,7 +48,6 @@ impl HidROS {
             robot_status: robot_status,
             control_flag: Arc::new(RwLock::new(0)),
 
-            sensor_pubs: sensor_pubs,
             proc_state_pubs: proc_state_pubs,
             proc_output_pubs: proc_output_pubs,
         }
@@ -81,19 +73,19 @@ impl HidROS {
         hidros
     }
 
-    /// Publish sensor data to ROS
-    pub fn publish_sensors(&self) {
-        self.sensor_pubs
-            .iter()
-            .enumerate()
-            .for_each(|(i, sensor_pub)| {
-                let mut msg = std_msgs::Float64MultiArray::default();
-                msg.data = self.robot_status.sensors[i].read().unwrap().data();
-                msg.data
-                    .push(self.robot_status.sensors[i].read().unwrap().timestamp());
-                sensor_pub.send(msg).unwrap();
-            });
-    }
+    // /// Publish sensor data to ROS
+    // pub fn publish_sensors(&self) {
+    //     self.sensor_pubs
+    //         .iter()
+    //         .enumerate()
+    //         .for_each(|(i, sensor_pub)| {
+    //             let mut msg = std_msgs::Float64MultiArray::default();
+    //             msg.data = self.robot_status.sensors[i].read().unwrap().data();
+    //             msg.data
+    //                 .push(self.robot_status.sensors[i].read().unwrap().timestamp());
+    //             sensor_pub.send(msg).unwrap();
+    //         });
+    // }
 
     /// Publish sensor data to ROS
     pub fn publish_process_states(&self) {
@@ -129,7 +121,7 @@ impl HidROS {
         while rosrust::is_ok() {
             let loopt = Instant::now();
 
-            self.publish_sensors();
+            // self.publish_sensors();
 
             if loopt.elapsed().as_millis() > 5 {
                 println!("HID ROS over cycled {}", loopt.elapsed().as_micros());
@@ -149,14 +141,14 @@ impl HidROS {
     pub fn pipeline(
         &mut self,
         shutdown: Arc<RwLock<bool>>,
-        control_tx: Sender<Vec<u8>>,
+        control_tx: Sender<ByteBuffer>,
         feedback_rx: Receiver<RobotStatus>,
     ) {
         self.shutdown = shutdown;
 
         self.robot_status = feedback_rx.recv().unwrap_or(RobotStatus::default());
 
-        let initializers = self.robot_status.get_initializers();
+        let initializers = self.robot_status.process_init_packets();
 
         initializers.iter().for_each(|init| {
             control_tx.send(init.clone()).unwrap();
@@ -165,7 +157,7 @@ impl HidROS {
         println!("HID-ROS Live");
 
         let mut current_report = 0;
-        let reports = self.robot_status.get_reports();
+        let reports = self.robot_status.process_request_packets();
 
         let mut publish_timer = Instant::now();
         let mut pub_switch = 0;
@@ -178,7 +170,7 @@ impl HidROS {
                 publish_timer = Instant::now();
                 match pub_switch {
                     0 => {
-                        self.publish_sensors();
+                        // self.publish_sensors();
                         pub_switch += 1;
                     }
                     1 => {
@@ -193,10 +185,10 @@ impl HidROS {
                 }
             }
 
-            control_tx.send(reports[current_report].clone()).unwrap();
+            // control_tx.send(reports[current_report].clone()).unwrap();
             current_report = (current_report + 1) % reports.len();
 
-            while loopt.elapsed().as_micros() < TEENSY_CYCLE_TIME_US as u128 {}
+            while loopt.elapsed().as_micros() < 1000 {}
         }
 
         // buffpy RUN relies on ros to shutdown

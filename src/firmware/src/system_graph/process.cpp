@@ -6,28 +6,73 @@
 #include "sensors/lsm6dsox.h"
 
 void Process::reset() {
-	Serial.println("Resetting PBO");
+	/*
+		Base implementation of process functions.
+		Only defined to show user when inheritance has issues.
+	*/
+	Serial.println("PBO Reset");
 }
 
 void Process::clear() {
-	Serial.println("Clearing PBO");
+	/*
+		Base implementation of process functions.
+		Only defined to show user when inheritance has issues.
+	*/
+	Serial.println("PBO Clear");
 }
 
 void Process::print() {
-	Serial.println("Printing PBO");
+	/*
+		Base implementation of process functions.
+		Only defined to show user when inheritance has issues.
+	*/
+	Serial.println("PBO Print");
 }
 
-void Process::context(Vector<float>* state) {
-	Serial.println("Acessing PBO context");
+void Process::setup(Vector<float>* config) {
+	/*
+		Base implementation of process functions.
+		Only defined to show user when inheritance has issues.
+		@param
+			config: (Vector<float>) Vector of configuration data, 
+				organization is handled by user
+	*/
+	Serial.println("PBO Setup");
+	config->print();
 }
 
-void Process::setup(Vector<float> config) {
-	Serial.println("Initalizing PBO");
-	config.print();
+void Process::context(Vector<float>* context) {
+	/*
+		Base implementation of process functions.
+		Only defined to show user when inheritance has issues.
+		@param
+			context: (Vector<float>*) empty vector to fill with the context
+	*/
+	Serial.println("Requested PBO context");
+	context->reset(0);
 }
 
 void Process::run(Vector<float>* input, Vector<float>* output) {
-	Serial.println("Running PBO");
+	/*
+		Base implementation of process functions.
+		Only defined to show user when inheritance has issues.
+		@param
+			input: (Vector<float>*) flattened Vector of input data for process
+			output: (Vector<float>*) flattened Vector of output data from process
+	*/
+	Serial.println("PBO Run");
+	output->reset(0);
+}
+
+bool Process::operator==(const Process& p) {
+	/*
+		Base implementation of process functions.
+		Only defined to show user when inheritance has issues.
+		@param
+			
+	*/
+	Serial.println("PBO Comparison");
+	return false;
 }
 
 

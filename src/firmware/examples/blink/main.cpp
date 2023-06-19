@@ -57,12 +57,10 @@ int main() {
 
 	timers.delay_millis(0, 1);
 
-	Serial.printf("timers: %f, %f, %f us\n", timers.micros(0), timers.micros(1), timers.micros(2));
-	Serial.printf("timer diff: %f %f\n", timers.micros(2) - timers.micros(0), timers.micros(2) - timers.micros(1));
-	Serial.printf("timers: %f, %f, %f ms\n", timers.millis(0), timers.millis(1), timers.millis(2));
-	Serial.printf("timer diff: %f %f\n", timers.millis(2) - timers.millis(0), timers.millis(2) - timers.millis(1));
-	Serial.printf("timers: %f, %f, %f s\n", timers.secs(0), timers.secs(1), timers.secs(2));
-	Serial.printf("timer diff: %f %f\n", timers.secs(2) - timers.secs(0), timers.secs(2) - timers.secs(1));
+	timers.print(0);
+	timers.print(1);
+	timers.print(2);
+	
 	Serial.println("Start blink tests");
 
 	int errors = runTests();

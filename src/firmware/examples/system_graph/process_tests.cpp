@@ -8,101 +8,90 @@
 #include "sensors/lsm6dsox.h"
 
 
+void simple_proc_test(Process* p) {
+	p->reset();
+	p->print();
+
+	Vector<float> inputs(0);
+	Vector<float> outputs(0);
+	Vector<float> state(0);
+	p->run(&inputs, &outputs);
+	p->run(&inputs, &outputs);
+	p->run(&inputs, &outputs);
+
+	Serial.print("output\t"); outputs.print();
+
+	p->context(&state);
+	Serial.print("context\t"); state.print();
+
+	p->print();
+
+	p->clear();
+	p->print();
+}
+
+void setup_proc_test(Process* p, Vector<float>* config, int num_inputs) {
+	p->reset();
+	p->print();
+
+	p->setup(config);
+
+	Vector<float> inputs(num_inputs);
+	Vector<float> outputs(0);
+	Vector<float> context(0);
+	p->run(&inputs, &outputs);
+	p->run(&inputs, &outputs);
+	p->run(&inputs, &outputs);
+
+	Serial.print("output\t"); outputs.print();
+
+	p->context(&context);
+	Serial.print("context\t"); context.print();
+
+	p->print();
+
+	p->reset();
+	p->print();
+}
+
+
 int main() {
 	while(!Serial){}
 
 	Serial.println("=== Starting PBO tests ===");
-
 	Process p;
-
-	p.clear();
-	p.reset();
-	p.print();
-
-	Vector<float> inputs(1);
-	Vector<float> outputs(1);
-	Vector<float> state(1);
-	p.run(&inputs, &outputs);
-
-	Serial.println("Process outputs:");
-	outputs.print();
-
-	Serial.println("Process State:");
-	p.context(&state);
-	state.print();
-
-	p.print();
+	simple_proc_test(&p);
 
 	Serial.println("=== Starting LSM6DSOX tests ===");
 
 	LSM6DSOX imu;
-
-	imu.clear();
-	imu.reset();
-	imu.print();
-
-	outputs.reset(9);
-	imu.run(&inputs, &outputs);
-	imu.run(&inputs, &outputs);
-	imu.run(&inputs, &outputs);
-
-	Serial.println("LSM6DSOX outputs:");
-	outputs.print();
-
-	Serial.println("Process State:");
-	state.reset(0);
-	imu.context(&state);
-	state.print();
-
-	imu.print();
+	simple_proc_test(&imu);
 
 	Serial.println("=== Starting ComplimentaryFilter tests ===");
 
 	ComplimentaryFilter cmf;
+	Vector<float> cmf_config(0);
+	cmf_config.push(0.6);
+	setup_proc_test(&cmf, &cmf_config, 12);
 
-	cmf.clear();
-	cmf.reset();
-	cmf.print();
-
-	inputs.reset(12);
-	outputs.reset(9);
-	cmf.run(&inputs, &outputs);
-	cmf.run(&inputs, &outputs);
-	cmf.run(&inputs, &outputs);
-
-	Serial.println("ComplimentaryFilter outputs:");
-	outputs.print();
-
-	Serial.println("Process State:");
-	cmf.context(&state);
-	state.print();
-
-	cmf.print();
-
-	Serial.println("=== Starting Factory tests ===");
+	Serial.println("=== Starting Factory tests ==="); Serial.flush();
 
 	Process_Factory p_fact;
 
-	Vector<Process*> p_list(2);
-	p_fact.new_proc("LSM");
+	Vector<Process*> p_list(0);
+	p_list.print();
 	p_list.push(p_fact.new_proc("LSM"));
+	p_list.print();
 	p_list.push(p_fact.new_proc("CMF"));
-	// p_list.push(&imu);
+	p_list.print();
 
-	p_list[0]->run(&inputs, &outputs);
-	p_list[0]->run(&inputs, &outputs);
-	p_list[0]->run(&inputs, &outputs);
-
-	p_list[0]->print();
-
-	p_list[1]->run(&inputs, &outputs);
-	p_list[1]->run(&inputs, &outputs);
-	p_list[1]->run(&inputs, &outputs);
-
-	p_list[1]->print();
+	Serial.println("=== LSM6DSOX ===");
+	simple_proc_test(p_list[0]);
+	Serial.println("=== ComplimentaryFilter ===");
+	setup_proc_test(p_list[1], &cmf_config, 12);
 
 
 	Serial.println("=== Finished Process tests ===");
 
-	// while(1) {}
+	return 0;
 }

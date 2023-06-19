@@ -80,6 +80,7 @@ impl PageBuffer {
 /// buffer for byte packet storage
 ///  stores the data, timestamp of the last access
 ///  and a flag for updates.
+#[derive(Clone)]
 pub struct ByteBuffer {
     pub data: Vec<u8>,      // data packet
     pub timestamp: Instant, // for time sensitive things
@@ -98,13 +99,20 @@ impl ByteBuffer {
         }
     }
 
+    pub fn hid() -> ByteBuffer {
+        /*
+            Create a new 64 byte buffer.
+        */
+        ByteBuffer::new(64)
+    }
+
     pub fn validate_index(&self, idx: usize) {
         if idx >= self.data.len() {
             panic!("Invalid index for operation {} < {}", idx, self.data.len());
         }
     }
 
-    pub fn get(&mut self, idx: usize) -> u8 {
+    pub fn get(&self, idx: usize) -> u8 {
         /*
             Read a value in the buffer.
         */
@@ -120,7 +128,7 @@ impl ByteBuffer {
         self.data[idx] = value;
     }
 
-    pub fn get_i32(&mut self, idx: usize) -> i32 {
+    pub fn get_i32(&self, idx: usize) -> i32 {
         /*
             Read an i32 from the buffer.
         */
@@ -134,7 +142,7 @@ impl ByteBuffer {
         ])
     }
 
-    pub fn get_u32(&mut self, idx: usize) -> u32 {
+    pub fn get_u32(&self, idx: usize) -> u32 {
         /*
             Read an i32 from the buffer.
         */
@@ -155,7 +163,7 @@ impl ByteBuffer {
         self.puts(idx, value.to_be_bytes().to_vec());
     }
 
-    pub fn get_float(&mut self, idx: usize) -> f64 {
+    pub fn get_float(&self, idx: usize) -> f64 {
         /*
             Read an f32 from the buffer.
             return as f64 just because.
@@ -170,7 +178,7 @@ impl ByteBuffer {
         ]) as f64
     }
 
-    pub fn get_floats(&mut self, idx: usize, n: usize) -> Vec<f64> {
+    pub fn get_floats(&self, idx: usize, n: usize) -> Vec<f64> {
         /*
             Read an f32 from the buffer.
             return as f64 just because.
@@ -200,7 +208,7 @@ impl ByteBuffer {
             .for_each(|(i, v)| self.put_float((4 * i as usize) + idx, *v));
     }
 
-    pub fn gets(&mut self, idx: usize, n: usize) -> Vec<u8> {
+    pub fn gets(&self, idx: usize, n: usize) -> Vec<u8> {
         /*
             Read a vec of values from the buffer.
         */
@@ -227,7 +235,7 @@ impl ByteBuffer {
         self.timestamp = Instant::now();
     }
 
-    pub fn print_data(&self) {
+    pub fn print(&self) {
         /*
             Print the buffer.
         */

@@ -30,6 +30,11 @@
 void init_timers();
 uint32_t duration_info(uint32_t, uint32_t);
 
+/*
+	Class to provide multiple timers that have exceptional
+	precision (Still hardware limited).
+*/
+
 class FTYK {
 	private:
 		uint32_t timers[MAX_NUM_TIMERS];
@@ -38,13 +43,15 @@ class FTYK {
 		FTYK();
 		void set(int);
 		void mark(int);
-		uint32_t cycles(int);
+		int cycles(int);
 		float nanos(int);
 		float micros(int);
 		float millis(int);
 		float secs(int);
 		float delay_micros(int, float);
 		float delay_millis(int, float);
+		void print(int);
+		void print(int, String);
 };
 
 #endif

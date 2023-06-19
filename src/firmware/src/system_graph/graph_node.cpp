@@ -6,44 +6,120 @@
 #include "sensors/lsm6dsox.h"
 
 GraphNode::GraphNode() {
-	output_shape = 0;
+	/*
+		Default constructor for a GraphNode
+		Sets everything to 0 (not values, shapes: zero inputs, zero outputs and zero config data)
+	*/
 	inputs.reset(0);
-	proc_out.reset(0);
-	setup_data.reset(0);
+	output_buffer.reset(0);
+	config_buffer.reset(0);
 }
 
-GraphNode::GraphNode(Process* p, int outputs, int configs, Vector<int> input_ids) {
+GraphNode::GraphNode(Process* p, int configs, Vector<int> input_ids) {
+	/*
+		GraphNode constructor
+		@param
+			p: (Process*) The driving process for this node
+			configs: (int) number of config values, size of buffer (always floats)
+			input_ids: (Vector<int>) the identifiers of input nodes (in order of concatenation),
+				does not specify the process index but a unique process id associated with each process
+	*/
 	proc = p;
-	output_shape = outputs;
+	proc->reset();
 	config_shape = configs;
 
 	inputs = input_ids;
-	proc_out.reset(0);
-	setup_data.reset(0);
+	output_buffer.reset(0);
+	config_buffer.reset(0);
 }
 
-void GraphNode::setup_proc() {
-	proc->setup(setup_data);
+void GraphNode::set_config(int configs) {
+	config_shape = configs;
 }
 
-void GraphNode::run_proc(Vector<float>* input_buffer) {
-	proc->run(input_buffer, &proc_out);
+void GraphNode::set_inputs(Vector<int> input_ids) {
+	inputs = input_ids;
+}
+
+void GraphNode::set_process(Process* process) {
+	proc = process;
+}
+
+bool GraphNode::setup_proc() {
+	/*
+		Call the processes setup function with the config buffer
+		Does nothing when not configured.
+		@return
+			status: (bool) if setup was called.
+	*/
+	if (is_configured()) {
+		proc->setup(&config_buffer);
+		return true;		
+	}
+	return false;
+}
+
+bool GraphNode::run_proc(Vector<float>* input_buffer) {
+	/*
+		Call the processes run function. Does nothing if not configured
+		@param
+			input_buffer: (Vector<float>*) concatenated outputs of processes
+				listed in input_ids
+		@return
+			status: (bool) if run was called.
+	*/
+	if (is_configured()) {
+		proc->run(input_buffer, &output_buffer);
+		return true;		
+	}
+	return false;
 }
 
 Vector<float>* GraphNode::output() {
-	return &proc_out;
+	/*
+		Get a pointer to the output buffer
+		@return
+			output: (Vector<float>*) buffer of output data
+	*/
+	return &output_buffer;
 }
 
 Vector<float>* GraphNode::config() {
-	return &setup_data;
+	/*
+		Get a pointer to the setup buffer
+		@return
+			config: (Vector<float>*) buffer of setup data
+	*/
+	return &config_buffer;
+}
+
+Vector<float>* GraphNode::context() {
+	/*
+		Get a pointer to the setup buffer
+		@return
+			config: (Vector<float>*) buffer of setup data
+	*/
+	proc->context(&context_buffer);
+	return &context_buffer;
 }
 
 Vector<int>* GraphNode::input_ids() {
+	/*
+		Get a pointer to the input_ids buffer
+		@return
+			input_ids: (Vector<float>*) buffer of input ids
+	*/
 	return &inputs;
 }
 
 bool GraphNode::is_configured() {
-	return config_shape == setup_data.size();
+	/*
+		Check if the process is configured. Needed because
+		setup data may be sent in chunks.
+		@return
+			status: (bool) if process is configured
+	*/
+	return config_shape == config_buffer.size();
 }
 
 void GraphNode::print_proc() {
@@ -52,6 +128,6 @@ void GraphNode::print_proc() {
 
 void GraphNode::print_output() {
 	Serial.print("\t");
-	proc_out.print();
+	output_buffer.print();
 }
 

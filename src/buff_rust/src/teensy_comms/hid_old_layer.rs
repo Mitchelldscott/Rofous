@@ -38,20 +38,19 @@ impl HidLayer {
         let mut hidros = HidROS::new();
 
         // create the rust channels
-        let (feedback_tx, feedback_rx): (Sender<RobotStatus>, Receiver<RobotStatus>) =
-            mpsc::channel();
-        let (control_tx, control_rx): (Sender<Vec<u8>>, Receiver<Vec<u8>>) = mpsc::channel();
+        let (reply_tx, reply_rx): (Sender<RobotStatus>, Receiver<RobotStatus>) = mpsc::channel();
+        let (send_tx, send_rx): (Sender<Vec<u8>>, Receiver<Vec<u8>>) = mpsc::channel();
 
         let hidwriter_handle = spawn(move || {
-            hidwriter.pipeline(shutdown, control_rx);
+            hidwriter.pipeline(shutdown, send_rx);
         });
 
         let hidros_handle = spawn(move || {
-            hidros.pipeline(shdn2, control_tx, feedback_rx);
+            hidros.pipeline(shdn2, send_tx, reply_rx);
         });
 
         let hidreader_handle = spawn(move || {
-            hidreader.pipeline(shdn1, feedback_tx);
+            hidreader.pipeline(shdn1, reply_tx);
         });
 
         hidreader_handle.join().expect("HID Reader failed");
@@ -72,27 +71,20 @@ impl HidLayer {
         let mut hidapi = HidApi::new().expect("Failed to create API instance");
         let mut hidreader = HidReader::new(&mut hidapi, vid, pid);
         let mut hidwriter = HidWriter::new(&mut hidapi, vid, pid);
-        let mut hidros = HidROS::new();
 
         // create the rust channels
-        let (feedback_tx, feedback_rx): (Sender<RobotStatus>, Receiver<RobotStatus>) =
-            mpsc::channel();
-        let (control_tx, control_rx): (Sender<Vec<u8>>, Receiver<Vec<u8>>) = mpsc::channel();
+        let (reply_tx, reply_rx): (Sender<RobotStatus>, Receiver<RobotStatus>) = mpsc::channel();
+        let (send_tx, send_rx): (Sender<Vec<u8>>, Receiver<Vec<u8>>) = mpsc::channel();
 
         let hidwriter_handle = spawn(move || {
-            hidwriter.pipeline(shutdown, control_rx);
-        });
-
-        let hidros_handle = spawn(move || {
-            hidros.pipeline(shdn2, control_tx, feedback_rx);
+            hidwriter.pipeline(shutdown, send_rx);
         });
 
         let hidreader_handle = spawn(move || {
-            hidreader.pipeline(shdn1, feedback_tx);
+            hidreader.pipeline(shdn1, reply_tx);
         });
 
         hidreader_handle.join().expect("HID Reader failed");
-        hidros_handle.join().expect("HID ROS failed");
         hidwriter_handle.join().expect("HID Writer failed");
     }
 }

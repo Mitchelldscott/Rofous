@@ -1,133 +1,27 @@
-pub static MAX_SENSOR_BUFFER_SIZE: usize = 10;
+use crate::utilities::buffers::ByteBuffer;
+
+pub static MAX_PROCESS_IO: usize = 10;
+pub static MAX_CONFIG_SIZE: usize = 40;
 pub static MAX_PROCESS_STATES: usize = 10;
-pub static MAX_CONFIG_SIZE: usize = 10;
-pub static MAX_PROCESS_IO: usize = 14;
-
-#[derive(Clone)]
-pub struct EmbeddedDevice {
-    name: String,
-    driver: String,
-    timestamp: f64,
-    data: Vec<f64>,
-    config: Vec<u8>,
-}
-
-impl EmbeddedDevice {
-    pub fn default() -> EmbeddedDevice {
-        EmbeddedDevice {
-            name: "UED".to_string(),
-            driver: "UNKNOWN".to_string(),
-            timestamp: 0.0,
-            data: vec![],
-            config: vec![],
-        }
-    }
-
-    pub fn anonymous(id: u8, data_size: usize, config: Vec<u8>, driver: &str) -> EmbeddedDevice {
-        EmbeddedDevice {
-            name: format!("embedded_device_{}", id),
-            driver: driver.to_string(),
-            timestamp: 0.0,
-            data: vec![0.0; data_size],
-            config: config,
-        }
-    }
-
-    pub fn named(
-        name: String,
-        driver: String,
-        data_size: usize,
-        config: Vec<u8>,
-    ) -> EmbeddedDevice {
-        EmbeddedDevice {
-            name: name,
-            driver: driver,
-            timestamp: 0.0,
-            data: vec![0.0; data_size],
-            config: config,
-        }
-    }
-
-    pub fn update(&mut self, data: Vec<f64>, time: f64) {
-        self.data = data[0..self.data.len()].to_vec();
-        self.timestamp = time;
-    }
-
-    pub fn print(&self) {
-        println!(
-            "{}\n\tconfig:\t{:?}\n\tData:\t{}\n\t\t{:?}",
-            self.name, self.config, self.timestamp, self.data
-        );
-    }
-
-    pub fn as_string_vec(&self) -> Vec<String> {
-        vec![self.timestamp.to_string()]
-            .into_iter()
-            .chain(
-                self.data
-                    .iter()
-                    .map(|x| x.to_string())
-                    .collect::<Vec<String>>(),
-            )
-            .collect()
-    }
-
-    pub fn get_initializers(&self, id: u8, mode: u8, dev_num: u8) -> Vec<Vec<u8>> {
-        self.config
-            .chunks(14)
-            .enumerate()
-            .map(|(i, chunk)| {
-                vec![id, mode, dev_num, i as u8]
-                    .into_iter()
-                    .chain(
-                        chunk
-                            .into_iter()
-                            .map(|x| (*x as f32).to_be_bytes())
-                            .flatten(),
-                    )
-                    .collect()
-            })
-            .collect()
-    }
-
-    pub fn name(&self) -> String {
-        self.name.clone()
-    }
-
-    pub fn data(&self) -> Vec<f64> {
-        self.data.clone()
-    }
-
-    pub fn shape(&self) -> usize {
-        self.data.len()
-    }
-
-    pub fn config(&self) -> Vec<u8> {
-        self.config.clone()
-    }
-
-    pub fn driver(&self) -> Vec<u8> {
-        self.driver.as_bytes().to_vec()
-    }
-
-    pub fn timestamp(&self) -> f64 {
-        self.timestamp.clone()
-    }
-}
+pub static MAX_SENSOR_BUFFER_SIZE: usize = 10;
 
 #[derive(Clone)]
 pub struct EmbeddedProcess {
     name: String,
     driver: String,
+
     config: Vec<f64>,
-    inputs: Vec<f64>,
     states: Vec<f64>,
+    inputs: Vec<f64>,
     outputs: Vec<f64>,
-    input_shapes: Vec<usize>,
+
     state_shape: usize,
+    input_shapes: Vec<usize>,
     output_shapes: Vec<usize>,
+
     input_names: Vec<String>,
     output_names: Vec<String>,
+
     timestamp: f64,
 }
 
@@ -137,11 +31,11 @@ impl EmbeddedProcess {
             name: "UED".to_string(),
             driver: "UNKNOWN".to_string(),
             config: vec![],
-            inputs: vec![],
             states: vec![],
+            inputs: vec![],
             outputs: vec![],
-            input_shapes: vec![0],
             state_shape: 0,
+            input_shapes: vec![0],
             output_shapes: vec![0],
             input_names: vec![],
             output_names: vec![],
@@ -151,7 +45,7 @@ impl EmbeddedProcess {
 
     pub fn set_config(&mut self, config: Vec<f64>) {
         if config.len() > MAX_CONFIG_SIZE {
-            panic!("No process config can exceed 15 values");
+            panic!("No process config can exceed {} values", MAX_CONFIG_SIZE);
         }
         self.config = config;
     }
@@ -169,11 +63,11 @@ impl EmbeddedProcess {
             name: name,
             driver: driver,
             config: config,
-            inputs: vec![0.0; input_shapes.iter().sum()],
             states: vec![0.0],
+            inputs: vec![0.0; input_shapes.iter().sum()],
             outputs: vec![0.0; output_shapes.iter().sum()],
-            input_shapes: input_shapes,
             state_shape: 0,
+            input_shapes: input_shapes,
             output_shapes: output_shapes,
             input_names: input_names,
             output_names: output_names,
@@ -207,22 +101,45 @@ impl EmbeddedProcess {
         self.timestamp = time;
     }
 
-    pub fn get_initializers(&self, id: u8, mode: u8, dev_num: u8) -> Vec<Vec<u8>> {
+    pub fn get_initializers(
+        &self,
+        report_id: u8,
+        report_mode: u8,
+        id: u8,
+        input_ids: Vec<u8>,
+    ) -> Vec<ByteBuffer> {
+        let mut reports = vec![];
+        let mut node_init = ByteBuffer::hid();
+        node_init.puts(0, vec![report_id, report_mode, id]);
+        node_init.puts(3, self.driver());
+        node_init.put(6, self.config_shape() as u8);
+        node_init.put(7, input_ids.len() as u8);
+        node_init.puts(8, input_ids);
+        reports.push(node_init);
+
         self.config
-            .chunks(14)
+            .chunks(MAX_PROCESS_IO)
             .enumerate()
-            .map(|(i, chunk)| {
-                vec![id, mode, dev_num, i as u8]
-                    .into_iter()
-                    .chain(
-                        chunk
-                            .into_iter()
-                            .map(|x| (*x as f32).to_be_bytes())
-                            .flatten(),
-                    )
-                    .collect()
-            })
-            .collect()
+            .for_each(|(i, chunk)| {
+                let mut buffer = ByteBuffer::hid();
+                buffer.puts(
+                    0,
+                    vec![report_id, report_mode + 1, id, i as u8, chunk.len() as u8],
+                );
+
+                buffer.puts(
+                    5,
+                    chunk
+                        .into_iter()
+                        .map(|x| (*x as f32).to_be_bytes())
+                        .flatten()
+                        .collect(),
+                );
+
+                reports.push(buffer);
+            });
+
+        reports
     }
 
     pub fn name(&self) -> String {
@@ -249,6 +166,10 @@ impl EmbeddedProcess {
         self.output_shapes.clone()
     }
 
+    pub fn config_shape(&self) -> usize {
+        self.config.len()
+    }
+
     pub fn n_inputs(&self) -> usize {
         self.input_shapes.iter().sum()
     }
@@ -271,5 +192,12 @@ impl EmbeddedProcess {
 
     pub fn timestamp(&self) -> f64 {
         self.timestamp
+    }
+
+    pub fn print(&self) {
+        println!("{:?}: {:?} [{}]", self.name, self.driver, self.timestamp);
+        println!("config:\n\t{:?}", self.config);
+        println!("state: [{}]\n\t{:?}", self.state_shape, self.states);
+        println!("output: {:?}\n\t{:?}", self.output_shapes, self.outputs);
     }
 }

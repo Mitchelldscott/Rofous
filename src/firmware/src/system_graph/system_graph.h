@@ -26,13 +26,15 @@ class SystemGraph {
 		SystemGraph();
 		// ~SystemGraph();
 		void collect_outputs(int, Vector<float>*);
-		void add(String, int, int, int, Vector<int>);
+		void add(String, int, int, Vector<int>);
 		void update_config(int, int, Vector<float>);
 		void spin();
 		void dump_all();
 		void handle_hid();
 		void init_process_hid();
 		void config_process_hid();
+		void process_state_hid();
+		void process_output_hid();
 };
 
 #endif

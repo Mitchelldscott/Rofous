@@ -1,36 +1,38 @@
 extern crate hidapi;
 
-use crate::teensy_comms::{data_structures::*, hid_common::*};
+use crate::teensy_comms::hid_layer::*;
 use crate::utilities::buffers::*;
-use hidapi::{HidApi, HidDevice};
-use std::{
-    sync::{mpsc::Sender, Arc, RwLock},
-    time::Instant,
-};
+use hidapi::HidDevice;
+use std::time::Instant;
 
 /// Responsible for initializing [RobotStatus] and continuously
 /// sending status reports
 pub struct HidReader {
-    pub shutdown: Arc<RwLock<bool>>,
     pub input: ByteBuffer,
-    pub robot_status: RobotStatus,
     pub teensy: HidDevice,
-    pub teensy_lifetime: f64,
-    pub rust_lifetime: f64,
+    pub layer: HidLayer,
 }
 
 impl HidReader {
-    pub fn new(hidapi: &mut HidApi, vid: u16, pid: u16) -> HidReader {
-        let device = init_hid_device(hidapi, vid, pid); // not two teensys, just two instances
-
+    pub fn new(layer: HidLayer) -> HidReader {
         HidReader {
-            shutdown: Arc::new(RwLock::new(false)),
-            input: ByteBuffer::new(64),
-            robot_status: RobotStatus::default(),
-            teensy: device,
-            teensy_lifetime: 0.0,
-            rust_lifetime: 0.0,
+            input: ByteBuffer::hid(),
+            teensy: layer.device(),
+            layer: layer,
         }
+    }
+
+    pub fn print(&self) {
+        println!(
+            "Reader Dump\n\trust time: {}\n\tteensy time: {}",
+            self.layer.lifetime(),
+            self.layer.mcu_lifetime(),
+        );
+        self.input.print();
+    }
+
+    pub fn buffer(&self) -> ByteBuffer {
+        self.input.clone()
     }
 
     /// Read data into the input buffer and return how many bytes were read
@@ -50,10 +52,11 @@ impl HidReader {
             Ok(value) => {
                 // reset watchdog... woof
                 self.input.timestamp = Instant::now();
+                self.layer.packet_read();
                 return *value;
             }
             _ => {
-                *self.shutdown.write().unwrap() = true;
+                // *self.shutdown.write().unwrap() = true;
             }
         }
         return 0;
@@ -74,28 +77,20 @@ impl HidReader {
     /// reader.wait_for_report_reply(255, 10);
     /// ```
     pub fn wait_for_report_reply(&mut self, packet_id: u8, timeout: u128) {
-        let mut loopt;
-        let t = Instant::now();
+        let wait_timer = Instant::now();
 
-        while t.elapsed().as_millis() < timeout {
-            loopt = Instant::now();
+        while wait_timer.elapsed().as_millis() < timeout {
+            let loopt = Instant::now();
+
+            // if !self.layer.is_connected() {
+            //     self.teensy = self.layer.device();
+            // }
 
             match self.read() {
                 64 => {
-                    if self.input.get(0) == 0 && self.input.get_float(60) == 0.0 {
-                        continue;
-                    } else if self.input.get_float(60) > TEENSY_CYCLE_TIME_US {
-                        println!(
-                            "Teensy cycle time is over the limit {}",
-                            self.input.get_float(60)
-                        );
-                    }
-
-                    self.teensy_lifetime = 0.0;
-                    self.rust_lifetime = 0.0;
+                    self.layer.reset_lifetime();
 
                     if self.input.get(0) == packet_id {
-                        println!("Teenys report {} reply received", packet_id);
                         return;
                     }
                 }
@@ -103,87 +98,12 @@ impl HidReader {
             }
 
             // HID runs at 1 ms
-            while loopt.elapsed().as_micros() < TEENSY_CYCLE_TIME_US as u128 {}
+            self.layer.loop_delay(loopt);
         }
 
         // If packet never arrives
-        *self.shutdown.write().unwrap() = true;
-        panic!("\tTimed out waiting for reply from Teensy");
-    }
-
-    /// Parse the stored HID packet into BuffBot Data Structures
-    ///
-    /// # Usage
-    ///
-    /// ```
-    /// // HID packet waiting
-    /// if reader.read() > 0 { // read returns the number of bytes (64 or bust)
-    ///     reader.parse_report();
-    /// }
-    /// ```
-    pub fn parse_report(&mut self) {
-        // println!(
-        //     "Lifetime relations {} - {} = {}",
-        //     self.teensy_lifetime,
-        //     self.rust_lifetime,
-        //     self.teensy_lifetime - self.rust_lifetime
-        // );
-
-        // if self.input.get_float(60) - self.teensy_lifetime > TEENSY_CYCLE_TIME_S + 1e-2 {
-        //     println!(
-        //         "Teensy cycle time is over the limit {}",
-        //         self.input.get_float(60) - self.teensy_lifetime
-        //     );
-        // }
-
-        self.teensy_lifetime = self.input.get_float(60);
-        // println!("Read packet: {} {}", self.input.get(0), self.teensy_lifetime as f64 / 1e6); // as seconds
-
-        // match the report number to determine the structure
-        if self.input.get(0) == SENSOR_REPORT_ID {
-            if self.input.get(1) == READ_MODE {
-                self.robot_status.update_sensor(
-                    self.input.get(2) as usize,
-                    self.input.get_floats(3, MAX_SENSOR_BUFFER_SIZE),
-                    self.teensy_lifetime,
-                );
-            }
-        }
-
-        if self.input.get(0) == MOTOR_REPORT_ID {
-            if self.input.get(1) == READ_MODE {
-                self.robot_status.update_motor(
-                    self.input.get(2) as usize,
-                    self.input.get_floats(3, MAX_SENSOR_BUFFER_SIZE),
-                    self.teensy_lifetime,
-                );
-            }
-        }
-
-        if self.input.get(0) == PROC_REPORT_ID {
-            if self.input.get(1) == READ_INPUT_MODE {
-                self.robot_status.update_proc_input(
-                    self.input.get(2) as usize,
-                    self.input.get_floats(3, MAX_PROCESS_IO),
-                    self.teensy_lifetime,
-                );
-            }
-            if self.input.get(1) == READ_STATE_MODE {
-                self.robot_status.update_proc_state(
-                    self.input.get(2) as usize,
-                    self.input.get(3) as usize,
-                    self.input.get_floats(4, MAX_PROCESS_STATES),
-                    self.teensy_lifetime,
-                );
-            }
-            if self.input.get(1) == READ_OUTPUT_MODE {
-                self.robot_status.update_proc_output(
-                    self.input.get(2) as usize,
-                    self.input.get_floats(3, MAX_PROCESS_STATES),
-                    self.teensy_lifetime,
-                );
-            }
-        }
+        self.layer.shutdown();
+        println!("HID Reader timed out waiting for reply from Teensy");
     }
 
     /// Main function to spin and connect the teensys
@@ -199,32 +119,54 @@ impl HidReader {
     /// reader.spin();       // runs until watchdog times out
     /// ```
     pub fn spin(&mut self) {
-        let mut readt = Instant::now();
-
-        while !*self.shutdown.read().unwrap() {
+        while !self.layer.is_shutdown() {
             let loopt = Instant::now();
 
             match self.read() {
                 64 => {
-                    self.parse_report();
-                    readt = Instant::now();
+                    if self.input.get(0) == 0 && self.input.get_float(60) == 0.0 {
+                        continue;
+                    } else if self.input.get_float(60) - self.layer.mcu_lifetime()
+                        > TEENSY_CYCLE_TIME_US
+                    {
+                        println!(
+                            "Teensy cycle time is over the limit {}",
+                            self.input.get_float(60) - self.layer.mcu_lifetime()
+                        );
+                    }
+                    // self.input.print();
+                    self.layer.report_parser(&self.input);
                 }
 
                 _ => {
-                    if readt.elapsed().as_millis() > 10 && readt.elapsed().as_millis() % 10 == 0 {
+                    let timestamp = self.input.timestamp.elapsed();
+                    if timestamp.as_secs() > MCU_NO_COMMS_TIMEOUT {
+                        println!("HID Reader watchdog called for shutdown");
+                        self.layer.shutdown();
+                    } 
+                    else if timestamp.as_millis() > MCU_NO_COMMS_RESET {
+                        if !self.layer.is_connected() { // watchdog... woof
+                            // writing also failed, try to re-init
+                            println!("HID Reader attempting to reconnect");
+                            self.teensy = self.layer.device();
+                        }                   
+                    }
+                    else if timestamp.as_millis() > TEENSY_CYCLE_TIME_MS as u128
+                        && timestamp.as_millis() % 10 == 0
+                    {
                         println!(
-                            "HID Reader: No reply from Teensy for {}",
-                            readt.elapsed().as_millis()
+                            "HID Reader: No reply from Teensy for {} ms",
+                            timestamp.as_millis()
                         );
                     }
+
                 }
             }
 
-            self.rust_lifetime += TEENSY_CYCLE_TIME_S;
             if loopt.elapsed().as_micros() > TEENSY_CYCLE_TIME_US as u128 {
-                println!("HID reader over cycled {}", loopt.elapsed().as_micros());
+                println!("HID Reader over cycled {}", loopt.elapsed().as_micros());
             }
-            while loopt.elapsed().as_micros() < TEENSY_CYCLE_TIME_US as u128 {}
+            self.layer.loop_delay(loopt);
         }
     }
 
@@ -234,15 +176,14 @@ impl HidReader {
     /// # Example
     ///
     /// see [HidLayer::pipeline()]
-    pub fn pipeline(&mut self, shutdown: Arc<RwLock<bool>>, feedback_tx: Sender<RobotStatus>) {
-        self.shutdown = shutdown;
-
-        feedback_tx.send(self.robot_status.clone()).unwrap();
+    pub fn pipeline(&mut self) {
         println!("HID-reader Live");
 
         // wait for initializers reply
-        self.wait_for_report_reply(255, 50);
+        self.wait_for_report_reply(255, 5000);
 
         self.spin();
+
+        println!("HID-reader Shutdown");
     }
 }

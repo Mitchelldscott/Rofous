@@ -1,5 +1,11 @@
 #ifndef BUFF_LOGGERS
 #define BUFF_LOGGERS
+/*
+	Plans for this is to become like unity macros
+	- used for assertions and debug printing
+	- need to support unit testing
+	- if it gets big enough start making a fancy serial layer (PC side)
+*/
 
 int int_eq(int, int, String);
 int ints_eq(int, int*, int, String);

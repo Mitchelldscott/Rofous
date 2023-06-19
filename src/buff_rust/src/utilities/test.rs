@@ -18,10 +18,6 @@ pub mod byu_tests {
 
         assert_eq!(byu.load_string("robot_type"), "demo");
 
-        byu.load_sensors();
-
-        byu.load_motors();
-
         byu.load_processes();
     }
 }
@@ -157,7 +153,7 @@ pub mod buffer_tests {
 
         let mut buffer = ByteBuffer::new(64);
         buffer.puts(2, n1.clone());
-        buffer.print_data();
+        buffer.print();
 
         assert_eq!(
             buffer.get_float(2),

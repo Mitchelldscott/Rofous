@@ -1,5 +1,5 @@
-use buff_rust::teensy_comms::buff_hid::*;
+use buff_rust::teensy_comms::hid_layer::*;
 
 fn main() {
-    HidLayer::pipeline();
+    let layer = HidLayer::default();
 }
