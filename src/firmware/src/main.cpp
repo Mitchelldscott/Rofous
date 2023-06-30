@@ -6,7 +6,7 @@
 #define MASTER_CYCLE_TIME_US 	1000.0
 #define MASTER_CYCLE_TIME_MS 	1.0
 #define MASTER_CYCLE_TIME_S 	0.001
-#define MASTER_CYCLE_TIME_ERR 	1.00025 // ms
+#define MASTER_CYCLE_TIME_ERR 	1.001 // ms
 
 FTYK timers;
 SystemGraph sg;
