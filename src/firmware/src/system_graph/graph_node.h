@@ -34,7 +34,7 @@ class GraphNode {
 
 	public:
 		GraphNode();
-		GraphNode(Process*, int, Vector<int>);
+		GraphNode(Process*, int, int, int*);
 
 		void set_config(int);
 		void set_inputs(Vector<int>);

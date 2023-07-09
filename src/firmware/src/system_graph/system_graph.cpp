@@ -19,18 +19,21 @@ void SystemGraph::collect_outputs(int index, Vector<float>* data) {
 	Vector<int> ids = *nodes[index]->input_ids();
 	for (int i = 0; i < ids.size(); i++) {
 		int node_id = node_ids.find(ids[i]);
+		Serial.printf("node id %i\n", node_id);
 		if (node_id >= 0) {
-			data->append(nodes[node_id]->output());		
+			data->append(nodes[node_id]->output());
+			Serial.print("output "); nodes[node_id]->output()->print();	
 		}
 	}
+	data->print();
 }
 
-void SystemGraph::add(String proc_id, int id, int n_configs, Vector<int> inputs) {
+void SystemGraph::add(String proc_id, int id, int n_configs, int n_inputs, int* inputs) {
 	// status.push(0);
 	int index = node_ids.find(id);
 	if (index == -1) {
 		node_ids.push(id);
-		nodes.push(new GraphNode(factory.new_proc(proc_id), n_configs, inputs));
+		nodes.push(new GraphNode(factory.new_proc(proc_id), n_configs, n_inputs, inputs));
 
 		if (n_configs == 0) {
 			status.push(1);
@@ -41,18 +44,18 @@ void SystemGraph::add(String proc_id, int id, int n_configs, Vector<int> inputs)
 	}
 	else {
 		nodes[index]->set_config(n_configs);
-		nodes[index]->set_inputs(inputs);
+		// nodes[index]->set_inputs(inputs);
 		// nodes[index]->set_process(factory.new_proc(proc_id)); // Doesn't seem to reinit imu but it should... imu init takes forever though so whatever
 	}
 }
 
-void SystemGraph::update_config(int id, int chunk_id, Vector<float> config) {
+void SystemGraph::update_config(int id, int chunk_id, int n_configs, float* config) {
 	int node_index = node_ids.find(id);
 	if (node_index == -1) {
 		Serial.printf("Node not found %i\n", id);
 		return;
 	}
-	nodes[node_index]->config()->insert(config, chunk_id * config.size());
+	nodes[node_index]->config()->insert(config, chunk_id * n_configs, n_configs);
 	if (nodes[node_index]->is_configured()) {
 		status[node_index] = 1;
 		nodes[node_index]->setup_proc();
@@ -63,9 +66,9 @@ void SystemGraph::spin() {
 	Vector<float> input(0);
 	for (int i = 0; i < nodes.size(); i++) {
 		if (status[i] == 1) {
-			// collect_outputs(i, &input);
-			// Serial.print("inputs ");
-			// input.print();
+			collect_outputs(i, &input);
+			Serial.print("inputs ");
+			input.print();
 			// nodes[i]->run_proc(&input);
 		}
 	}
@@ -145,11 +148,11 @@ void SystemGraph::init_process_hid() {
 	Serial.printf("new process %i: ", id);
 	Serial.print(key);
 	Serial.printf(" %i %i\n", n_config, n_inputs);
-	Vector<int> input_ids(n_inputs);
+	int input_ids[n_inputs];
 	for (int i = 0; i < n_inputs; i++) {
 		input_ids[i] = report.get(i + 8);
 	}
-	add(key, id, n_config, input_ids);
+	add(key, id, n_config, n_inputs, input_ids);
 }
 
 void SystemGraph::config_process_hid() {
@@ -158,11 +161,11 @@ void SystemGraph::config_process_hid() {
 	int chunk_size = report.get(4);
 	Serial.printf("configure %i, %i, %i\n",id, chunk_num, chunk_size);
 
-	Vector<float> data(chunk_size);
+	float data[chunk_size];
 	for (int i = 0; i < chunk_size; i++) {
 		data[i] = report.get_float((4 * i) + 5);
 	}
-	update_config(id, chunk_num, data);
+	update_config(id, chunk_num, chunk_size, data);
 }
 
 void SystemGraph::process_state_hid() {

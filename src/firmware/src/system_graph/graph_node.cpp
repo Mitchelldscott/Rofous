@@ -15,7 +15,7 @@ GraphNode::GraphNode() {
 	config_buffer.reset(0);
 }
 
-GraphNode::GraphNode(Process* p, int configs, Vector<int> input_ids) {
+GraphNode::GraphNode(Process* p, int configs, int n_inputs, int* input_ids) {
 	/*
 		GraphNode constructor
 		@param
@@ -28,7 +28,7 @@ GraphNode::GraphNode(Process* p, int configs, Vector<int> input_ids) {
 	proc->reset();
 	config_shape = configs;
 
-	inputs = input_ids;
+	inputs.from_array(input_ids, n_inputs);
 	output_buffer.reset(0);
 	config_buffer.reset(0);
 }

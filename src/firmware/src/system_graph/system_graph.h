@@ -26,8 +26,8 @@ class SystemGraph {
 		SystemGraph();
 		// ~SystemGraph();
 		void collect_outputs(int, Vector<float>*);
-		void add(String, int, int, Vector<int>);
-		void update_config(int, int, Vector<float>);
+		void add(String, int, int, int, int*);
+		void update_config(int, int, int, float*);
 		void spin();
 		void dump_all();
 		void handle_hid();

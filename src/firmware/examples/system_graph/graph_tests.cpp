@@ -14,20 +14,30 @@ int main() {
 	float tmp[1] = {0.6};
 	int cmf_inputs[2] = {1, 0};
 
+
+	Serial.println("=== Init Process Factory ===");
 	Process_Factory p_fact;
+
+	Serial.println("=== Init Graph Node ===");
 	GraphNode* nodelist[2];
 
-	nodelist[0] = new GraphNode(p_fact.new_proc("LSM"), 0, Vector<int>(0));
-	nodelist[1] = new GraphNode(p_fact.new_proc("CMF"), 1, Vector<int>(cmf_inputs, 2));
+	Serial.println("=== Add LSM6DSOX ===");
+	nodelist[0] = new GraphNode(p_fact.new_proc("LSM"), 0, 1, cmf_inputs);
 
+	Serial.println("=== Add Complimentary Filter ===");
+	nodelist[1] = new GraphNode(p_fact.new_proc("CMF"), 1, 2, cmf_inputs);
+
+	Serial.println("=== Init input Vector ===");
 	Vector<float> input(1);
 
+	Serial.println("=== Run Process 0 ===");
 	nodelist[0]->run_proc(&input);
 	nodelist[0]->run_proc(&input);
 	nodelist[0]->run_proc(&input);
 	nodelist[0]->print_proc();
 	nodelist[0]->print_output();
 
+	Serial.println("=== Setup Process 1 ===");
 	input.reset(3);
 	input.append(nodelist[0]->output());
 	Serial.print("CMF inputs\t"); input.print();
