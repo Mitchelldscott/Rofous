@@ -2,7 +2,7 @@
 #include <Adafruit_LSM6DSOX.h>
 
 #include "utilities/vector.h"
-#include "system_graph/process.h"
+#include "syncor/process.h"
 
 
 #ifndef BUFF_LSM6DSOX_H

@@ -1,12 +1,26 @@
 #! /bin/bash
 
-export UBUNTU_VERSION=$(cut -f2 <<< $(lsb_release -r))
-
 #		Setup robot params
-export DOCKER=False
-export PROJECT_ROOT=${PWD}
-export HOSTNAME=$HOSTNAME 
 export SUDO='sudo'
+export DOCKER=False
+export PLATFORM=$(uname)
+export PROJECT_ROOT=${PWD}
+
+#################### Platform specific setup ####################
+
+if [[ "$PLATFORM" == "Linux"* ]]; then
+	export UBUNTU_VERSION=$(cut -f2 <<< $(lsb_release -r))
+elif [[ "$PLATFORM" == "Darwin" || "$PLATFORM" == "msys" || "$PLATFORM" == "win32" ]]; then
+	export UBUNTU_VERSION="False"
+else
+	echo -e "Unsupported OS... good luck!"
+fi
+
+echo -e "Setting up tools for ${PLATFORM}"
+echo -e "\tUbuntu\tDocker\tProject Root"
+echo -e "\t${UBUNTU_VERSION}\t${DOCKER}\t${PROJECT_ROOT}"
+
+#################### Docker tools setup ####################
 
 if [[ -f /.dockerenv ]]; then
 	SUDO=''
@@ -18,13 +32,14 @@ if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then
 	export ROS_DISTRO=noetic				# ROS for Ubuntu18
 elif [[ "${UBUNTU_VERSION}" == "18.04" ]]; then
 	export ROS_DISTRO=melodic
+else
+	export ROS_DISTRO=
 fi
 
 
 if [[ "${DOCKER}" == "False" ]]; then
 	alias spinup="cd ${PROJECT_ROOT}/containers && \
 		docker compose run "
-	
 else
 	export LC_ALL=C.UTF-8
     export LANG=C.UTF-8
@@ -35,6 +50,8 @@ if [[ "${PROJECT_ROOT}" != */rufous ]]; then
 	return
 fi
 
+#################### Python/ROS tools setup ####################
+
 PYTHONPATH=
 
 # If ROS is installed source the setup file
@@ -43,13 +60,6 @@ if [[ -f /opt/ros/${ROS_DISTRO}/setup.bash ]]; then
 	source /opt/ros/${ROS_DISTRO}/setup.bash
 fi
 
-#		setup Cargo tools
-
-if [[ "${PATH}" != *"/.cargo"*  && -f ${HOME}/.cargo/env ]]; then
-	source ${HOME}/.cargo/env
-fi
-
-#		Setup python tools (if reset replace the bin links)
 if [[ "$1" == "reset" ]]; then
 	if [[ -f "/usr/local/bin/buffpy" ]]; then
 		${SUDO} rm -rf "/usr/local/bin/buffpy"
@@ -70,7 +80,6 @@ if [[ ! -f "/usr/local/bin/run" ]]; then
 	${SUDO} chmod +x "/usr/local/bin/run"
 fi 
 
-
 # Only export if if not already in path
 if [[ "${PYTHONPATH}" != *"${PROJECT_ROOT}/buffpy/lib:"* ]]; then	
 	export PYTHONPATH="${PROJECT_ROOT}/buffpy/lib:${PYTHONPATH}" 
@@ -84,15 +93,23 @@ if [[ "${ROS_PACKAGE_PATH}" != *"rufous"* ]]; then
 	export ROS_PACKAGE_PATH="${PROJECT_ROOT}:${ROS_PACKAGE_PATH}"
 fi
 
-# Not totally clear but this solves an 
-# illegal instruction error with rospy.
-# Only for Jetson
-# the status of this issue needs to be double checked
+#################### Cargo setup ####################
+
+if [[ "${PATH}" != *"/.cargo"*  && -f ${HOME}/.cargo/env ]]; then
+	source ${HOME}/.cargo/env
+fi
+
+#################### Bash tools setup ####################
+
 alias bc="cd ${PROJECT_ROOT}"
 alias br="cd ${PROJECT_ROOT}/src/buff_rust"
 alias fw="cd ${PROJECT_ROOT}/src/firmware"
 alias bn="cd ${PROJECT_ROOT}/src/rknn_buffnet"
 
+# Not totally clear but this solves an 
+# illegal instruction error with rospy.
+# Only for Jetson
+# the status of this issue needs to be double checked
 if [[ "${HOSTNAME}" == "edge"* ]]; then
 	export OPENBLAS_CORETYPE=ARMV8
 	export ROS_IP=$(/sbin/ip -o -4 addr list wlan0 | awk '{print $4}' | cut -d/ -f1)

@@ -9,7 +9,6 @@ lsm6dsox:
   - config: [0]
   - inputs: []
   - outputs: [imu]
-  - output_shapes: [9]
   - driver: LSM
 
 ##############################
@@ -23,8 +22,6 @@ attitude_estimator:
  - config: [0.6]
  - inputs: [attitude, imu]
  - outputs: [attitude]
- - input_shapes: [9]
- - output_shapes: [3]
  - driver: CMF
 
 ##############################

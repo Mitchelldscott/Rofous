@@ -38,6 +38,19 @@ byte HidReport::get(int idx){
 	return data[idx];
 }
 
+void HidReport::get(int idx, int n, byte* arr){
+	/*
+		  Get the byte at packet[idx]
+		@param:
+			idx: index of byte to read
+			n: number of bytes to read
+			arr: byte array to fill
+	*/
+	for (int i = 0; i < n; i++) {
+		arr[i] = data[i + idx];
+	}
+}
+
 void HidReport::put(int idx, byte value){
 	/*
 		  Set the byte at packet[idx]
@@ -46,6 +59,18 @@ void HidReport::put(int idx, byte value){
 			value: the byte to write
 	*/
 	data[idx] = value;
+}
+
+void HidReport::put(int idx, int n, byte* arr){
+	/*
+		  Set the byte at packet[idx]
+		@param:
+			idx: index of the byte to set
+			value: the byte to write
+	*/
+	for (int i = 0; i < n; i++) {
+		data[i + idx] = arr[i];
+	}
 }
 
 int32_t HidReport::get_int32(int idx){

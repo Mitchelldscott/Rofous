@@ -1,12 +1,17 @@
 #include <Arduino.h>
 #include "utilities/timing.h"
-#include "utilities/loggers.h"
+#include "utilities/assertions.h"
+
 #include "sensors/lsm6dsox.h"
+
+//
+//		DEPRECATED
+//
+
 
 int imu_dev_cnt = 0;
 
 LSM6DSOX imu;
-
 
 int test_imu_read(void) {
 	int errors = 0;
@@ -26,11 +31,13 @@ int test_imu_read(void) {
 	imu.read_lis3mdl();
 	timer_mark(0);
 	
-	for (int i = 0; i < 9; i++) {
-		errors += float_neq(0.0, abs(imu.data[i]), "Failed");
-		errors += float_nan(imu.data[i]);		
-	}
-	Serial.println();
+	// for (int i = 0; i < 9; i++) {
+	// 	errors += assert_neq(0.0, abs(imu.data[i]), "Failed");
+	// 	errors += assert_not_nan(imu.data[i]);		
+	// }
+	// Serial.println();
+	assert_neq<float>(imu.data, 0.0, "IMU sensor value", 9);
+	assert_not_nan(imu.data, "IMU sensor value", 9);
 
 	return errors;
 }

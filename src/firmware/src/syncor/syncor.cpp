@@ -1,11 +1,11 @@
 #include <Arduino.h>
 #include "utilities/blink.h"
 #include "utilities/vector.h"
-#include "system_graph/process.h"
-#include "system_graph/graph_node.h"
-#include "system_graph/system_graph.h"
+#include "syncor/process.h"
+#include "syncor/syncor_node.h"
+#include "syncor/syncor.h"
 
-SystemGraph::SystemGraph() {
+SynCor::SynCor() {
 	lifetime = 0;
 	watch.set(0);
 	status.reset(0);
@@ -15,25 +15,21 @@ SystemGraph::SystemGraph() {
 	setup_blink();
 }
 
-void SystemGraph::collect_outputs(int index, Vector<float>* data) {
-	Vector<int> ids = *nodes[index]->input_ids();
-	for (int i = 0; i < ids.size(); i++) {
-		int node_id = node_ids.find(ids[i]);
-		Serial.printf("node id %i\n", node_id);
+void SynCor::collect_outputs(int index, Vector<float>* data) {
+	for (int i = 0; i < nodes[index]->n_inputs(); i++) {
+		int node_id = node_ids.find(nodes[index]->input_id(i));
 		if (node_id >= 0) {
 			data->append(nodes[node_id]->output());
-			Serial.print("output "); nodes[node_id]->output()->print();	
 		}
 	}
-	data->print();
 }
 
-void SystemGraph::add(String proc_id, int id, int n_configs, int n_inputs, int* inputs) {
+void SynCor::add(String proc_id, int id, int n_configs, int n_inputs, int* inputs) {
 	// status.push(0);
 	int index = node_ids.find(id);
 	if (index == -1) {
 		node_ids.push(id);
-		nodes.push(new GraphNode(factory.new_proc(proc_id), n_configs, n_inputs, inputs));
+		nodes.push(new SynCorNode(factory.new_proc(proc_id), n_configs, n_inputs, inputs));
 
 		if (n_configs == 0) {
 			status.push(1);
@@ -44,38 +40,43 @@ void SystemGraph::add(String proc_id, int id, int n_configs, int n_inputs, int* 
 	}
 	else {
 		nodes[index]->set_config(n_configs);
-		// nodes[index]->set_inputs(inputs);
+		nodes[index]->set_inputs(inputs, n_inputs);
 		// nodes[index]->set_process(factory.new_proc(proc_id)); // Doesn't seem to reinit imu but it should... imu init takes forever though so whatever
 	}
 }
 
-void SystemGraph::update_config(int id, int chunk_id, int n_configs, float* config) {
+void SynCor::update_config(int id, int chunk_id, int n_configs, float* config) {
 	int node_index = node_ids.find(id);
+	status[node_index] = 0;
+
 	if (node_index == -1) {
 		Serial.printf("Node not found %i\n", id);
 		return;
 	}
-	nodes[node_index]->config()->insert(config, chunk_id * n_configs, n_configs);
+
+	nodes[node_index]->config()->insert(config, chunk_id * n_configs, n_configs);	
 	if (nodes[node_index]->is_configured()) {
-		status[node_index] = 1;
 		nodes[node_index]->setup_proc();
+		status[node_index] = 1;
 	}
 }
 
-void SystemGraph::spin() {
+void SynCor::spin() {
 	Vector<float> input(0);
 	for (int i = 0; i < nodes.size(); i++) {
 		if (status[i] == 1) {
 			collect_outputs(i, &input);
-			Serial.print("inputs ");
-			input.print();
-			// nodes[i]->run_proc(&input);
+			nodes[i]->run_proc(&input);
+		}
+		else if (nodes[i]->is_configured()) {
+			nodes[i]->setup_proc();
+			status[i] = 1;
 		}
 	}
 }
 
-void SystemGraph::dump_all() {
-	Serial.printf("lifetime: %f\n", lifetime);
+void SynCor::dump_all() {
+	Serial.printf("SynCor lifetime: %f\n", lifetime);
 	Serial.print("Node ids\n\t");
 	node_ids.print();
 	for (int i = 0; i < nodes.size(); i++) {
@@ -84,7 +85,7 @@ void SystemGraph::dump_all() {
 	}
 }
 
-void SystemGraph::handle_hid() {
+void SynCor::handle_hid() {
 	switch (report.read()) {
 		case 64:
 			blink();										// only blink when connected to hid
@@ -137,7 +138,7 @@ void SystemGraph::handle_hid() {
 	watch.set(0);
 }
 
-void SystemGraph::init_process_hid() {
+void SynCor::init_process_hid() {
 	String key = "";
 	int id = report.get(2);
 	key += char(report.get(3));
@@ -155,7 +156,7 @@ void SystemGraph::init_process_hid() {
 	add(key, id, n_config, n_inputs, input_ids);
 }
 
-void SystemGraph::config_process_hid() {
+void SynCor::config_process_hid() {
 	int id = report.get(2);
 	int chunk_num = report.get(3);
 	int chunk_size = report.get(4);
@@ -168,7 +169,7 @@ void SystemGraph::config_process_hid() {
 	update_config(id, chunk_num, chunk_size, data);
 }
 
-void SystemGraph::process_state_hid() {
+void SynCor::process_state_hid() {
 	int id = report.get(2);
 	// Vector<float>* state = nodes[id]->context();
 	// report.put(3, state->size());
@@ -181,7 +182,7 @@ void SystemGraph::process_state_hid() {
 	}
 }
 
-void SystemGraph::process_output_hid() {
+void SynCor::process_output_hid() {
 	int id = report.get(2);
 	// Vector<float>* output = nodes[id]->output();
 	// for (int i = 0; i < output->size(); i++){

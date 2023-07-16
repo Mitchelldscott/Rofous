@@ -1,6 +1,6 @@
 // #include "unity.h"
 #include "utilities/timing.h"
-#include "utilities/loggers.h"
+#include "utilities/assertions.h"
 #include "robot_comms/hid_report.h"
 
 
@@ -16,15 +16,18 @@ int packet_put_test() {
 
 	// execute the function in question
 	timer.set(0);
-	for (int i = 0; i < HIDREPORT_SIZE_BYTES; i++) {
+	for (int i = 0; i < HID_REPORT_SIZE_BYTES; i++) {
 		outgoing_report.put(i, 0xFF);
 	}	
 	timer.mark(0);
 
 	// check the test
-	for (int i = 0; i < HIDREPORT_SIZE_BYTES; i++) {
-		errors += int_eq(0xFF, outgoing_report.get(i), "failed packet insert");
+	for (int i = 0; i < HID_REPORT_SIZE_BYTES; i++) {
+		errors += assert_eq<int>(0xFF, outgoing_report.get(i), "failed packet insert");
 	}
+	// byte* data[HID_REPORT_SIZE_BYTES];
+	// outgoing_report.get(0, HID_REPORT_SIZE_BYTES, data);
+	// return assert_eq()
 	return errors;
 }
 
@@ -32,22 +35,22 @@ int packet_get_test() {
 	int errors = 0;
 	Serial.printf("\nGET test:...\n");
 	// insert semi-random values 
-	for (int i = 0; i < HIDREPORT_SIZE_BYTES; i++) {
-		outgoing_report.put(i, HIDREPORT_SIZE_BYTES - i);
+	for (int i = 0; i < HID_REPORT_SIZE_BYTES; i++) {
+		outgoing_report.put(i, HID_REPORT_SIZE_BYTES - i);
 	}
 
 	// execute the function
 	int8_t tmp[64];
 	timer.set(0);
-	for (int i = 0; i < HIDREPORT_SIZE_BYTES; i++) {
+	for (int i = 0; i < HID_REPORT_SIZE_BYTES; i++) {
 		tmp[i] = outgoing_report.get(i);
 	}
 	timer.mark(0);
 
 	// check the output
-	for (int i = 0; i < HIDREPORT_SIZE_BYTES; i++) {
+	for (int i = 0; i < HID_REPORT_SIZE_BYTES; i++) {
 		// Sum error of inserted values
-		errors += int_eq(tmp[i], (HIDREPORT_SIZE_BYTES - i), "failed packet read");
+		errors += assert_eq<int>(tmp[i], (HID_REPORT_SIZE_BYTES - i), "failed packet read");
 	}
 
 	return errors;
@@ -56,23 +59,23 @@ int packet_get_test() {
 int packet_puts_gets_test() {
 	Serial.printf("\nPUTS/GETS test:...\n");
 	// insert semi-random values 
-	byte tmp1[HIDREPORT_SIZE_BYTES];
-	for (size_t i = 0; i < HIDREPORT_SIZE_BYTES; i++) {
-		tmp1[i] = HIDREPORT_SIZE_BYTES - i;
+	byte tmp1[HID_REPORT_SIZE_BYTES];
+	for (size_t i = 0; i < HID_REPORT_SIZE_BYTES; i++) {
+		tmp1[i] = HID_REPORT_SIZE_BYTES - i;
 	}
 
 	timer.set(0);
-	outgoing_report.rputs(tmp1, 0, HIDREPORT_SIZE_BYTES);
+	outgoing_report.rputs(tmp1, 0, HID_REPORT_SIZE_BYTES);
 	timer.mark(0);
 
 	// execute the function
-	byte tmp2[HIDREPORT_SIZE_BYTES];
+	byte tmp2[HID_REPORT_SIZE_BYTES];
 	timer.set(0);
-	outgoing_report.rgets(tmp2, 0, HIDREPORT_SIZE_BYTES);
+	outgoing_report.rgets(tmp2, 0, HID_REPORT_SIZE_BYTES);
 	timer.mark(0);
 
 	// check the output
-	return bytes_eq(tmp1, tmp2, HIDREPORT_SIZE_BYTES, "Failed Puts-Gets");
+	return assert_eq<byte>(tmp1, tmp2, "Failed Puts-Gets", HID_REPORT_SIZE_BYTES);
 }
 
 int packet_int32_test() {
@@ -80,41 +83,41 @@ int packet_int32_test() {
 	int32_t test_value = 913;
 	// insert semi-random values 
 	timer.set(0);
-	for (int i = 0; i < HIDREPORT_SIZE_BYTES; i += 4) {
+	for (int i = 0; i < HID_REPORT_SIZE_BYTES; i += 4) {
 		outgoing_report.put_int32(i, test_value);
 	}
 	timer.mark(0);
 
 	// check the values output from the function in question
-	int tmp[HIDREPORT_SIZE_BYTES / 4];
+	int tmp[HID_REPORT_SIZE_BYTES / 4];
 	timer.set(0);
-	for (int i = 0; i < HIDREPORT_SIZE_BYTES / 4; i++) {
+	for (int i = 0; i < HID_REPORT_SIZE_BYTES / 4; i++) {
 		tmp[i] = outgoing_report.get_int32(4 * i);
 	}
 	timer.mark(0);
 
 	// check the output
-	return ints_eq(int(test_value), tmp, HIDREPORT_SIZE_BYTES / 4, "Failed int32_t test");
+	return assert_eq<int>(tmp, int(test_value), "Failed int32_t test", HID_REPORT_SIZE_BYTES / 4);
 }
 
 
 int packet_float_test() {
-	int errors = 0;
+	// int errors = 0;
 	Serial.printf("\nFloat test:...\n");
 	float test_value = 3.14159;
 
 	// insert semi-random values 
 	timer.set(0);
-	for (int i = 0; i < HIDREPORT_SIZE_BYTES; i += 4) {
+	for (int i = 0; i < HID_REPORT_SIZE_BYTES; i += 4) {
 		outgoing_report.put_float(i, test_value);
 	}
 	timer.mark(0);
 	outgoing_report.print();
 
 	// check the values output from the function in question
-	float tmp[HIDREPORT_SIZE_BYTES / 4];
+	float tmp[HID_REPORT_SIZE_BYTES / 4];
 	timer.set(0);
-	for (int i = 0; i < HIDREPORT_SIZE_BYTES / 4; i++) {
+	for (int i = 0; i < HID_REPORT_SIZE_BYTES / 4; i++) {
 		tmp[i] = outgoing_report.get_float(4 * i);
 		Serial.printf("%f\t", tmp[i]);
 		if ((i + 1) % 6 == 0 && i > 0) {
@@ -124,12 +127,12 @@ int packet_float_test() {
 	timer.mark(0);
 
 	// check the output
-	for (int i = 0; i < HIDREPORT_SIZE_BYTES / 4; i++) {
-		// Sum error of inserted values
-		errors += float_eq(tmp[i], test_value, "Failed float test");
-	}
+	// for (int i = 0; i < HID_REPORT_SIZE_BYTES / 4; i++) {
+	// 	// Sum error of inserted values
+	// 	errors += assert_eq<float>(tmp[i], test_value, "Failed float test");
+	// }
 
-	return errors;
+	return assert_eq<float>(tmp, test_value, "Failed float test", HID_REPORT_SIZE_BYTES / 4);
 }
 
 int run_hid_report_tests(void) {

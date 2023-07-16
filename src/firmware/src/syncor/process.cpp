@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include "utilities/vector.h"
-#include "system_graph/process.h"
+#include "syncor/process.h"
 
 // Drivers
 #include "sensors/lsm6dsox.h"
@@ -27,6 +27,36 @@ void Process::print() {
 		Only defined to show user when inheritance has issues.
 	*/
 	Serial.println("PBO Print");
+}
+
+int Process::input_dim() {
+	/*
+		Base implementation of process functions.
+		returns dimensions of the input.
+		@return
+			dimension: (int) size of input
+	*/
+	return dimensions[0];
+}
+
+int Process::context_dim() {
+	/*
+		Base implementation of process functions.
+		returns dimensions of the context.
+		@return
+			dimension: (int) size of input
+	*/
+	return dimensions[1];
+}
+
+int Process::output_dim() {
+	/*
+		Base implementation of process functions.
+		returns dimensions of the output.
+		@return
+			dimension: (int) size of input
+	*/
+	return dimensions[2];
 }
 
 void Process::setup(Vector<float>* config) {

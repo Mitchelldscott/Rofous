@@ -31,7 +31,10 @@ class HidReport {
 
 		// Getters/Setters
 		byte get(int);
+		void get(int, int, byte*);
+
 		void put(int, byte);
+		void put(int, int, byte*);
 
 		int32_t get_int32(int);
 		void put_int32(int, int32_t);

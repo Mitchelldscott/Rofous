@@ -1,8 +1,8 @@
 #include <Arduino.h>
 #include "utilities/timing.h"
 #include "utilities/vector.h"
-#include "system_graph/graph_node.h"
-#include "system_graph/system_graph.h"
+#include "syncor/syncor_node.h"
+#include "syncor/syncor.h"
 
 #include "sensors/lsm6dsox.h"
 
@@ -14,36 +14,34 @@ int main() {
 	Serial.println("=== Starting System Graph tests ===");
 	
 	float tmp[1] = {0.6};
-	int imu_inputs[2] = {-1};
+	int imu_input;
 	int cmf_inputs[2] = {9, 10};
 
 	watch.set(0);
-	SystemGraph sg;
-	watch.print(0, "SG init");
+	SynCor sc;
+	watch.print(0, "SynCor init");
 
 	watch.set(1);
-	sg.add("LSM", 10, 0, 1, imu_inputs);
+	sc.add("LSM", 10, 0, 0, &imu_input);
 	watch.print(1, "LSM Node init");
 
 	watch.set(1);
-	sg.add("CMF", 9, 1, 2, cmf_inputs);
+	sc.add("CMF", 9, 1, 2, cmf_inputs);
 	watch.print(1, "CMF Node init");
 
 	watch.set(1);
-	sg.update_config(9, 0, 1, tmp);
+	sc.update_config(9, 0, 1, tmp);
 	watch.print(1, "Update config");
 
 	for (int i = 0; i < 3; i++) {
-		Serial.printf("Iteration: %i ===\n", i);
+		// Serial.printf("Iteration: %i ===\n", i);
 		watch.set(1);
-		sg.spin();
+		sc.spin();
 		watch.print(1, "Run"); 
-		Serial.flush();
+		// Serial.flush();
 	}
-	sg.dump_all();
-
 	Serial.print("Full test "); watch.print(0);
-
+	sc.dump_all();
 	Serial.println("=== Finished System Graph tests ===");
 	
 }

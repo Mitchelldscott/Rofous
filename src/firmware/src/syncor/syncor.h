@@ -3,14 +3,14 @@
 
 #include "utilities/timing.h"
 #include "utilities/vector.h"
-#include "system_graph/process.h"
+#include "syncor/process.h"
 #include "robot_comms/hid_report.h"
-#include "system_graph/graph_node.h"
-#include "system_graph/process_factory.h"
+#include "syncor/syncor_node.h"
+#include "syncor/process_factory.h"
 
 #define MAXIMUM_GRAPH_NODES 10
 
-class SystemGraph {
+class SynCor {
 	private:
 		HidReport report;
 		Process_Factory factory;
@@ -20,10 +20,10 @@ class SystemGraph {
 
 		Vector<int> status;
 		Vector<int> node_ids;
-		Vector<GraphNode*> nodes;
+		Vector<SynCorNode*> nodes;
 
 	public:
-		SystemGraph();
+		SynCor();
 		// ~SystemGraph();
 		void collect_outputs(int, Vector<float>*);
 		void add(String, int, int, int, int*);

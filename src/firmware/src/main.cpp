@@ -1,7 +1,7 @@
 #include "utilities/blink.h"
 #include "utilities/timing.h"
-#include "utilities/loggers.h"
-#include "system_graph/system_graph.h"
+#include "utilities/assertions.h"
+#include "syncor/syncor.h"
 
 #define MASTER_CYCLE_TIME_US 	1000.0
 #define MASTER_CYCLE_TIME_MS 	1.0
@@ -9,7 +9,7 @@
 #define MASTER_CYCLE_TIME_ERR 	1.001 // ms
 
 FTYK timers;
-SystemGraph sg;
+SynCor sg;
 
 // Runs once
 void setup() {

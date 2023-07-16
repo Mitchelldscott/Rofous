@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "utilities/vector.h"
-#include "system_graph/process.h"
-#include "system_graph/graph_node.h"
+#include "syncor/process.h"
+#include "syncor/syncor_node.h"
 
 template <typename T> Vector<T>::Vector() {
 	length = 0;
@@ -104,12 +104,21 @@ template <typename T> void Vector<T>::append(Vector<T> data) {
 		@param:
 			data: (Vector<T>*) data to fill buffer with
 	*/
-	int n = data.size();
-	T tmp[length + n];
-	memcpy(tmp, buffer, length * sizeof(T));
-	data.slice(&tmp[length], 0, n);
-	reset(length + n);
-	memcpy(buffer, tmp, length * sizeof(T));
+	int n = length;
+	int m = data.size();
+
+	T tmp1[n];
+	T* tmp2 = data.as_array();
+
+	reset(n + m);
+	for (int i = 0; i < n; i++) {
+		buffer[i] = tmp1[i];
+	}
+	for (int i = 0; i < m; i++) {
+		buffer[i+n] = tmp2[i];
+	}
+	// memcpy(buffer, tmp1, n * sizeof(T));
+	// memcpy(&buffer[n], tmp2, m * sizeof(T));
 }
 
 template <typename T> void Vector<T>::append(Vector<T>* data) {
@@ -119,12 +128,15 @@ template <typename T> void Vector<T>::append(Vector<T>* data) {
 		@param:
 			data: (Vector<T>*) data to fill buffer with
 	*/
-	int n = data->size();
-	T tmp[length + n];
-	memcpy(tmp, buffer, length * sizeof(T));
-	data->slice(&tmp[length], 0, n);
-	reset(length + n);
-	memcpy(buffer, tmp, length * sizeof(T));
+	int n = length;
+	int m = data->size();
+
+	T tmp1[n];
+	T* tmp2 = data->as_array();
+
+	reset(n + m);
+	memcpy(buffer, tmp1, n * sizeof(T));
+	memcpy(&buffer[n], tmp2, m * sizeof(T));
 }
 
 template <typename T> void Vector<T>::insert(T* data, int index, int size) {
@@ -241,6 +253,10 @@ template <typename T> void Vector<T>::operator=(Vector<T>& data) {
 /// print
 
 template <> void Vector<int>::print() {
+	if (length == 0) {
+		Serial.printf("Vectori [%i]\n", length);
+		return;
+	}
 	Serial.printf("Vectori [%i]: [", length);
 	for (int i = 0; i < length-1; i++) {
 		Serial.printf("%i, ", buffer[i]);
@@ -249,6 +265,10 @@ template <> void Vector<int>::print() {
 }
 
 template <> void Vector<float>::print() {
+	if (length == 0) {
+		Serial.printf("Vectorf [%i]\n", length);
+		return;
+	}
 	Serial.printf("Vectorf [%i]: [", length);
 	for (int i = 0; i < length-1; i++) {
 		Serial.printf("%f, ", buffer[i]);
@@ -274,7 +294,7 @@ template <> void Vector<Process*>::print() {
 template class Vector<int>;
 template class Vector<float>; 
 template class Vector<Process*>;
-template class Vector<GraphNode*>;
+template class Vector<SynCorNode*>;
 // template class Vector<Vector<int>>;
 // template class Vector<Vector<float>>; 
 

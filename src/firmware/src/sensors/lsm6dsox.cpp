@@ -53,6 +53,11 @@ LSM6DSOX::LSM6DSOX() {
 											true,  // polarity
 											false, // don't latch
 											true); // enabled!
+
+	dimensions.reset(PROCESS_DIMENSIONS);
+	dimensions[INPUT_DIMENSION] = 0;
+	dimensions[CONTEXT_DIMENSION] = 1;
+	dimensions[OUTPUT_DIMENSION] = LSM6DSOX_DOF;
 }
 
 void LSM6DSOX::read_lsm6dsox_accel(){
@@ -96,7 +101,7 @@ void LSM6DSOX::setup(Vector<float>* config) {
 }
 
 void LSM6DSOX::context(Vector<float>* context) {
-	context->reset(0);
+	context->reset(dimensions[2]);
 	context->push(sensor_index);
 }
 
@@ -129,7 +134,7 @@ void LSM6DSOX::run(Vector<float>* unused, Vector<float>* output) {
 		tmp[i+6] = mag[i];
 	}
 
-	output->from_array(tmp, LSM6DSOX_DOF);
+	output->from_array(tmp, dimensions[OUTPUT_DIMENSION]);
 }
 
 

@@ -1,4 +1,4 @@
-#include "system_graph/process.h"
+#include "syncor/process.h"
 
 #include "sensors/lsm6dsox.h"
 #include "algorithms/complimentary_filter.h"
