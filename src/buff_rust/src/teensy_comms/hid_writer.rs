@@ -63,7 +63,10 @@ impl HidWriter {
             _ => {
                 println!("HID Writer error");
                 if self.output.timestamp.elapsed().as_millis() > MCU_NO_COMMS_RESET {
-                    println!("HID Writer hasn't written for {} ms", self.output.timestamp.elapsed().as_millis());
+                    println!(
+                        "HID Writer hasn't written for {} ms",
+                        self.output.timestamp.elapsed().as_millis()
+                    );
                     if self.layer.is_connected() {
                         println!("HID Writer disconnecting");
                         self.layer.disconnect();

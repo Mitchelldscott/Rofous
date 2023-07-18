@@ -121,45 +121,6 @@ impl BuffYamlUtil {
             .collect()
     }
 
-    // pub fn parse_device_items(data: &Yaml) -> Vec<EmbeddedDevice> {
-    //     data.as_hash()
-    //         .unwrap()
-    //         .iter()
-    //         .map(|(key, value)| {
-    //             // println!("new device: {:?}", key.as_str().unwrap());
-    //             let name = key.as_str().unwrap();
-    //             let mut buffer_size = 0;
-    //             let mut config = vec![0];
-    //             let mut driver = "UNKNOWN".to_string();
-    //             value.as_vec().unwrap().iter().for_each(|item| {
-    //                 item.as_hash().unwrap().iter().for_each(|(k, v)| {
-    //                     match k.as_str().unwrap() {
-    //                         "buffer" => {
-    //                             buffer_size = v.as_i64().unwrap() as usize;
-    //                             // println!("\tbuffer: {}", v.as_i64().unwrap() as usize);
-    //                         }
-    //                         "driver" => {
-    //                             driver = v.as_str().unwrap().to_string();
-    //                             // println!("\tdriver: {:?}", v.as_str().unwrap());
-    //                         }
-    //                         "config" => {
-    //                             config = v
-    //                                 .as_vec()
-    //                                 .unwrap()
-    //                                 .iter()
-    //                                 .map(|x| x.as_i64().unwrap() as u8)
-    //                                 .collect::<Vec<u8>>();
-    //                             // println!("\tconfig: {:?}", config);
-    //                         }
-    //                         _ => {}
-    //                     }
-    //                 });
-    //             });
-    //             EmbeddedDevice::named(name.to_string(), driver, buffer_size, config)
-    //         })
-    //         .collect()
-    // }
-
     pub fn parse_processes(data: &Yaml) -> Vec<EmbeddedProcess> {
         data.as_hash()
             .unwrap()
@@ -170,8 +131,6 @@ impl BuffYamlUtil {
                 let mut inputs = vec![];
                 let mut outputs = vec![];
                 let mut config = vec![];
-                let mut input_shapes = vec![];
-                let mut output_shapes = vec![];
                 let mut driver = "UNKNOWN".to_string();
 
                 value.as_vec().unwrap().iter().for_each(|item| {
@@ -207,22 +166,22 @@ impl BuffYamlUtil {
                                 });
                                 // println!("\tconfig: {:?}", config);
                             }
-                            "input_shapes" => {
-                                input_shapes = v
-                                    .as_vec()
-                                    .unwrap()
-                                    .iter()
-                                    .map(|x| x.as_i64().unwrap() as usize)
-                                    .collect();
-                            }
-                            "output_shapes" => {
-                                output_shapes = v
-                                    .as_vec()
-                                    .unwrap()
-                                    .iter()
-                                    .map(|x| x.as_i64().unwrap() as usize)
-                                    .collect();
-                            }
+                            // "input_shapes" => {
+                            //     input_shapes = v
+                            //         .as_vec()
+                            //         .unwrap()
+                            //         .iter()
+                            //         .map(|x| x.as_i64().unwrap() as usize)
+                            //         .collect();
+                            // }
+                            // "output_shapes" => {
+                            //     output_shapes = v
+                            //         .as_vec()
+                            //         .unwrap()
+                            //         .iter()
+                            //         .map(|x| x.as_i64().unwrap() as usize)
+                            //         .collect();
+                            // }
                             "driver" => {
                                 driver = v.as_str().unwrap().to_string();
                                 // println!("\ttype: {:?}", v.as_str().unwrap());
@@ -231,15 +190,7 @@ impl BuffYamlUtil {
                         }
                     });
                 });
-                EmbeddedProcess::named(
-                    name.to_string(),
-                    driver,
-                    input_shapes,
-                    output_shapes,
-                    inputs,
-                    outputs,
-                    config,
-                )
+                EmbeddedProcess::named(name.to_string(), driver, inputs, outputs, config)
             })
             .collect()
     }

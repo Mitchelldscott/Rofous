@@ -3,8 +3,10 @@
 
 #include "utilities/timing.h"
 #include "utilities/vector.h"
-#include "syncor/process.h"
+
 #include "robot_comms/hid_report.h"
+
+#include "syncor/process.h"
 #include "syncor/syncor_node.h"
 #include "syncor/process_factory.h"
 
@@ -25,7 +27,7 @@ class SynCor {
 	public:
 		SynCor();
 		// ~SystemGraph();
-		void collect_outputs(int, Vector<float>*);
+		Vector<float> collect_outputs(int);
 		void add(String, int, int, int, int*);
 		void update_config(int, int, int, float*);
 		void spin();
@@ -33,8 +35,7 @@ class SynCor {
 		void handle_hid();
 		void init_process_hid();
 		void config_process_hid();
-		void process_state_hid();
-		void process_output_hid();
+		void dump_vector(Vector<float>*);
 };
 
 #endif

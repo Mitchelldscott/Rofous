@@ -101,8 +101,8 @@ void LSM6DSOX::setup(Vector<float>* config) {
 }
 
 void LSM6DSOX::context(Vector<float>* context) {
-	context->reset(dimensions[2]);
-	context->push(sensor_index);
+	context->reset(dimensions[CONTEXT_DIMENSION]);
+	(*context)[0] = sensor_index;
 }
 
 void LSM6DSOX::run(Vector<float>* unused, Vector<float>* output) {

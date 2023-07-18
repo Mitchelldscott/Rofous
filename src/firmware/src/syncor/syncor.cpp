@@ -15,13 +15,18 @@ SynCor::SynCor() {
 	setup_blink();
 }
 
-void SynCor::collect_outputs(int index, Vector<float>* data) {
+Vector<float> SynCor::collect_outputs(int index) {
+	int curr_size = 0;
+	Vector<float> data(nodes[index]->input_dim());
 	for (int i = 0; i < nodes[index]->n_inputs(); i++) {
 		int node_id = node_ids.find(nodes[index]->input_id(i));
 		if (node_id >= 0) {
-			data->append(nodes[node_id]->output());
+			int output_dim = nodes[node_id]->output_dim();
+			data.insert(nodes[node_id]->output()->as_array(), curr_size, output_dim);
+			curr_size += output_dim;
 		}
 	}
+	return data;
 }
 
 void SynCor::add(String proc_id, int id, int n_configs, int n_inputs, int* inputs) {
@@ -62,15 +67,17 @@ void SynCor::update_config(int id, int chunk_id, int n_configs, float* config) {
 }
 
 void SynCor::spin() {
-	Vector<float> input(0);
 	for (int i = 0; i < nodes.size(); i++) {
-		if (status[i] == 1) {
-			collect_outputs(i, &input);
+		if (status[i]) {
+			Vector<float> input = collect_outputs(i);
 			nodes[i]->run_proc(&input);
 		}
 		else if (nodes[i]->is_configured()) {
 			nodes[i]->setup_proc();
 			status[i] = 1;
+		}
+		else {
+			Serial.printf("Process %i is not configured\n", i);
 		}
 	}
 }
@@ -111,11 +118,11 @@ void SynCor::handle_hid() {
 				case 1:
 					switch (report.get(1)) {
 						case 1:
-							// process_state_hid();
+							dump_vector(nodes[report.get(2)]->context());
 							break;
 
 						case 2:
-							// process_output_hid();
+							dump_vector(nodes[report.get(2)]->output());
 							break;
 
 						default:
@@ -146,9 +153,11 @@ void SynCor::init_process_hid() {
 	key += char(report.get(5));
 	int n_config = report.get(6);
 	int n_inputs = report.get(7);
+
 	Serial.printf("new process %i: ", id);
 	Serial.print(key);
 	Serial.printf(" %i %i\n", n_config, n_inputs);
+
 	int input_ids[n_inputs];
 	for (int i = 0; i < n_inputs; i++) {
 		input_ids[i] = report.get(i + 8);
@@ -169,26 +178,9 @@ void SynCor::config_process_hid() {
 	update_config(id, chunk_num, chunk_size, data);
 }
 
-void SynCor::process_state_hid() {
-	int id = report.get(2);
-	// Vector<float>* state = nodes[id]->context();
-	// report.put(3, state->size());
-	// for (int i = 0; i < state->size(); i++){
-	// 	report.put_float((4 * i) + 4, (*state)[i]);
-	// }
-	report.put(3, 5);
-	for (int i = 0; i < 5; i++){
-		report.put_float((4 * i) + 4, lifetime); // debug
-	}
-}
-
-void SynCor::process_output_hid() {
-	int id = report.get(2);
-	// Vector<float>* output = nodes[id]->output();
-	// for (int i = 0; i < output->size(); i++){
-	// 	report.put_float((4 * i) + 3, (*output)[i]);
-	// }
-	for (int i = 0; i < 5; i++){
-		report.put_float((4 * i) + 3, lifetime); // debug
+void SynCor::dump_vector(Vector<float>* data) {
+	report.put(3, data->size());
+	for (int i = 0; i < data->size(); i++){
+		report.put_float((4 * i) + 4, (*data)[i]);
 	}
 }

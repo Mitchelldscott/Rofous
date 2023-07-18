@@ -40,6 +40,33 @@ int SynCorNode::n_inputs() {
 	return inputs.size();
 }
 
+int SynCorNode::input_dim() {
+	/*
+		Get the size of desired input buffer.
+		@return
+			size: (int) user defined size of input vector.
+	*/
+	return proc->input_dim();
+}
+
+int SynCorNode::context_dim() {
+	/*
+		Get the size of desired context buffer.
+		@return
+			size: (int) user defined size of context vector.
+	*/
+	return proc->context_dim();
+}
+
+int SynCorNode::output_dim() {
+	/*
+		Get the size of desired output buffer.
+		@return
+			size: (int) user defined size of output vector.
+	*/
+	return proc->output_dim();
+}
+
 int SynCorNode::input_id(int index) {
 	/*
 		Get an id at index from the input id list

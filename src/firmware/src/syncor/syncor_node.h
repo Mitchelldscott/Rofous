@@ -39,6 +39,9 @@ class SynCorNode {
 		SynCorNode(Process*, int, int, int*);
 
 		int n_inputs();
+		int input_dim();
+		int context_dim();
+		int output_dim();
 		int input_id(int);
 		bool is_configured();
 		Vector<float>* output();

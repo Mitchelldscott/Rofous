@@ -1,17 +1,11 @@
-use crate::{teensy_comms::data_structures::*, utilities::buffers::ByteBuffer};
+use crate::teensy_comms::{data_structures::*, hid_layer::*};
 use rosrust_msg::std_msgs;
-use std::{
-    sync::{
-        mpsc::{Receiver, Sender},
-        Arc, RwLock,
-    },
-    time::Instant,
-};
+use std::time::Instant;
+
+pub static PUBLISH_TIME_MS: u128 = 100;
 
 pub struct HidROS {
-    pub shutdown: Arc<RwLock<bool>>,
-    pub robot_status: RobotStatus,
-    pub control_flag: Arc<RwLock<i32>>,
+    pub layer: HidLayer,
 
     pub proc_state_pubs: Vec<rosrust::Publisher<std_msgs::Float64MultiArray>>,
     pub proc_output_pubs: Vec<rosrust::Publisher<std_msgs::Float64MultiArray>>,
@@ -26,7 +20,7 @@ impl HidROS {
     ///
     /// let hidros = HidROS::new();
     /// ```
-    pub fn new() -> HidROS {
+    pub fn new(layer: HidLayer) -> HidROS {
         let robot_status = RobotStatus::from_self();
         let proc_names = robot_status.get_process_names();
 
@@ -44,33 +38,11 @@ impl HidROS {
             .collect();
 
         HidROS {
-            shutdown: Arc::new(RwLock::new(false)),
-            robot_status: robot_status,
-            control_flag: Arc::new(RwLock::new(0)),
+            layer: layer,
 
             proc_state_pubs: proc_state_pubs,
             proc_output_pubs: proc_output_pubs,
         }
-    }
-
-    /// Create a new HidROS from an existing RobotStatus
-    ///
-    /// # Usage
-    ///
-    /// ```
-    /// use buff_rust::teensy_comms::buff_hid::HidROS;
-    ///
-    /// let hidros = HidROS::from_robot_status(shutdown, robotstatus);
-    /// ```
-    pub fn from_robot_status(shutdown: Arc<RwLock<bool>>, robot_status: RobotStatus) -> HidROS {
-        env_logger::init();
-        rosrust::init("buffpy_hid");
-
-        let mut hidros = HidROS::new();
-        hidros.shutdown = shutdown;
-        hidros.robot_status = robot_status;
-
-        hidros
     }
 
     // /// Publish sensor data to ROS
@@ -88,15 +60,14 @@ impl HidROS {
     // }
 
     /// Publish sensor data to ROS
-    pub fn publish_process_states(&self) {
+    pub fn publish_process_context(&self) {
         self.proc_state_pubs
             .iter()
             .enumerate()
             .for_each(|(i, proc_state_pub)| {
                 let mut msg = std_msgs::Float64MultiArray::default();
-                msg.data = self.robot_status.processes[i].read().unwrap().state();
-                msg.data
-                    .push(self.robot_status.processes[i].read().unwrap().timestamp());
+                msg.data = self.layer.get_context(i);
+                msg.data.push(self.layer.process_timestamp(i));
                 proc_state_pub.send(msg).unwrap();
             });
     }
@@ -107,9 +78,8 @@ impl HidROS {
             .enumerate()
             .for_each(|(i, proc_out_pub)| {
                 let mut msg = std_msgs::Float64MultiArray::default();
-                msg.data = self.robot_status.processes[i].read().unwrap().output();
-                msg.data
-                    .push(self.robot_status.processes[i].read().unwrap().timestamp());
+                msg.data = self.layer.get_output(i);
+                msg.data.push(self.layer.process_timestamp(i));
                 proc_out_pub.send(msg).unwrap();
             });
     }
@@ -126,11 +96,11 @@ impl HidROS {
             if loopt.elapsed().as_millis() > 5 {
                 println!("HID ROS over cycled {}", loopt.elapsed().as_micros());
             }
-            while loopt.elapsed().as_millis() < 5 {}
+            self.layer.delay(loopt);
         }
 
         // buffpy RUN relies on ros to shutdown
-        *self.shutdown.write().unwrap() = true;
+        self.layer.shutdown();
     }
 
     /// Begin publishing motor, controller, and sensor data to ROS and
@@ -138,46 +108,26 @@ impl HidROS {
     ///
     /// # Example
     /// See [HidLayer::pipeline()]
-    pub fn pipeline(
-        &mut self,
-        shutdown: Arc<RwLock<bool>>,
-        control_tx: Sender<ByteBuffer>,
-        feedback_rx: Receiver<RobotStatus>,
-    ) {
-        self.shutdown = shutdown;
-
-        self.robot_status = feedback_rx.recv().unwrap_or(RobotStatus::default());
-
-        let initializers = self.robot_status.process_init_packets();
-
-        initializers.iter().for_each(|init| {
-            control_tx.send(init.clone()).unwrap();
-        });
+    pub fn pipeline(&mut self) {
+        while !self.layer.is_connected() {}
 
         println!("HID-ROS Live");
-
-        let mut current_report = 0;
-        let reports = self.robot_status.process_request_packets();
 
         let mut publish_timer = Instant::now();
         let mut pub_switch = 0;
 
-        while rosrust::is_ok() && !*self.shutdown.read().unwrap() {
+        while rosrust::is_ok() && !self.layer.is_shutdown() {
             let loopt = Instant::now();
 
             // don't publish every cycle
-            if publish_timer.elapsed().as_millis() > (reports.len() / 2) as u128 {
+            if publish_timer.elapsed().as_millis() > PUBLISH_TIME_MS {
                 publish_timer = Instant::now();
                 match pub_switch {
                     0 => {
-                        // self.publish_sensors();
+                        self.publish_process_context();
                         pub_switch += 1;
                     }
                     1 => {
-                        self.publish_process_states();
-                        pub_switch += 1;
-                    }
-                    2 => {
                         self.publish_process_outputs();
                         pub_switch = 0;
                     }
@@ -185,13 +135,10 @@ impl HidROS {
                 }
             }
 
-            // control_tx.send(reports[current_report].clone()).unwrap();
-            current_report = (current_report + 1) % reports.len();
-
-            while loopt.elapsed().as_micros() < 1000 {}
+            self.layer.delay(loopt);
         }
 
         // buffpy RUN relies on ros to shutdown
-        *self.shutdown.write().unwrap() = true;
+        self.layer.shutdown();
     }
 }

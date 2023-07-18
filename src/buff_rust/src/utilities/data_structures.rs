@@ -11,13 +11,9 @@ pub struct EmbeddedProcess {
     driver: String,
 
     config: Vec<f64>,
-    states: Vec<f64>,
+    context: Vec<f64>,
     inputs: Vec<f64>,
     outputs: Vec<f64>,
-
-    state_shape: usize,
-    input_shapes: Vec<usize>,
-    output_shapes: Vec<usize>,
 
     input_names: Vec<String>,
     output_names: Vec<String>,
@@ -31,12 +27,9 @@ impl EmbeddedProcess {
             name: "UED".to_string(),
             driver: "UNKNOWN".to_string(),
             config: vec![],
-            states: vec![],
+            context: vec![],
             inputs: vec![],
             outputs: vec![],
-            state_shape: 0,
-            input_shapes: vec![0],
-            output_shapes: vec![0],
             input_names: vec![],
             output_names: vec![],
             timestamp: 0.0,
@@ -53,8 +46,6 @@ impl EmbeddedProcess {
     pub fn named(
         name: String,
         driver: String,
-        input_shapes: Vec<usize>,
-        output_shapes: Vec<usize>,
         input_names: Vec<String>,
         output_names: Vec<String>,
         config: Vec<f64>,
@@ -63,12 +54,9 @@ impl EmbeddedProcess {
             name: name,
             driver: driver,
             config: config,
-            states: vec![0.0],
-            inputs: vec![0.0; input_shapes.iter().sum()],
-            outputs: vec![0.0; output_shapes.iter().sum()],
-            state_shape: 0,
-            input_shapes: input_shapes,
-            output_shapes: output_shapes,
+            context: vec![],
+            inputs: vec![],
+            outputs: vec![],
             input_names: input_names,
             output_names: output_names,
             timestamp: 0.0,
@@ -83,21 +71,15 @@ impl EmbeddedProcess {
             .collect()
     }
 
-    pub fn update_input(&mut self, data: Vec<f64>, time: f64) {
-        let n_inputs: usize = self.input_shapes.iter().sum();
-        self.inputs = data[0..n_inputs].to_vec();
+    pub fn update_output(&mut self, length: usize, data: Vec<f64>, time: f64) {
+        // println!("New output {:?}: {} {:?}", self.name, length, data);
+        self.outputs = data[0..length].to_vec();
         self.timestamp = time;
     }
 
-    pub fn update_output(&mut self, data: Vec<f64>, time: f64) {
-        let n_outputs: usize = self.output_shapes.iter().sum();
-        self.outputs = data[0..n_outputs].to_vec();
-        self.timestamp = time;
-    }
-
-    pub fn update_states(&mut self, length: usize, data: Vec<f64>, time: f64) {
-        self.state_shape = length;
-        self.states = data[0..length].to_vec();
+    pub fn update_context(&mut self, length: usize, data: Vec<f64>, time: f64) {
+        // println!("New context {:?}: {} {:?}", self.name, length, data);
+        self.context = data[0..length].to_vec();
         self.timestamp = time;
     }
 
@@ -150,20 +132,16 @@ impl EmbeddedProcess {
         self.inputs.clone()
     }
 
-    pub fn state(&self) -> Vec<f64> {
-        self.states.clone()
+    pub fn context(&self) -> Vec<f64> {
+        self.context.clone()
     }
 
     pub fn output(&self) -> Vec<f64> {
         self.outputs.clone()
     }
 
-    pub fn input_shape(&self) -> Vec<usize> {
-        self.input_shapes.clone()
-    }
-
-    pub fn output_shape(&self) -> Vec<usize> {
-        self.output_shapes.clone()
+    pub fn output_shape(&self) -> usize {
+        self.outputs.len()
     }
 
     pub fn config_shape(&self) -> usize {
@@ -171,11 +149,11 @@ impl EmbeddedProcess {
     }
 
     pub fn n_inputs(&self) -> usize {
-        self.input_shapes.iter().sum()
+        self.input_names.len()
     }
 
     pub fn n_outputs(&self) -> usize {
-        self.output_shapes.iter().sum()
+        self.output_names.len()
     }
 
     pub fn input_names(&self) -> Vec<String> {
@@ -197,7 +175,7 @@ impl EmbeddedProcess {
     pub fn print(&self) {
         println!("{:?}: {:?} [{}]", self.name, self.driver, self.timestamp);
         println!("config:\n\t{:?}", self.config);
-        println!("state: [{}]\n\t{:?}", self.state_shape, self.states);
-        println!("output: {:?}\n\t{:?}", self.output_shapes, self.outputs);
+        println!("state:\n\t{:?}", self.context);
+        println!("output:\n\t{:?}", self.outputs);
     }
 }

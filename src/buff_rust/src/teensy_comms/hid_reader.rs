@@ -48,9 +48,11 @@ impl HidReader {
     /// }
     /// ```
     pub fn read(&mut self) -> usize {
+        // let t = Instant::now();
         match &self.teensy.read(&mut self.input.data) {
             Ok(value) => {
                 // reset watchdog... woof
+                // println!("Read time: {}", t.elapsed().as_micros());
                 self.input.timestamp = Instant::now();
                 self.layer.packet_read();
                 return *value;
@@ -135,7 +137,13 @@ impl HidReader {
                         );
                     }
                     // self.input.print();
+                    let t = Instant::now();
                     self.layer.report_parser(&self.input);
+                    // println!(
+                    //     "Parse time: {}/{}",
+                    //     t.elapsed().as_micros(),
+                    //     loopt.elapsed().as_micros()
+                    // );
                 }
 
                 _ => {
@@ -143,15 +151,14 @@ impl HidReader {
                     if timestamp.as_secs() > MCU_NO_COMMS_TIMEOUT {
                         println!("HID Reader watchdog called for shutdown");
                         self.layer.shutdown();
-                    } 
-                    else if timestamp.as_millis() > MCU_NO_COMMS_RESET {
-                        if !self.layer.is_connected() { // watchdog... woof
+                    } else if timestamp.as_millis() > MCU_NO_COMMS_RESET {
+                        if !self.layer.is_connected() {
+                            // watchdog... woof
                             // writing also failed, try to re-init
                             println!("HID Reader attempting to reconnect");
                             self.teensy = self.layer.device();
-                        }                   
-                    }
-                    else if timestamp.as_millis() > TEENSY_CYCLE_TIME_MS as u128
+                        }
+                    } else if timestamp.as_millis() > TEENSY_CYCLE_TIME_MS as u128
                         && timestamp.as_millis() % 10 == 0
                     {
                         println!(
@@ -159,13 +166,12 @@ impl HidReader {
                             timestamp.as_millis()
                         );
                     }
-
                 }
             }
 
-            if loopt.elapsed().as_micros() > TEENSY_CYCLE_TIME_US as u128 {
-                println!("HID Reader over cycled {}", loopt.elapsed().as_micros());
-            }
+            // if loopt.elapsed().as_micros() > TEENSY_CYCLE_TIME_US as u128 {
+            //     println!("HID Reader over cycled {}", loopt.elapsed().as_micros());
+            // }
             self.layer.loop_delay(loopt);
         }
     }

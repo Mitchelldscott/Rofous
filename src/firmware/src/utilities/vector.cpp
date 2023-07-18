@@ -164,7 +164,7 @@ template <typename T> void Vector<T>::insert(Vector<T> data, int index) {
 		large enough it will be extended. This works much better if
 		the vector is already large enough (append can call reset).
 		@param:
-			data: (Vector<T>*) data to fill buffer with
+			data: (Vector<T>) data to fill buffer with
 			index: (int) index to start insertion
 	*/
 	int n = data.size();

@@ -23,10 +23,10 @@ void setup() {
 int main() {
 	timers.set(1);
 	while (1) {
-		// sg.spin();
+		sg.spin();
 		sg.handle_hid();
 		if (timers.delay_millis(1, MASTER_CYCLE_TIME_MS) > MASTER_CYCLE_TIME_ERR) { // timer error threashold (very tight)
-			Serial.printf("Teensy overcycled %f/%f ms\n", timers.millis(1), MASTER_CYCLE_TIME_ERR);
+			// Serial.printf("Teensy overcycled %f/%f ms\n", timers.millis(1), MASTER_CYCLE_TIME_ERR);
 		}
 		timers.set(1);
 	}

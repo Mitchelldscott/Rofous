@@ -232,14 +232,33 @@ impl HidLayer {
         self.robot_status.clone()
     }
 
+    pub fn get_context(&self, index: usize) -> Vec<f64> {
+        self.robot_status.processes[index].read().unwrap().context()
+    }
+
+    pub fn get_output(&self, index: usize) -> Vec<f64> {
+        self.robot_status.processes[index].read().unwrap().output()
+    }
+
+    pub fn process_timestamp(&self, index: usize) -> f64 {
+        self.robot_status.processes[index]
+            .read()
+            .unwrap()
+            .timestamp()
+    }
+
     pub fn report_parser(&mut self, report: &ByteBuffer) {
         self.set_mcu_lifetime(report.get_float(60));
-        // println!("Read packet: {} {}", self.input.get(0), self.teensy_lifetime as f64 / 1e6); // as seconds
+        println!(
+            "HID lifetime: rust {}s  mcu {}s",
+            self.lifetime(),
+            self.mcu_lifetime()
+        );
 
         // match the report number to determine the structure
         if report.get(0) == PROC_REPORT_ID {
-            if report.get(1) == READ_STATE_MODE {
-                self.robot_status.update_proc_state(
+            if report.get(1) == READ_CONTEXT_MODE {
+                self.robot_status.update_proc_context(
                     report.get(2) as usize,
                     report.get(3) as usize,
                     report.get_floats(4, MAX_FLOATS_PER_REPORT),
@@ -249,7 +268,8 @@ impl HidLayer {
             if report.get(1) == READ_OUTPUT_MODE {
                 self.robot_status.update_proc_output(
                     report.get(2) as usize,
-                    report.get_floats(3, MAX_FLOATS_PER_REPORT),
+                    report.get(3) as usize,
+                    report.get_floats(4, MAX_FLOATS_PER_REPORT),
                     self.mcu_lifetime(),
                 );
             }
@@ -262,6 +282,38 @@ impl HidLayer {
 
     pub fn get_requests(&self) -> Vec<ByteBuffer> {
         self.robot_status.process_request_packets()
+    }
+
+    pub fn control_pipeline(&self) {
+        let initializers = self.get_initializers();
+
+        while !self.is_connected() {}
+
+        println!("HID-SIM Live");
+
+        initializers.iter().for_each(|init| {
+            let t = Instant::now();
+            self.writer_tx(init.clone());
+            self.delay(t);
+        });
+
+        let mut current_report = 0;
+        let reports = self.get_requests();
+
+        while !self.is_shutdown() {
+            let loopt = Instant::now();
+
+            if self.is_connected() {
+                self.writer_tx(reports[current_report].clone());
+            }
+            current_report = (current_report + 1) % reports.len();
+
+            while loopt.elapsed().as_micros() < TEENSY_CYCLE_TIME_US as u128 {}
+        }
+
+        self.shutdown();
+        println!("HID Control shutdown");
+        self.print();
     }
 
     pub fn print(&self) {

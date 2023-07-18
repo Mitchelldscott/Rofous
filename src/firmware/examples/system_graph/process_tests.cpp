@@ -2,8 +2,8 @@
 
 #include "utilities/vector.h"
 #include "utilities/assertions.h"
-#include "system_graph/process.h"
-#include "system_graph/process_factory.h"
+#include "syncor/process.h"
+#include "syncor/process_factory.h"
 #include "algorithms/complimentary_filter.h"
 
 #include "sensors/lsm6dsox.h"

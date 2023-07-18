@@ -13,7 +13,7 @@ pub static DELIM: u8 = 0x3A;
 /// HID laws
 pub static MAX_PROCESS_IO: usize = 14;
 pub static MAX_CONFIG_SIZE: usize = 10;
-pub static MAX_PROCESS_STATES: usize = 10;
+pub static MAX_PROCESS_CONTEXT: usize = 10;
 pub static MAX_SENSOR_BUFFER_SIZE: usize = 10;
 
 /// first HID identifier
@@ -42,10 +42,10 @@ pub static SETUP_CONFIG_MODE: u8 = 2;
 ///     packet.put(0, PROC_REPORT_ID);
 ///     packet.put(1, REPORT_MODE);
 /// '''
-pub static READ_STATE_MODE: u8 = 1;
+pub static READ_CONTEXT_MODE: u8 = 1;
 pub static READ_OUTPUT_MODE: u8 = 2;
 pub static WRITE_INPUT_MODE: u8 = 3;
-pub static WRITE_STATE_MODE: u8 = 4;
+pub static WRITE_CONTEXT_MODE: u8 = 4;
 pub static WRITE_OUTPUT_MODE: u8 = 5;
 
 #[derive(Clone)]
@@ -124,22 +124,15 @@ impl RobotStatus {
             out_buffer.puts(0, vec![PROC_REPORT_ID, READ_OUTPUT_MODE, i as u8]);
             results.push(out_buffer);
 
-            let mut state_buffer = ByteBuffer::hid();
-            state_buffer.puts(0, vec![PROC_REPORT_ID, READ_STATE_MODE, i as u8]);
-            results.push(state_buffer);
+            let mut context_buffer = ByteBuffer::hid();
+            context_buffer.puts(0, vec![PROC_REPORT_ID, READ_CONTEXT_MODE, i as u8]);
+            results.push(context_buffer);
         });
 
         results
     }
 
-    pub fn update_proc_output(&mut self, index: usize, data: Vec<f64>, timestamp: f64) {
-        self.processes[index]
-            .write()
-            .unwrap()
-            .update_output(data, timestamp);
-    }
-
-    pub fn update_proc_state(
+    pub fn update_proc_output(
         &mut self,
         index: usize,
         length: usize,
@@ -149,7 +142,20 @@ impl RobotStatus {
         self.processes[index]
             .write()
             .unwrap()
-            .update_states(length, data, timestamp);
+            .update_output(length, data, timestamp);
+    }
+
+    pub fn update_proc_context(
+        &mut self,
+        index: usize,
+        length: usize,
+        data: Vec<f64>,
+        timestamp: f64,
+    ) {
+        self.processes[index]
+            .write()
+            .unwrap()
+            .update_context(length, data, timestamp);
     }
 
     pub fn get_process_names(&self) -> Vec<String> {

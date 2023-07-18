@@ -34,11 +34,11 @@ int main() {
 	watch.print(1, "Update config");
 
 	for (int i = 0; i < 3; i++) {
-		// Serial.printf("Iteration: %i ===\n", i);
+		Serial.printf("Iteration: %i ===\n", i);
 		watch.set(1);
 		sc.spin();
 		watch.print(1, "Run"); 
-		// Serial.flush();
+		Serial.flush();
 	}
 	Serial.print("Full test "); watch.print(0);
 	sc.dump_all();
