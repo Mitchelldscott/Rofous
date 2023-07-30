@@ -1,18 +1,18 @@
-#include <Arduino.h>
-#include "utilities/blink.h"
-#include "utilities/vector.h"
-#include "syncor/process.h"
-#include "syncor/syncor_node.h"
 #include "syncor/syncor.h"
 
 SynCor::SynCor() {
+	timers.set(1);
 	lifetime = 0;
-	watch.set(0);
+	timers.set(0);
 	status.reset(0);
 	nodes.reset(0);
 	node_ids.reset(0);
 
 	setup_blink();
+}
+
+void SynCor::enable_hid_interrupts() {
+	hidtimer.begin(this->handle_hid, HID_READ_WRITE_RATE_US);
 }
 
 Vector<float> SynCor::collect_outputs(int index) {
@@ -136,13 +136,14 @@ void SynCor::handle_hid() {
 			break;
 		
 		default:
-			// Serial.println("No report");
+			Serial.println("No report");
 			break;
 	}
-	lifetime += US_2_S(watch.delay_micros(0, 1E3));
+
+	lifetime += US_2_S(timers.delay_micros(0, 1E3));
 	report.put_float(60, lifetime);
 	report.write();
-	watch.set(0);
+	timers.set(0);
 }
 
 void SynCor::init_process_hid() {
@@ -154,14 +155,12 @@ void SynCor::init_process_hid() {
 	int n_config = report.get(6);
 	int n_inputs = report.get(7);
 
-	Serial.printf("new process %i: ", id);
-	Serial.print(key);
-	Serial.printf(" %i %i\n", n_config, n_inputs);
-
 	int input_ids[n_inputs];
 	for (int i = 0; i < n_inputs; i++) {
 		input_ids[i] = report.get(i + 8);
 	}
+
+	timers.set(1);
 	add(key, id, n_config, n_inputs, input_ids);
 }
 
@@ -169,7 +168,7 @@ void SynCor::config_process_hid() {
 	int id = report.get(2);
 	int chunk_num = report.get(3);
 	int chunk_size = report.get(4);
-	Serial.printf("configure %i, %i, %i\n",id, chunk_num, chunk_size);
+	// Serial.printf("configure %i, %i, %i\n",id, chunk_num, chunk_size);
 
 	float data[chunk_size];
 	for (int i = 0; i < chunk_size; i++) {

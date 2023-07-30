@@ -115,7 +115,7 @@ template <typename T> int assert_geq(T* a, T* b, String message, int n) {
 	return errors;
 }
 
-int assert_not_nan(float a){
+template <typename T> int assert_not_nan(T a){
 	if (isnan(a)) {
 		TEST_INFO_SCALAR("Value is NaN", a);
 		return 1;
@@ -129,12 +129,6 @@ template <typename T> int assert_not_nan(T* a, String message, int n) {
 		errors += assert_not_nan(a[i], message + " [" + String(i) + "]");
 	}
 	return errors;
-}
-
-void timer_print(uint32_t time, String message) {
-	Serial.print("[TIMER]\t");
-		Serial.print(message);
-		Serial.printf("\t%i\n", time);
 }
 
 #endif

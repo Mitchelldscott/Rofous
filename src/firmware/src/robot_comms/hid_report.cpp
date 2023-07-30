@@ -201,7 +201,10 @@ int8_t HidReport::write(){
 		@return:
 			n: number of bytes written
 	*/
-	return usb_rawhid_send(&data, 0);
+	if (usb_rawhid_available()) {
+		return usb_rawhid_send(&data, 0);
+	}
+	return 0;
 }
 
 int8_t HidReport::read(){
@@ -210,7 +213,10 @@ int8_t HidReport::read(){
 		@return:
 			n: number of bytes read
 	*/
-	return usb_rawhid_recv(&data, 0);
+	if (usb_rawhid_available()) {
+		return usb_rawhid_recv(&data, 0);
+	}
+	return 0;
 }
 #endif
 

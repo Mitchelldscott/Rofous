@@ -1,10 +1,9 @@
-#include <Arduino.h>
-
-#include "utilities/vector.h"
+#include "utilities/timing.h"
+#include "utilities/assertions.h"
 #include "syncor/syncor_node.h"
 #include "syncor/process_factory.h"
 
-#include "sensors/lsm6dsox.h"
+FTYK timers;
 
 int main() {
 	while(!Serial){}
@@ -23,10 +22,14 @@ int main() {
 	SynCorNode* nodelist[2];
 
 	Serial.println("=== Add LSM6DSOX ===");
+	timers.set(0);
 	nodelist[0] = new SynCorNode(p_fact.new_proc("LSM"), 0, 0, &empty);
+	assert_leq<float>(timers.micros(0), 2, "LSM new node timer");
 
 	Serial.println("=== Add Complimentary Filter ===");
+	timers.set(0);
 	nodelist[1] = new SynCorNode(p_fact.new_proc("CMF"), 1, 2, cmf_inputs);
+	assert_leq<float>(timers.micros(0), 2, "CMF new node timer");
 
 	Serial.println("=== Init input Vector ===");
 	Vector<float> input(0);

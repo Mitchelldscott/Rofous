@@ -1,10 +1,10 @@
+#ifndef PROC_FACTORY
+#define PROC_FACTORY
+
 #include "syncor/process.h"
 
 #include "sensors/lsm6dsox.h"
 #include "algorithms/complimentary_filter.h"
-
-#ifndef PROC_FACTORY
-#define PROC_FACTORY
 
 #define LSM6DSOX_ID "LSM"
 #define COMPLIMENTARYFILTER_ID "CMF"

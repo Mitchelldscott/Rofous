@@ -1,6 +1,7 @@
 #ifndef SYNCOR_NODE
 #define SYNCOR_NODE
 
+#include <Arduino.h>
 #include "utilities/vector.h"
 #include "syncor/process.h"
 

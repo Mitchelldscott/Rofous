@@ -1,9 +1,9 @@
-#include <Arduino.h>
+// #include <Arduino.h>
 
-#include "utilities/vector.h"
+// #include "utilities/vector.h"
 #include "syncor/syncor_node.h"
 
-#include "sensors/lsm6dsox.h"
+// #include "sensors/lsm6dsox.h"
 
 SynCorNode::SynCorNode() {
 	/*
