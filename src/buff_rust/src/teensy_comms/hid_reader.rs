@@ -84,15 +84,12 @@ impl HidReader {
         while wait_timer.elapsed().as_millis() < timeout {
             let loopt = Instant::now();
 
-            // if !self.layer.is_connected() {
-            //     self.teensy = self.layer.device();
-            // }
-
             match self.read() {
                 64 => {
                     self.layer.reset_lifetime();
 
                     if self.input.get(0) == packet_id {
+                        self.layer.initialize(true);
                         return;
                     }
                 }
@@ -136,14 +133,7 @@ impl HidReader {
                             self.input.get_float(60) - self.layer.mcu_lifetime()
                         );
                     }
-                    // self.input.print();
-                    let t = Instant::now();
                     self.layer.report_parser(&self.input);
-                    // println!(
-                    //     "Parse time: {}/{}",
-                    //     t.elapsed().as_micros(),
-                    //     loopt.elapsed().as_micros()
-                    // );
                 }
 
                 _ => {

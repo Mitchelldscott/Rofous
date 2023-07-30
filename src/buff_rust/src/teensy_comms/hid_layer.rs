@@ -249,11 +249,11 @@ impl HidLayer {
 
     pub fn report_parser(&mut self, report: &ByteBuffer) {
         self.set_mcu_lifetime(report.get_float(60));
-        println!(
-            "HID lifetime: rust {}s  mcu {}s",
-            self.lifetime(),
-            self.mcu_lifetime()
-        );
+        // println!(
+        //     "HID lifetime: rust {}s  mcu {}s",
+        //     self.lifetime(),
+        //     self.mcu_lifetime()
+        // );
 
         // match the report number to determine the structure
         if report.get(0) == PROC_REPORT_ID {

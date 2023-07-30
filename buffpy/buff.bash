@@ -16,9 +16,11 @@ else
 	echo -e "Unsupported OS... good luck!"
 fi
 
-echo -e "Setting up tools for ${PLATFORM}"
+echo -e "Welcome to $(basename ${PROJECT_ROOT}) ${USER}"
+echo -e "\tSetting up tools for ${PLATFORM}"
 echo -e "\tUbuntu\tDocker\tProject Root"
 echo -e "\t${UBUNTU_VERSION}\t${DOCKER}\t${PROJECT_ROOT}"
+git status
 
 #################### Docker tools setup ####################
 

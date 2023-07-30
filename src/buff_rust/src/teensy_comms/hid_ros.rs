@@ -2,7 +2,7 @@ use crate::teensy_comms::{data_structures::*, hid_layer::*};
 use rosrust_msg::std_msgs;
 use std::time::Instant;
 
-pub static PUBLISH_TIME_MS: u128 = 100;
+pub static PUBLISH_TIME_MS: u128 = 200;
 
 pub struct HidROS {
     pub layer: HidLayer,
