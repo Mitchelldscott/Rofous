@@ -125,6 +125,8 @@ impl HidReader {
                 64 => {
                     if self.input.get(0) == 0 && self.input.get_float(60) == 0.0 {
                         continue;
+                    } else if self.input.get(0) == 255 {
+                        
                     } else if self.input.get_float(60) - self.layer.mcu_lifetime()
                         > TEENSY_CYCLE_TIME_US
                     {

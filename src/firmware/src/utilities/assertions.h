@@ -10,13 +10,13 @@
 #define TEST_INFO_SCALAR(msg, a) { \
 	Serial.print("[TEST INFO]\t"); \
 	Serial.print(msg); \
-	Serial.printf(": %f\n", a); \
+	Serial.printf(": %.4f\n", float(a)); \
 }
 
 #define TEST_INFO(msg, op, a, b) { \
 	Serial.print("[TEST INFO]\t"); \
 	Serial.print(msg); \
-	Serial.printf(": %f %s %f\n", a, op, b); \
+	Serial.printf(": %.4f %s %.4f\n", float(a), op, float(b)); \
 }
 
 template <typename T> int assert_eq(T a, T b, String message) {

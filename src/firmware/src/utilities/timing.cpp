@@ -1,22 +1,6 @@
 #include "timing.h"
 
 
-uint32_t duration_info(uint32_t start, uint32_t stop){
-	/*
-		  Helper to print info about *very small* durations in
-		time. Prints the cycles and time in ns.
-		@param
-			start: (uint32_t) value of ARM_DWT_CYCCNT at the beginning of a duration
-			stop: (uint32_t) value of ARM_DWT_CYCNT at the end of a duration
-		@return
-			delta_ns: (uint32_t) duration in nanoseconds
-	*/
-	uint32_t delta_cycles = stop - start;
-	uint32_t delta_ns = CYCLES_2_NS(delta_cycles); 
-	Serial.printf( "\t%1lu cycles, %1lu ns\n", delta_cycles, delta_ns);
-	return delta_ns;
-}
-
 FTYK::FTYK() {
 	/*
 		  Object to get precise timing, nanos is available but not really supported.
@@ -49,7 +33,7 @@ void FTYK::mark(int idx) {
 		@param:
 			idx: (int) index of the timer to print info about.
 	*/
-	duration_info(timers[idx], ARM_DWT_CYCCNT);
+	print(idx);
 }
 
 int FTYK::cycles(int idx) {
@@ -126,9 +110,9 @@ float FTYK::delay_millis(int idx, float duration){
 }
 
 void FTYK::print(int idx) {
-	Serial.printf("Timer %i\n", idx);
 	int cyccnt = cycles(idx);
 	float ns = CYCLES_2_NS(cyccnt);
+	Serial.printf("Timer %i\n", idx);
 	Serial.printf("%f s | %f ms | %f us | %f ns | %i cycles\n", 
 		NS_2_S(ns),
 		NS_2_MS(ns),
@@ -137,9 +121,9 @@ void FTYK::print(int idx) {
 }
 
 void FTYK::print(int idx, String title) {
-	Serial.print(title); Serial.printf(" Timer %i\n", idx);
 	int cyccnt = cycles(idx);
 	float ns = CYCLES_2_NS(cyccnt);
+	Serial.print(title); Serial.printf(" Timer %i\n", idx);
 	Serial.printf("%f s | %f ms | %f us | %f ns | %i cycles\n", 
 		NS_2_S(ns),
 		NS_2_MS(ns),

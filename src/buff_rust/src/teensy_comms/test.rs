@@ -3,8 +3,11 @@ extern crate hidapi;
 
 use hidapi::{HidApi, HidDevice};
 
-use crate::teensy_comms::{
-    data_structures::*, hid_layer::*, hid_reader::*, hid_ros::*, hid_writer::*,
+use crate::{
+    teensy_comms::{
+        data_structures::*, hid_layer::*, hid_reader::*, hid_ros::*, hid_writer::*,
+    },
+    utilities::buffers::ByteBuffer,
 };
 use crate::utilities::loaders::*;
 
@@ -35,6 +38,87 @@ pub mod robot_status_tests {
         rs.process_request_packets().iter().for_each(|packet| {
             packet.print();
         })
+    }
+}
+
+///
+/// Test the hid functionality on the Teensy
+/// Only demonstrates the ability to maintain a connection
+/// This is usually paried with firmware/examples/hid/live_test.cpp
+/// Dump packets to the Teensy at 1ms, each packet contains a counter
+/// and timestamp.
+#[cfg(test)]
+pub mod teensy_dev_tests {
+    // Note this useful idiom: importing names from outer (for mod tests) scope.
+    use super::*;
+
+    pub fn sim_control_pipeline(layer: HidLayer) {
+        while !layer.is_connected() {}
+
+        println!("HID-CTRL Live");
+
+        let mut write_count = 0.0;
+        let mut buffer = ByteBuffer::new(64);
+        buffer.put(0, 255);
+        buffer.put(1, 255);
+
+        let mut loopt = Instant::now();
+        let t = Instant::now();
+        while t.elapsed().as_secs() < 5 && !layer.is_shutdown() {
+
+            // println!("{:?}", reports[current_report]);
+            if layer.is_connected() {
+                write_count += 1.0;
+                buffer.put_floats(2, vec![write_count, layer.lifetime()]);
+                layer.writer_tx(buffer.clone());
+            }
+
+            if layer.delay(loopt) > TEENSY_CYCLE_TIME_US {
+                println!("HID Control over cycled {}", loopt.elapsed().as_micros());
+            }
+            loopt = Instant::now();
+        }
+
+        layer.shutdown();
+        println!("HID Control sim shutdown");
+        layer.print();
+    }
+
+    #[test]
+    pub fn hid_control_test() {
+        /*
+            Start an hid layer
+        */
+        let (layer, writer_rx) = HidLayer::new("penguin");
+        layer.print();
+        let sim_layer = layer.clone();
+        let mut hidreader = HidReader::new(layer.clone());
+        let mut hidwriter = HidWriter::new(layer, writer_rx);
+
+        let hidreader_handle = Builder::new()
+            .name("HID Reader".to_string())
+            .spawn(move || {
+                hidreader.pipeline();
+            })
+            .unwrap();
+
+        let hidwriter_handle = Builder::new()
+            .name("HID Writer".to_string())
+            .spawn(move || {
+                hidwriter.pipeline();
+            })
+            .unwrap();
+
+        let pipeline_sim = Builder::new()
+            .name("HID Control".to_string())
+            .spawn(move || {
+                sim_control_pipeline(sim_layer);
+            })
+            .unwrap();
+
+        hidreader_handle.join().expect("HID Reader failed");
+        pipeline_sim.join().expect("HID Sim failed");
+        hidwriter_handle.join().expect("HID Writer failed");
     }
 }
 
@@ -71,7 +155,9 @@ pub mod teensy_comms_tests {
             }
             current_report = (current_report + 1) % reports.len();
 
-            while loopt.elapsed().as_micros() < TEENSY_CYCLE_TIME_US as u128 {}
+            if layer.delay(loopt) > TEENSY_CYCLE_TIME_US {
+                println!("HID Control over cycled {}", loopt.elapsed().as_micros());
+            }
         }
 
         layer.shutdown();

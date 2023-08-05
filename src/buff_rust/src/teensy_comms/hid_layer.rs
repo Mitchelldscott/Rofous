@@ -249,11 +249,6 @@ impl HidLayer {
 
     pub fn report_parser(&mut self, report: &ByteBuffer) {
         self.set_mcu_lifetime(report.get_float(60));
-        // println!(
-        //     "HID lifetime: rust {}s  mcu {}s",
-        //     self.lifetime(),
-        //     self.mcu_lifetime()
-        // );
 
         // match the report number to determine the structure
         if report.get(0) == PROC_REPORT_ID {
@@ -308,7 +303,9 @@ impl HidLayer {
             }
             current_report = (current_report + 1) % reports.len();
 
-            while loopt.elapsed().as_micros() < TEENSY_CYCLE_TIME_US as u128 {}
+            if self.delay(loopt) > TEENSY_CYCLE_TIME_US {
+                println!("HID Control over cycled {}", loopt.elapsed().as_micros());
+            }
         }
 
         self.shutdown();

@@ -11,9 +11,9 @@ SynCor::SynCor() {
 	setup_blink();
 }
 
-void SynCor::enable_hid_interrupts() {
-	hidtimer.begin(this->handle_hid, HID_READ_WRITE_RATE_US);
-}
+// void SynCor::enable_hid_interrupts() {
+// 	hidtimer.begin(handle_hid, HID_READ_WRITE_RATE_US);
+// }
 
 Vector<float> SynCor::collect_outputs(int index) {
 	int curr_size = 0;

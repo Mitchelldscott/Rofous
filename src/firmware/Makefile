@@ -102,10 +102,10 @@ LIBRARY_DIR=libraries
 BUILD_PATH=$(abspath $(CURDIR)/build)
 
 # path location for Teensy Loader, teensy_post_compile and teensy_reboot (on Linux)
-TOOLS_PATH=$(abspath $(ARDUINO_PATH)/packages/teensy/tools/teensy-tools/1.57.2)
+TOOLS_PATH=$(abspath $(ARDUINO_PATH)/packages/teensy/tools/teensy-tools/1.58.0)
 
 # path location for the arm-none-eabi compiler
-COMPILER_PATH=$(abspath $(ARDUINO_PATH)/packages/teensy/tools/teensy-compile/5.4.1/arm/bin)
+COMPILER_PATH=$(abspath $(ARDUINO_PATH)/packages/teensy/tools/teensy-compile/11.3.1/arm/bin)
 
 #************************************************************************
 # Settings below this point usually do not need to be edited

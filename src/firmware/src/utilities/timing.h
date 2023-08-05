@@ -27,9 +27,6 @@
 
 #define MAX_NUM_TIMERS 10
 
-void init_timers();
-uint32_t duration_info(uint32_t, uint32_t);
-
 /*
 	Class to provide multiple timers that have exceptional
 	precision (Still hardware limited).

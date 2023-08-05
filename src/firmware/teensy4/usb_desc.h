@@ -114,14 +114,14 @@ let me know?  http://forum.pjrc.com/forums/4-Suggestions-amp-Bug-Reports
 #if defined(USB_SERIAL)
   #define VENDOR_ID		0x16C0
   #define PRODUCT_ID		0x0483
-  #define MANUFACTURER_NAME	{'T','e','e','n','s','y','d','u','i','n','o'}
-  #define MANUFACTURER_NAME_LEN	11
+  #define MANUFACTURER_NAME	{'D','y','s','e',' ','I','n','d','u','s','t','r','i','e','s'}
+  #define MANUFACTURER_NAME_LEN	15
   #define PRODUCT_NAME		{'U','S','B',' ','S','e','r','i','a','l'}
   #define PRODUCT_NAME_LEN	10
   #define EP0_SIZE		64
   #define NUM_ENDPOINTS		4
   #define NUM_USB_BUFFERS	12
-  #define NUM_INTERFACE		2
+  #define NUM_INTERFACE		3
   #define CDC_IAD_DESCRIPTOR    1       // Serial
   #define CDC_STATUS_INTERFACE	0
   #define CDC_DATA_INTERFACE	1
@@ -133,7 +133,7 @@ let me know?  http://forum.pjrc.com/forums/4-Suggestions-amp-Bug-Reports
   #define CDC_TX_SIZE_480       512
   #define CDC_RX_SIZE_12        64
   #define CDC_TX_SIZE_12        64
-  //#define EXPERIMENTAL_INTERFACE 2
+  #define EXPERIMENTAL_INTERFACE 2
   #define ENDPOINT2_CONFIG	ENDPOINT_RECEIVE_UNUSED + ENDPOINT_TRANSMIT_INTERRUPT
   #define ENDPOINT3_CONFIG	ENDPOINT_RECEIVE_BULK + ENDPOINT_TRANSMIT_UNUSED
   #define ENDPOINT4_CONFIG      ENDPOINT_RECEIVE_UNUSED + ENDPOINT_TRANSMIT_BULK
@@ -141,8 +141,8 @@ let me know?  http://forum.pjrc.com/forums/4-Suggestions-amp-Bug-Reports
 #elif defined(USB_DUAL_SERIAL)
   #define VENDOR_ID             0x16C0
   #define PRODUCT_ID            0x048B
-  #define MANUFACTURER_NAME     {'T','e','e','n','s','y','d','u','i','n','o'}
-  #define MANUFACTURER_NAME_LEN 11
+  #define MANUFACTURER_NAME     {'D','y','s','e',' ','I','n','d','u','s','t','r','i','e','s'}
+  #define MANUFACTURER_NAME_LEN 15
   #define PRODUCT_NAME          {'D','u','a','l',' ','S','e','r','i','a','l'}
   #define PRODUCT_NAME_LEN      11
   #define EP0_SIZE              64
@@ -172,8 +172,8 @@ let me know?  http://forum.pjrc.com/forums/4-Suggestions-amp-Bug-Reports
 #elif defined(USB_TRIPLE_SERIAL)
   #define VENDOR_ID             0x16C0
   #define PRODUCT_ID            0x048C
-  #define MANUFACTURER_NAME     {'T','e','e','n','s','y','d','u','i','n','o'}
-  #define MANUFACTURER_NAME_LEN 11
+  #define MANUFACTURER_NAME     {'D','y','s','e',' ','I','n','d','u','s','t','r','i','e','s'}
+  #define MANUFACTURER_NAME_LEN 15
   #define PRODUCT_NAME          {'T','r','i','p','l','e',' ','S','e','r','i','a','l'}
   #define PRODUCT_NAME_LEN      13
   #define EP0_SIZE              64
@@ -210,8 +210,8 @@ let me know?  http://forum.pjrc.com/forums/4-Suggestions-amp-Bug-Reports
 #elif defined(USB_KEYBOARDONLY)
   #define VENDOR_ID		0x16C0
   #define PRODUCT_ID		0x04D0
-  #define MANUFACTURER_NAME	{'T','e','e','n','s','y','d','u','i','n','o'}
-  #define MANUFACTURER_NAME_LEN	11
+  #define MANUFACTURER_NAME	{'D','y','s','e',' ','I','n','d','u','s','t','r','i','e','s'}
+  #define MANUFACTURER_NAME_LEN	15
   #define PRODUCT_NAME		{'K','e','y','b','o','a','r','d'}
   #define PRODUCT_NAME_LEN	8
   #define EP0_SIZE		64
@@ -240,8 +240,8 @@ let me know?  http://forum.pjrc.com/forums/4-Suggestions-amp-Bug-Reports
 #elif defined(USB_HID)
   #define VENDOR_ID		0x16C0
   #define PRODUCT_ID		0x0482
-  #define MANUFACTURER_NAME	{'T','e','e','n','s','y','d','u','i','n','o'}
-  #define MANUFACTURER_NAME_LEN	11
+  #define MANUFACTURER_NAME	{'D','y','s','e',' ','I','n','d','u','s','t','r','i','e','s'}
+  #define MANUFACTURER_NAME_LEN	15
   #define PRODUCT_NAME		{'K','e','y','b','o','a','r','d','/','M','o','u','s','e','/','J','o','y','s','t','i','c','k'}
   #define PRODUCT_NAME_LEN	23
   #define EP0_SIZE		64
@@ -283,8 +283,8 @@ let me know?  http://forum.pjrc.com/forums/4-Suggestions-amp-Bug-Reports
   #define DEVICE_CLASS		0xEF
   #define DEVICE_SUBCLASS	0x02
   #define DEVICE_PROTOCOL	0x01
-  #define MANUFACTURER_NAME	{'T','e','e','n','s','y','d','u','i','n','o'}
-  #define MANUFACTURER_NAME_LEN	11
+  #define MANUFACTURER_NAME	{'D','y','s','e',' ','I','n','d','u','s','t','r','i','e','s'}
+  #define MANUFACTURER_NAME_LEN	15
   #define PRODUCT_NAME		{'S','e','r','i','a','l','/','K','e','y','b','o','a','r','d','/','M','o','u','s','e','/','J','o','y','s','t','i','c','k'}
   #define PRODUCT_NAME_LEN	30
   #define EP0_SIZE		64
@@ -327,8 +327,8 @@ let me know?  http://forum.pjrc.com/forums/4-Suggestions-amp-Bug-Reports
 #elif defined(USB_TOUCHSCREEN)
   #define VENDOR_ID		0x16C0
   #define PRODUCT_ID		0x04D3
-  #define MANUFACTURER_NAME	{'T','e','e','n','s','y','d','u','i','n','o'}
-  #define MANUFACTURER_NAME_LEN	11
+  #define MANUFACTURER_NAME	{'D','y','s','e',' ','I','n','d','u','s','t','r','i','e','s'}
+  #define MANUFACTURER_NAME_LEN	15
   #define PRODUCT_NAME		{'K','e','y','b','o','a','r','d','/','T','o','u','c','h','s','c','r','e','e','n'}
   #define PRODUCT_NAME_LEN	20
   #define EP0_SIZE		64
@@ -361,8 +361,8 @@ let me know?  http://forum.pjrc.com/forums/4-Suggestions-amp-Bug-Reports
 #elif defined(USB_HID_TOUCHSCREEN)
   #define VENDOR_ID		0x16C0
   #define PRODUCT_ID		0x04D4
-  #define MANUFACTURER_NAME	{'T','e','e','n','s','y','d','u','i','n','o'}
-  #define MANUFACTURER_NAME_LEN	11
+  #define MANUFACTURER_NAME	{'D','y','s','e',' ','I','n','d','u','s','t','r','i','e','s'}
+  #define MANUFACTURER_NAME_LEN	15
   #define PRODUCT_NAME		{'K','e','y','b','o','a','r','d','/','M','o','u','s','e','/','T','o','u','c','h','s','c','r','e','e','n'}
   #define PRODUCT_NAME_LEN	26
   #define EP0_SIZE		64
@@ -400,8 +400,8 @@ let me know?  http://forum.pjrc.com/forums/4-Suggestions-amp-Bug-Reports
 #elif defined(USB_MIDI)
   #define VENDOR_ID		0x16C0
   #define PRODUCT_ID		0x0485
-  #define MANUFACTURER_NAME	{'T','e','e','n','s','y','d','u','i','n','o'}
-  #define MANUFACTURER_NAME_LEN	11
+  #define MANUFACTURER_NAME	{'D','y','s','e',' ','I','n','d','u','s','t','r','i','e','s'}
+  #define MANUFACTURER_NAME_LEN	15
   #define PRODUCT_NAME		{'T','e','e','n','s','y',' ','M','I','D','I'}
   #define PRODUCT_NAME_LEN	11
   #define EP0_SIZE		64
@@ -429,8 +429,8 @@ let me know?  http://forum.pjrc.com/forums/4-Suggestions-amp-Bug-Reports
   #define VENDOR_ID		0x16C0
   #define PRODUCT_ID		0x0485
   #define BCD_DEVICE		0x0211
-  #define MANUFACTURER_NAME	{'T','e','e','n','s','y','d','u','i','n','o'}
-  #define MANUFACTURER_NAME_LEN	11
+  #define MANUFACTURER_NAME	{'D','y','s','e',' ','I','n','d','u','s','t','r','i','e','s'}
+  #define MANUFACTURER_NAME_LEN	15
   #define PRODUCT_NAME		{'T','e','e','n','s','y',' ','M','I','D','I','x','4'}
   #define PRODUCT_NAME_LEN	13
   #define EP0_SIZE		64
@@ -458,8 +458,8 @@ let me know?  http://forum.pjrc.com/forums/4-Suggestions-amp-Bug-Reports
   #define VENDOR_ID		0x16C0
   #define PRODUCT_ID		0x0485
   #define BCD_DEVICE		0x0212
-  #define MANUFACTURER_NAME	{'T','e','e','n','s','y','d','u','i','n','o'}
-  #define MANUFACTURER_NAME_LEN	11
+  #define MANUFACTURER_NAME	{'D','y','s','e',' ','I','n','d','u','s','t','r','i','e','s'}
+  #define MANUFACTURER_NAME_LEN	15
   #define PRODUCT_NAME		{'T','e','e','n','s','y',' ','M','I','D','I','x','1','6'}
   #define PRODUCT_NAME_LEN	14
   #define EP0_SIZE		64
@@ -486,8 +486,8 @@ let me know?  http://forum.pjrc.com/forums/4-Suggestions-amp-Bug-Reports
 #elif defined(USB_MIDI_SERIAL)
   #define VENDOR_ID		0x16C0
   #define PRODUCT_ID		0x0489
-  #define MANUFACTURER_NAME	{'T','e','e','n','s','y','d','u','i','n','o'}
-  #define MANUFACTURER_NAME_LEN	11
+  #define MANUFACTURER_NAME	{'D','y','s','e',' ','I','n','d','u','s','t','r','i','e','s'}
+  #define MANUFACTURER_NAME_LEN	15
   #define PRODUCT_NAME		{'T','e','e','n','s','y',' ','M','I','D','I'}
   #define PRODUCT_NAME_LEN	11
   #define EP0_SIZE		64
@@ -520,8 +520,8 @@ let me know?  http://forum.pjrc.com/forums/4-Suggestions-amp-Bug-Reports
   #define VENDOR_ID		0x16C0
   #define PRODUCT_ID		0x0489
   #define BCD_DEVICE		0x0211
-  #define MANUFACTURER_NAME	{'T','e','e','n','s','y','d','u','i','n','o'}
-  #define MANUFACTURER_NAME_LEN	11
+  #define MANUFACTURER_NAME	{'D','y','s','e',' ','I','n','d','u','s','t','r','i','e','s'}
+  #define MANUFACTURER_NAME_LEN	15
   #define PRODUCT_NAME		{'T','e','e','n','s','y',' ','M','I','D','I','x','4'}
   #define PRODUCT_NAME_LEN	13
   #define EP0_SIZE		64
@@ -554,8 +554,8 @@ let me know?  http://forum.pjrc.com/forums/4-Suggestions-amp-Bug-Reports
   #define VENDOR_ID		0x16C0
   #define PRODUCT_ID		0x0489
   #define BCD_DEVICE		0x0212
-  #define MANUFACTURER_NAME	{'T','e','e','n','s','y','d','u','i','n','o'}
-  #define MANUFACTURER_NAME_LEN	11
+  #define MANUFACTURER_NAME	{'D','y','s','e',' ','I','n','d','u','s','t','r','i','e','s'}
+  #define MANUFACTURER_NAME_LEN	15
   #define PRODUCT_NAME		{'T','e','e','n','s','y',' ','M','I','D','I','x','1','6'}
   #define PRODUCT_NAME_LEN	14
   #define EP0_SIZE		64
@@ -589,10 +589,10 @@ let me know?  http://forum.pjrc.com/forums/4-Suggestions-amp-Bug-Reports
   #define PRODUCT_ID		0x0486
   #define RAWHID_USAGE_PAGE	0xFFAB  // recommended: 0xFF00 to 0xFFFF
   #define RAWHID_USAGE		0x0200  // recommended: 0x0100 to 0xFFFF
-  #define MANUFACTURER_NAME	{'T','e','e','n','s','y','d','u','i','n','o'}
-  #define MANUFACTURER_NAME_LEN	11
-  #define PRODUCT_NAME		{'T','e','e','n','s','y','d','u','i','n','o',' ','R','a','w','H','I','D'}
-  #define PRODUCT_NAME_LEN	18
+  #define MANUFACTURER_NAME	{'D','y','s','e',' ','I','n','d','u','s','t','r','i','e','s'}
+  #define MANUFACTURER_NAME_LEN	15
+  #define PRODUCT_NAME		{'D','y','s','e',' ','R','a','w','H','I','D'}
+  #define PRODUCT_NAME_LEN	11
   #define EP0_SIZE		64
   #define NUM_ENDPOINTS         4
   #define NUM_INTERFACE		2
@@ -617,8 +617,8 @@ let me know?  http://forum.pjrc.com/forums/4-Suggestions-amp-Bug-Reports
 #elif defined(USB_FLIGHTSIM)
   #define VENDOR_ID		0x16C0
   #define PRODUCT_ID		0x0488
-  #define MANUFACTURER_NAME	{'T','e','e','n','s','y','d','u','i','n','o'}
-  #define MANUFACTURER_NAME_LEN	11
+  #define MANUFACTURER_NAME	{'D','y','s','e',' ','I','n','d','u','s','t','r','i','e','s'}
+  #define MANUFACTURER_NAME_LEN	15
   #define PRODUCT_NAME		{'T','e','e','n','s','y',' ','F','l','i','g','h','t',' ','S','i','m',' ','C','o','n','t','r','o','l','s'}
   #define PRODUCT_NAME_LEN	26
   #define EP0_SIZE		64
@@ -645,8 +645,8 @@ let me know?  http://forum.pjrc.com/forums/4-Suggestions-amp-Bug-Reports
   #define VENDOR_ID		0x16C0
   #define PRODUCT_ID		0x0488
   #define BCD_DEVICE		0x0211
-  #define MANUFACTURER_NAME	{'T','e','e','n','s','y','d','u','i','n','o'}
-  #define MANUFACTURER_NAME_LEN	11
+  #define MANUFACTURER_NAME	{'D','y','s','e',' ','I','n','d','u','s','t','r','i','e','s'}
+  #define MANUFACTURER_NAME_LEN	15
   #define PRODUCT_NAME		{'T','e','e','n','s','y',' ','F','l','i','g','h','t',' ','S','i','m',' ','C','o','n','t','r','o','l','s'}
   #define PRODUCT_NAME_LEN	26
   #define EP0_SIZE		64
@@ -677,8 +677,8 @@ let me know?  http://forum.pjrc.com/forums/4-Suggestions-amp-Bug-Reports
 #elif defined(USB_MTPDISK)
   #define VENDOR_ID		0x16C0
   #define PRODUCT_ID		0x04D1
-  #define MANUFACTURER_NAME	{'T','e','e','n','s','y','d','u','i','n','o'}
-  #define MANUFACTURER_NAME_LEN	11
+  #define MANUFACTURER_NAME	{'D','y','s','e',' ','I','n','d','u','s','t','r','i','e','s'}
+  #define MANUFACTURER_NAME_LEN	15
   #define PRODUCT_NAME		{'T','e','e','n','s','y',' ','M','T','P',' ','D','i','s','k'}
   #define PRODUCT_NAME_LEN	15
   #define EP0_SIZE		64
@@ -709,8 +709,8 @@ let me know?  http://forum.pjrc.com/forums/4-Suggestions-amp-Bug-Reports
 #elif defined(USB_MTPDISK_SERIAL)
   #define VENDOR_ID		0x16C0
   #define PRODUCT_ID		0x04D5
-  #define MANUFACTURER_NAME	{'T','e','e','n','s','y','d','u','i','n','o'}
-  #define MANUFACTURER_NAME_LEN	11
+  #define MANUFACTURER_NAME	{'D','y','s','e',' ','I','n','d','u','s','t','r','i','e','s'}
+  #define MANUFACTURER_NAME_LEN	15
   #define PRODUCT_NAME		{'T','e','e','n','s','y',' ','M','T','P',' ','D','i','s','k'}
   #define PRODUCT_NAME_LEN	15
   #define EP0_SIZE		64
@@ -746,8 +746,8 @@ let me know?  http://forum.pjrc.com/forums/4-Suggestions-amp-Bug-Reports
 #elif defined(USB_AUDIO)
   #define VENDOR_ID		0x16C0
   #define PRODUCT_ID		0x04D2
-  #define MANUFACTURER_NAME	{'T','e','e','n','s','y','d','u','i','n','o'}
-  #define MANUFACTURER_NAME_LEN	11
+  #define MANUFACTURER_NAME	{'D','y','s','e',' ','I','n','d','u','s','t','r','i','e','s'}
+  #define MANUFACTURER_NAME_LEN	15
   #define PRODUCT_NAME		{'T','e','e','n','s','y',' ','A','u','d','i','o'}
   #define PRODUCT_NAME_LEN	12
   #define EP0_SIZE		64
@@ -773,8 +773,8 @@ let me know?  http://forum.pjrc.com/forums/4-Suggestions-amp-Bug-Reports
 #elif defined(USB_MIDI_AUDIO_SERIAL)
   #define VENDOR_ID		0x16C0
   #define PRODUCT_ID		0x048A
-  #define MANUFACTURER_NAME	{'T','e','e','n','s','y','d','u','i','n','o'}
-  #define MANUFACTURER_NAME_LEN	11
+  #define MANUFACTURER_NAME	{'D','y','s','e',' ','I','n','d','u','s','t','r','i','e','s'}
+  #define MANUFACTURER_NAME_LEN	15
   #define PRODUCT_NAME		{'T','e','e','n','s','y',' ','M','I','D','I','/','A','u','d','i','o'}
   #define PRODUCT_NAME_LEN	17
   #define EP0_SIZE		64
@@ -815,8 +815,8 @@ let me know?  http://forum.pjrc.com/forums/4-Suggestions-amp-Bug-Reports
   #define VENDOR_ID		0x16C0
   #define PRODUCT_ID		0x048A
   #define BCD_DEVICE		0x0212
-  #define MANUFACTURER_NAME	{'T','e','e','n','s','y','d','u','i','n','o'}
-  #define MANUFACTURER_NAME_LEN	11
+  #define MANUFACTURER_NAME	{'D','y','s','e',' ','I','n','d','u','s','t','r','i','e','s'}
+  #define MANUFACTURER_NAME_LEN	15
   #define PRODUCT_NAME		{'T','e','e','n','s','y',' ','M','I','D','I','x','1','6','/','A','u','d','i','o'}
   #define PRODUCT_NAME_LEN	20
   #define EP0_SIZE		64
@@ -861,8 +861,8 @@ let me know?  http://forum.pjrc.com/forums/4-Suggestions-amp-Bug-Reports
   #define DEVICE_CLASS		0xEF
   #define DEVICE_SUBCLASS	0x02
   #define DEVICE_PROTOCOL	0x01
-  #define MANUFACTURER_NAME	{'T','e','e','n','s','y','d','u','i','n','o'}
-  #define MANUFACTURER_NAME_LEN	11
+  #define MANUFACTURER_NAME	{'D','y','s','e',' ','I','n','d','u','s','t','r','i','e','s'}
+  #define MANUFACTURER_NAME_LEN	15
   #define PRODUCT_NAME		{'A','l','l',' ','T','h','e',' ','T','h','i','n','g','s'}
   #define PRODUCT_NAME_LEN	14
   #define EP0_SIZE		64
