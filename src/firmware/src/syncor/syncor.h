@@ -12,11 +12,11 @@
 #define MAXIMUM_GRAPH_NODES 10
 #define HID_READ_WRITE_RATE_US 1000
 
+Process_Factory p_factory;
+
+
 class SynCor {
 	private:
-		HidReport report;
-		IntervalTimer hidtimer;
-		Process_Factory factory;
 
 		FTYK timers;
 		float lifetime;
@@ -28,9 +28,11 @@ class SynCor {
 	public:
 		SynCor();
 		// ~SystemGraph();
-		Vector<float> collect_outputs(int);
+		int node_index(int proc_id);
 		void add(HidProcessParams*);
 		void update_config(HidProcessConfig*);
+		Vector<float> collect_outputs(int);
+
 		void spin();
 		void dump_all();
 		// void handle_hid();

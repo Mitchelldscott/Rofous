@@ -29,11 +29,12 @@ class SynCorNode {
 	private:
 		int config_shape;
 
-		Process* proc;
-		Vector<int> inputs;
-		Vector<float> output_buffer;
-		Vector<float> config_buffer;
-		Vector<float> context_buffer;
+		Process* proc;					// The thing that does the jawns
+		Vector<int> inputs_ids;			// proc_ids of input nodes (maybe useless)
+		Vector<SynCorNode*> inputs;		// pointers to the input nodes (not implemented)
+		Vector<float> output_buffer;	// a buffer of output data, maybe ditching soon
+		Vector<float> config_buffer;	// configuration buffer (here to stay)
+		Vector<float> context_buffer;	// buffer of context data, also ditching soon
 
 	public:
 		SynCorNode();
