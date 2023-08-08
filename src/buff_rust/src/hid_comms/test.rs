@@ -4,7 +4,7 @@ extern crate hidapi;
 use hidapi::{HidApi, HidDevice};
 
 use crate::{
-    teensy_comms::{
+    hid_comms::{
         data_structures::*, hid_layer::*, hid_reader::*, hid_ros::*, hid_writer::*,
     },
     utilities::buffers::ByteBuffer,
@@ -52,6 +52,31 @@ pub mod teensy_dev_tests {
     // Note this useful idiom: importing names from outer (for mod tests) scope.
     use super::*;
 
+    // pub fn writer_dev_pipeline(writer: HidWriter) {
+    //     println!("HID-writer Live");
+
+    //     let mut write_count = 0.0;
+
+    //     let mut loopt = Instant::now();
+    //     let t = Instant::now();
+    //     while t.elapsed().as_secs() < 5 && !writer.layer.is_shutdown() {
+
+    //         if layer.is_connected() {
+    //             write_count += 1.0;
+    //             writer.output.puts(0, vec![255, 255]);
+    //             writer.output.put_floats(2, vec![write_count, self.layer.lifetime()]);
+    //             writer.write();
+    //         }
+
+    //         if layer.delay(loopt) > TEENSY_CYCLE_TIME_US {
+    //             println!("HID Writer over cycled {}", loopt.elapsed().as_micros());
+    //         }
+    //         loopt = Instant::now();
+    //     }
+
+    //     println!("HID-writer Shutdown");
+    // }
+
     pub fn sim_control_pipeline(layer: HidLayer) {
         while !layer.is_connected() {}
 
@@ -66,7 +91,6 @@ pub mod teensy_dev_tests {
         let t = Instant::now();
         while t.elapsed().as_secs() < 5 && !layer.is_shutdown() {
 
-            // println!("{:?}", reports[current_report]);
             if layer.is_connected() {
                 write_count += 1.0;
                 buffer.put_floats(2, vec![write_count, layer.lifetime()]);
@@ -109,15 +133,19 @@ pub mod teensy_dev_tests {
             })
             .unwrap();
 
-        let pipeline_sim = Builder::new()
-            .name("HID Control".to_string())
-            .spawn(move || {
-                sim_control_pipeline(sim_layer);
-            })
-            .unwrap();
+        let t = Instant::now();
+        while t.elapsed().as_secs() < 5 && !sim_layer.is_shutdown() {}
+        sim_layer.shutdown();
+
+        // let pipeline_sim = Builder::new()
+        //     .name("HID Control".to_string())
+        //     .spawn(move || {
+        //         sim_control_pipeline(sim_layer);
+        //     })
+        //     .unwrap();
 
         hidreader_handle.join().expect("HID Reader failed");
-        pipeline_sim.join().expect("HID Sim failed");
+        // pipeline_sim.join().expect("HID Sim failed");
         hidwriter_handle.join().expect("HID Writer failed");
     }
 }

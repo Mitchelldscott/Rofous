@@ -1,2 +1,2 @@
-pub mod teensy_comms;
+pub mod hid_comms;
 pub mod utilities;

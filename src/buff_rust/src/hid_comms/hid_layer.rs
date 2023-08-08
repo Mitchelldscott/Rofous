@@ -1,6 +1,6 @@
 extern crate hidapi;
 
-use crate::{teensy_comms::data_structures::*, utilities::buffers::ByteBuffer};
+use crate::{hid_comms::data_structures::*, utilities::buffers::ByteBuffer};
 use hidapi::{HidApi, HidDevice};
 use std::{
     sync::{

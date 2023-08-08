@@ -1,6 +1,6 @@
 extern crate hidapi;
 
-use crate::teensy_comms::hid_layer::*;
+use crate::hid_comms::hid_layer::*;
 use crate::utilities::buffers::*;
 use hidapi::HidDevice;
 use std::{sync::mpsc::Receiver, time::Instant};
@@ -36,11 +36,10 @@ impl HidWriter {
     }
 
     pub fn silent_channel_default(&mut self) -> ByteBuffer {
-        let mut report = ByteBuffer::hid();
-        report.put_float(56, self.layer.get_packets_sent());
-        report.put_float(60, self.layer.lifetime());
-
-        report
+        let mut buffer = ByteBuffer::hid();
+        buffer.puts(0, vec![255, 255]);
+        buffer.put_floats(2, vec![self.layer.get_packets_sent(), self.layer.lifetime()]);
+        buffer
     }
 
     /// Write the bytes from the output buffer to the teensy, then clear the buffer.

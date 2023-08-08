@@ -18,4 +18,4 @@ rosrust_msg = "0.1.6"
 
 [[bin]]
 name = "comms_node"
-path = "src/teensy_comms/comms_node.rs"
+path = "src/hid_comms/comms_node.rs"

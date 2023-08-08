@@ -3,7 +3,8 @@
 
 #include "utilities/blink.h"
 
-#include "robot_comms/hid_report.h"
+#include "hid_comms/hid_report.h"
+#include "hid_comms/hid_comms.h"
 
 #include "syncor/syncor_node.h"
 #include "syncor/process_factory.h"
@@ -17,7 +18,7 @@ class SynCor {
 		IntervalTimer hidtimer;
 		Process_Factory factory;
 
-		FTYK timers;		// timer0 = hid write timer
+		FTYK timers;
 		float lifetime;
 
 		Vector<int> status;
@@ -27,16 +28,13 @@ class SynCor {
 	public:
 		SynCor();
 		// ~SystemGraph();
-		void enable_hid_interrupts();
 		Vector<float> collect_outputs(int);
-		void add(String, int, int, int, int*);
-		void update_config(int, int, int, float*);
+		void add(HidProcessParams*);
+		void update_config(HidProcessConfig*);
 		void spin();
 		void dump_all();
-		void handle_hid();
-		void init_process_hid();
-		void config_process_hid();
-		void dump_vector(Vector<float>*);
+		// void handle_hid();
+		// void dump_vector(Vector<float>*);
 };
 
 #endif

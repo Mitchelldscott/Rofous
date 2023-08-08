@@ -1,6 +1,6 @@
 extern crate hidapi;
 
-use crate::teensy_comms::hid_layer::*;
+use crate::hid_comms::hid_layer::*;
 use crate::utilities::buffers::*;
 use hidapi::HidDevice;
 use std::time::Instant;
@@ -111,7 +111,7 @@ impl HidReader {
     /// # Usage
     /// ```
     /// use hidapi::HidApi;
-    /// use buff_rust::teensy_comms::buff_hid::HidReader;
+    /// use buff_rust::hid_comms::buff_hid::HidReader;
     ///
     /// let mut hidapi = HidApi::new().expect("Failed to create API instance");
     /// let mut reader = HidReader::new(&mut hidapi, vid, pid);

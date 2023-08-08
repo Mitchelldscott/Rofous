@@ -29,12 +29,12 @@ Vector<float> SynCor::collect_outputs(int index) {
 	return data;
 }
 
-void SynCor::add(String proc_id, int id, int n_configs, int n_inputs, int* inputs) {
+void SynCor::add(HidProcessParams* proc_info) {
 	// status.push(0);
-	int index = node_ids.find(id);
+	int index = node_ids.find(proc_info->proc_id);
 	if (index == -1) {
-		node_ids.push(id);
-		nodes.push(new SynCorNode(factory.new_proc(proc_id), n_configs, n_inputs, inputs));
+		node_ids.push(proc_info->proc_id);
+		nodes.push(new SynCorNode(factory.new_proc(proc_info->proc_key), proc_info->n_configs, proc_info->n_inputs, proc_info->inputs));
 
 		if (n_configs == 0) {
 			status.push(1);
@@ -44,22 +44,21 @@ void SynCor::add(String proc_id, int id, int n_configs, int n_inputs, int* input
 		}
 	}
 	else {
-		nodes[index]->set_config(n_configs);
-		nodes[index]->set_inputs(inputs, n_inputs);
-		// nodes[index]->set_process(factory.new_proc(proc_id)); // Doesn't seem to reinit imu but it should... imu init takes forever though so whatever
+		nodes[index]->set_config(proc_info->n_configs);
+		nodes[index]->set_inputs(proc_info->inputs, proc_info->n_inputs);
 	}
 }
 
-void SynCor::update_config(int id, int chunk_id, int n_configs, float* config) {
-	int node_index = node_ids.find(id);
+void SynCor::update_config(HidProcessConfig) {
+	int node_index = node_ids.find(proc_info->proc_id);
 	status[node_index] = 0;
 
 	if (node_index == -1) {
-		Serial.printf("Node not found %i\n", id);
+		Serial.printf("Node not found %i\n", proc_info->proc_id);
 		return;
 	}
 
-	nodes[node_index]->config()->insert(config, chunk_id * n_configs, n_configs);	
+	nodes[node_index]->config()->insert(proc_info->config, proc_info->chunk_id * proc_info->n_configs, proc_info->n_configs);	
 	if (nodes[node_index]->is_configured()) {
 		nodes[node_index]->setup_proc();
 		status[node_index] = 1;
@@ -89,97 +88,5 @@ void SynCor::dump_all() {
 	for (int i = 0; i < nodes.size(); i++) {
 		nodes[i]->print_proc();
 		nodes[i]->print_output();
-	}
-}
-
-void SynCor::handle_hid() {
-	switch (report.read()) {
-		case 64:
-			blink();										// only blink when connected to hid
-			// Serial.printf("[%f]Report %i, %i, %i\n", lifetime, report.get(0), report.get(1), report.get(2));
-			switch (report.get(0)) {
-				case 255:
-					// report.print();
-					switch (report.get(1)) {
-						case 1:
-							init_process_hid();
-							break;
-
-						case 2:
-							config_process_hid();
-							break;
-
-						default:
-							break;
-					}
-					lifetime = 0;
-					break;
-
-				case 1:
-					switch (report.get(1)) {
-						case 1:
-							dump_vector(nodes[report.get(2)]->context());
-							break;
-
-						case 2:
-							dump_vector(nodes[report.get(2)]->output());
-							break;
-
-						default:
-							break;
-					}
-					break;
-
-				default:
-					break;
-			}
-			break;
-		
-		default:
-			Serial.println("No report");
-			break;
-	}
-
-	lifetime += US_2_S(timers.delay_micros(0, 1E3));
-	report.put_float(60, lifetime);
-	report.write();
-	timers.set(0);
-}
-
-void SynCor::init_process_hid() {
-	String key = "";
-	int id = report.get(2);
-	key += char(report.get(3));
-	key += char(report.get(4));
-	key += char(report.get(5));
-	int n_config = report.get(6);
-	int n_inputs = report.get(7);
-
-	int input_ids[n_inputs];
-	for (int i = 0; i < n_inputs; i++) {
-		input_ids[i] = report.get(i + 8);
-	}
-
-	timers.set(1);
-	add(key, id, n_config, n_inputs, input_ids);
-}
-
-void SynCor::config_process_hid() {
-	int id = report.get(2);
-	int chunk_num = report.get(3);
-	int chunk_size = report.get(4);
-	// Serial.printf("configure %i, %i, %i\n",id, chunk_num, chunk_size);
-
-	float data[chunk_size];
-	for (int i = 0; i < chunk_size; i++) {
-		data[i] = report.get_float((4 * i) + 5);
-	}
-	update_config(id, chunk_num, chunk_size, data);
-}
-
-void SynCor::dump_vector(Vector<float>* data) {
-	report.put(3, data->size());
-	for (int i = 0; i < data->size(); i++){
-		report.put_float((4 * i) + 4, (*data)[i]);
 	}
 }

@@ -1,4 +1,4 @@
-use crate::teensy_comms::{data_structures::*, hid_layer::*};
+use crate::hid_comms::{data_structures::*, hid_layer::*};
 use rosrust_msg::std_msgs;
 use std::time::Instant;
 
@@ -16,7 +16,7 @@ impl HidROS {
     ///
     /// # Usage
     /// ```
-    /// use buff_rust::teensy_comms::buff_hid::HidROS;
+    /// use buff_rust::hid_comms::buff_hid::HidROS;
     ///
     /// let hidros = HidROS::new();
     /// ```

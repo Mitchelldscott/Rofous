@@ -52,7 +52,6 @@ class HidReport {
 		int8_t read();
 		// send data as HID packet
 		int8_t write();
-
 };
 
 #endif

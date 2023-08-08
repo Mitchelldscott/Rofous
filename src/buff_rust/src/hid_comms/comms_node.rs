@@ -1,4 +1,4 @@
-use buff_rust::teensy_comms::{hid_layer::*, hid_reader::*, hid_ros::*, hid_writer::*};
+use buff_rust::hid_comms::{hid_layer::*, hid_reader::*, hid_ros::*, hid_writer::*};
 use std::thread::Builder;
 
 fn main() {

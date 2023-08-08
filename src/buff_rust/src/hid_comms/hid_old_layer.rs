@@ -1,6 +1,6 @@
 extern crate hidapi;
 
-use crate::teensy_comms::{data_structures::*, hid_reader::*, hid_ros::*, hid_writer::*};
+use crate::hid_comms::{data_structures::*, hid_reader::*, hid_ros::*, hid_writer::*};
 use crate::utilities::loaders::*;
 use hidapi::HidApi;
 use std::{
