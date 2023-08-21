@@ -1,18 +1,19 @@
 #include "utilities/timing.h"
-#include "syncor/process.h"
+#include "task_manager/task.h"
 #include "algorithms/linear_algebra.h"
 
 #ifndef COMP_FILTER_H
 #define COMP_FILTER_H
 
-#define ATTITUDE_DIM 3
-#define CMF_STATE_SIZE 6
-#define CMF_INPUT_DIMS 12
-#define DEFAULT_GAIN 0.4
+#define ATTITUDE_DIM 	3
+#define CMF_STATE_SIZE 	6
+#define CMF_INPUT_DIMS 	12
+#define DEFAULT_GAIN 	0.4
 
-class ComplimentaryFilter: public Process {
+class ComplimentaryFilter: public Task {
 	private:
-		FTYK watches;
+		char key[3] = {'C', 'M', 'F'};
+		FTYK timers;
 		float axz_norm = 0;
 		float ayz_norm = 0;
 		float mag_norm = 0;
@@ -21,21 +22,21 @@ class ComplimentaryFilter: public Process {
 		float q_accel[ATTITUDE_DIM];
 		float bias_accel[ATTITUDE_DIM];
 
-
 	public:
 		ComplimentaryFilter() {
-			dimensions.reset(PROCESS_DIMENSIONS);
+			dimensions.reset(TASK_DIMENSIONS);
 			dimensions[INPUT_DIMENSION] = CMF_INPUT_DIMS;
 			dimensions[CONTEXT_DIMENSION] = CMF_STATE_SIZE;
 			dimensions[OUTPUT_DIMENSION] = ATTITUDE_DIM;
-			watches.set(0);
+			dimensions[PARAMS_DIMENSION] = 1;
+
+			timers.set(0);
 			reset();
-			clear();
 		}
 
 		void setup(Vector<float>* config) {
 			K = (*config)[0];
-			watches.set(0);
+			timers.set(0);
 			for (int i = 0; i < ATTITUDE_DIM; i++) {
 				q_accel[i] = 0;
 				q_gyro[i] = 0;
@@ -91,16 +92,16 @@ class ComplimentaryFilter: public Process {
 		}
 
 		void run(Vector<float>* inputs, Vector<float>* outputs) {
-			float dt = watches.micros(0);
-			watches.set(0);
+			float dt = timers.micros(0);
+			timers.set(0);
 			float estimate[ATTITUDE_DIM];
 			float accel[ATTITUDE_DIM];
 			float gyro[ATTITUDE_DIM];
 			float mag[ATTITUDE_DIM];
-			inputs->slice(estimate, 0, 3);
-			inputs->slice(accel, 3, 6);
-			inputs->slice(gyro, 6, 9);
-			inputs->slice(mag, 9, 12);
+			inputs->slice(estimate, 0, ATTITUDE_DIM);
+			inputs->slice(accel, 3, ATTITUDE_DIM);
+			inputs->slice(gyro, 6, ATTITUDE_DIM);
+			inputs->slice(mag, 9, ATTITUDE_DIM);
 			
 			filter(accel, gyro, mag, dt, estimate);
 

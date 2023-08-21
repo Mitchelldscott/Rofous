@@ -1,331 +1,144 @@
+/********************************************************************************
+ *
+ *      ____                     ____          __           __       _
+ *     / __ \__  __________     /  _/___  ____/ /_  _______/ /______(_)__  _____
+ *    / / / / / / / ___/ _ \    / // __ \/ __  / / / / ___/ __/ ___/ / _ \/ ___/
+ *   / /_/ / /_/ (__  )  __/  _/ // / / / /_/ / /_/ (__  ) /_/ /  / /  __(__  )
+ *  /_____/\__, /____/\___/  /___/_/ /_/\__,_/\__,_/____/\__/_/  /_/\___/____/
+ *        /____/
+ *
+ *
+ *
+ ********************************************************************************/
+
 extern crate hidapi;
 
-use crate::{hid_comms::data_structures::*, utilities::buffers::ByteBuffer};
+use crate::hid_comms::data_structures::*;
 use hidapi::{HidApi, HidDevice};
-use std::{
-    sync::{
-        mpsc,
-        mpsc::{Receiver, Sender},
-        Arc, RwLock,
-    },
-    time::Instant,
-};
-
-pub static MCU_NO_COMMS_TIMEOUT: u64 = 5;
-pub static MCU_NO_COMMS_RESET: u128 = 100;
-pub static MCU_RECONNECT_DELAY: f64 = 5.0 * 1E6;
-
-pub static MAX_FLOATS_PER_REPORT: usize = 12;
-
-pub static TEENSY_CYCLE_TIME_S: f64 = 0.001;
-pub static TEENSY_CYCLE_TIME_MS: f64 = TEENSY_CYCLE_TIME_S * 1000.0;
-pub static TEENSY_CYCLE_TIME_US: f64 = TEENSY_CYCLE_TIME_MS * 1000.0;
-
-pub static TEENSY_DEFAULT_VID: u16 = 0x16C0;
-pub static TEENSY_DEFAULT_PID: u16 = 0x0486;
+use std::time::Instant;
 
 pub struct HidLayer {
     // Device info for initializing connection
-    vid: u16,
-    pid: u16,
-    hidapi: HidApi,
+    pub vid: u16,
+    pub pid: u16,
+    pub sample_time: f64,
 
-    // Logic flags to cause events in other threads
-    shutdown: Arc<RwLock<bool>>,
-    connected: Arc<RwLock<bool>>,
-    initialized: Arc<RwLock<bool>>,
+    pub hidapi: HidApi,
 
     // Layer Statistics
-    lifetime: Arc<RwLock<f64>>,
-    mcu_lifetime: Arc<RwLock<f64>>,
-    packets_sent: Arc<RwLock<f64>>,
-    packets_read: Arc<RwLock<f64>>,
+    pub pc_stats: HidStats,
+    pub mcu_stats: HidStats,
 
-    // For sending reports to the writer
-    writer_tx: Sender<ByteBuffer>,
-
-    // For storing reply data
-    robot_status: RobotStatus,
+    // Layer control vectors
+    pub control_flags: HidControlFlags,
 }
 
 impl HidLayer {
-    pub fn default() -> (HidLayer, Receiver<ByteBuffer>) {
-        let (writer_tx, writer_rx): (Sender<ByteBuffer>, Receiver<ByteBuffer>) = mpsc::channel();
+    pub fn new(vid: u16, pid: u16, sample_time: f64) -> HidLayer {
+        HidLayer {
+            vid: vid,
+            pid: pid,
+            sample_time: sample_time,
 
-        (
-            HidLayer {
-                vid: TEENSY_DEFAULT_VID,
-                pid: TEENSY_DEFAULT_PID,
-                hidapi: HidApi::new().expect("Failed to create API instance"),
+            hidapi: HidApi::new().expect("Failed to create API instance"),
 
-                shutdown: Arc::new(RwLock::new(false)),
-                connected: Arc::new(RwLock::new(false)),
-                initialized: Arc::new(RwLock::new(false)),
-
-                lifetime: Arc::new(RwLock::new(0.0)),
-                mcu_lifetime: Arc::new(RwLock::new(0.0)),
-                packets_sent: Arc::new(RwLock::new(0.0)),
-                packets_read: Arc::new(RwLock::new(0.0)),
-
-                writer_tx: writer_tx,
-
-                robot_status: RobotStatus::default(),
-            },
-            writer_rx,
-        )
-    }
-
-    pub fn new(robot: &str) -> (HidLayer, Receiver<ByteBuffer>) {
-        let (writer_tx, writer_rx): (Sender<ByteBuffer>, Receiver<ByteBuffer>) = mpsc::channel();
-
-        (
-            HidLayer {
-                vid: TEENSY_DEFAULT_VID,
-                pid: TEENSY_DEFAULT_PID,
-                hidapi: HidApi::new().expect("Failed to create API instance"),
-
-                shutdown: Arc::new(RwLock::new(false)),
-                connected: Arc::new(RwLock::new(false)),
-                initialized: Arc::new(RwLock::new(false)),
-
-                lifetime: Arc::new(RwLock::new(0.0)),
-                mcu_lifetime: Arc::new(RwLock::new(0.0)),
-                packets_sent: Arc::new(RwLock::new(0.0)),
-                packets_read: Arc::new(RwLock::new(0.0)),
-
-                writer_tx: writer_tx,
-
-                robot_status: RobotStatus::new(robot),
-            },
-            writer_rx,
-        )
+            pc_stats: HidStats::new(),
+            mcu_stats: HidStats::new(),
+            control_flags: HidControlFlags::new(),
+        }
     }
 
     pub fn clone(&self) -> HidLayer {
         HidLayer {
-            vid: TEENSY_DEFAULT_VID,
-            pid: TEENSY_DEFAULT_PID,
+            vid: self.vid,
+            pid: self.pid,
+            sample_time: self.sample_time,
+
             hidapi: HidApi::new().expect("Failed to create API instance"),
 
-            shutdown: self.shutdown.clone(),
-            connected: self.connected.clone(),
-            initialized: self.initialized.clone(),
-
-            lifetime: self.lifetime.clone(),
-            mcu_lifetime: self.mcu_lifetime.clone(),
-            packets_sent: self.packets_sent.clone(),
-            packets_read: self.packets_read.clone(),
-
-            writer_tx: self.writer_tx.clone(),
-
-            robot_status: self.robot_status.clone(),
+            pc_stats: self.pc_stats.clone(),
+            mcu_stats: self.mcu_stats.clone(),
+            control_flags: self.control_flags.clone(),
         }
     }
 
-    pub fn device(&self) -> HidDevice {
+    pub fn device(&self) -> Option<HidDevice> {
         match self.hidapi.open(self.vid, self.pid) {
             Ok(dev) => {
                 println!("New Device");
 
-                self.connect();
+                self.control_flags.connect();
                 dev.set_blocking_mode(false).unwrap();
-                dev
+                Some(dev)
             }
             Err(_) => {
-                if self.is_shutdown() {
-                    panic!("Shutdown while searching for Teensy");
+                if self.control_flags.is_shutdown() {
+                    panic!("[HID-Layer]: Shutdown while searching for MCU");
                 }
-                println!("recursing");
-                let t = Instant::now();
-                while self.delay(t) < MCU_RECONNECT_DELAY {}
-                self.device()
+                None
             }
         }
     }
 
-    pub fn writer_tx(&self, report: ByteBuffer) {
-        self.writer_tx.send(report).unwrap();
+    pub fn wait_for_device(&self) -> HidDevice {
+        let mut lap_millis = 0;
+        let mut lap_secs = 0;
+        let t = Instant::now();
+
+        while (t.elapsed().as_millis() as f64) < self.sample_time * 10.0 {
+            match self.device() {
+                Some(dev) => {
+                    return dev;
+                }
+                None => {
+                    let elapsed = t.elapsed();
+                    if elapsed.as_secs() - lap_secs >= 1 {
+                        println!(
+                            "[HID-Layer]: Hasn't heard from MCU for {}s",
+                            (elapsed.as_millis() as f64) * 1E-3
+                        );
+                        lap_secs = elapsed.as_secs();
+                    }
+                }
+            }
+
+            while ((t.elapsed().as_millis() - lap_millis) as f64) < self.sample_time {}
+            lap_millis = t.elapsed().as_millis()
+        }
+
+        self.control_flags.shutdown();
+        panic!("[HID-Layer]: Could not find MCU, shutting down");
     }
 
     pub fn delay(&self, time: Instant) -> f64 {
         let mut t = time.elapsed().as_micros() as f64;
-        while t < TEENSY_CYCLE_TIME_US {
+        while t < self.sample_time {
             t = time.elapsed().as_micros() as f64;
         }
         t
     }
 
     pub fn loop_delay(&self, time: Instant) {
-        self.increment_lifetime(self.delay(time) * 1E-6);
-    }
-
-    pub fn is_shutdown(&self) -> bool {
-        *self.shutdown.read().unwrap()
-    }
-
-    pub fn shutdown(&self) {
-        *self.shutdown.write().unwrap() = true;
-    }
-
-    pub fn startup(&self) {
-        *self.shutdown.write().unwrap() = false;
-    }
-
-    pub fn is_connected(&self) -> bool {
-        *self.connected.read().unwrap()
-    }
-
-    pub fn connect(&self) {
-        *self.connected.write().unwrap() = true;
-    }
-
-    pub fn disconnect(&self) {
-        *self.connected.write().unwrap() = false;
-    }
-
-    pub fn is_initialized(&self) -> bool {
-        *self.initialized.read().unwrap()
-    }
-
-    pub fn initialize(&self, status: bool) {
-        *self.initialized.write().unwrap() = status;
-    }
-
-    pub fn packet_sent(&self) {
-        *self.packets_sent.write().unwrap() += 1.0;
-    }
-
-    pub fn get_packets_sent(&self) -> f64 {
-        *self.packets_sent.read().unwrap()
-    }
-
-    pub fn packet_read(&self) {
-        *self.packets_read.write().unwrap() += 1.0;
-    }
-
-    pub fn get_packets_read(&self) -> f64 {
-        *self.packets_read.read().unwrap()
-    }
-
-    pub fn reset_lifetime(&self) {
-        *self.lifetime.write().unwrap() = 0.0;
-        *self.mcu_lifetime.write().unwrap() = 0.0;
-    }
-
-    pub fn lifetime(&self) -> f64 {
-        *self.lifetime.read().unwrap()
-    }
-
-    pub fn increment_lifetime(&self, t: f64) {
-        *self.lifetime.write().unwrap() += t;
-    }
-
-    pub fn mcu_lifetime(&self) -> f64 {
-        *self.mcu_lifetime.read().unwrap()
-    }
-
-    pub fn set_mcu_lifetime(&self, t: f64) {
-        *self.mcu_lifetime.write().unwrap() = t;
-    }
-
-    pub fn robot(&self) -> RobotStatus {
-        self.robot_status.clone()
-    }
-
-    pub fn get_context(&self, index: usize) -> Vec<f64> {
-        self.robot_status.processes[index].read().unwrap().context()
-    }
-
-    pub fn get_output(&self, index: usize) -> Vec<f64> {
-        self.robot_status.processes[index].read().unwrap().output()
-    }
-
-    pub fn process_timestamp(&self, index: usize) -> f64 {
-        self.robot_status.processes[index]
-            .read()
-            .unwrap()
-            .timestamp()
-    }
-
-    pub fn report_parser(&mut self, report: &ByteBuffer) {
-        self.set_mcu_lifetime(report.get_float(60));
-
-        // match the report number to determine the structure
-        if report.get(0) == PROC_REPORT_ID {
-            if report.get(1) == READ_CONTEXT_MODE {
-                self.robot_status.update_proc_context(
-                    report.get(2) as usize,
-                    report.get(3) as usize,
-                    report.get_floats(4, MAX_FLOATS_PER_REPORT),
-                    self.mcu_lifetime(),
-                );
-            }
-            if report.get(1) == READ_OUTPUT_MODE {
-                self.robot_status.update_proc_output(
-                    report.get(2) as usize,
-                    report.get(3) as usize,
-                    report.get_floats(4, MAX_FLOATS_PER_REPORT),
-                    self.mcu_lifetime(),
-                );
-            }
-        }
-    }
-
-    pub fn get_initializers(&self) -> Vec<ByteBuffer> {
-        self.robot_status.process_init_packets()
-    }
-
-    pub fn get_requests(&self) -> Vec<ByteBuffer> {
-        self.robot_status.process_request_packets()
-    }
-
-    pub fn control_pipeline(&self) {
-        let initializers = self.get_initializers();
-
-        while !self.is_connected() {}
-
-        println!("HID-SIM Live");
-
-        initializers.iter().for_each(|init| {
-            let t = Instant::now();
-            self.writer_tx(init.clone());
-            self.delay(t);
-        });
-
-        let mut current_report = 0;
-        let reports = self.get_requests();
-
-        while !self.is_shutdown() {
-            let loopt = Instant::now();
-
-            if self.is_connected() {
-                self.writer_tx(reports[current_report].clone());
-            }
-            current_report = (current_report + 1) % reports.len();
-
-            if self.delay(loopt) > TEENSY_CYCLE_TIME_US {
-                println!("HID Control over cycled {}", loopt.elapsed().as_micros());
-            }
-        }
-
-        self.shutdown();
-        println!("HID Control shutdown");
-        self.print();
+        self.pc_stats.set_lifetime(self.delay(time) * 1E-6);
     }
 
     pub fn print(&self) {
-        println!("HIDLayer info");
+        println!("[HID-Layer]: info");
         println!(
-            "Shutdown: {}, Connected: {}, initialized: {}",
-            self.is_shutdown(),
-            self.is_connected(),
-            self.is_initialized()
+            "\tShutdown: {}\n\tConnected: {}\n\tInitialized: {}",
+            self.control_flags.is_shutdown(),
+            self.control_flags.is_connected(),
+            self.control_flags.is_initialized()
         );
         println!(
-            "Packets sent: {}, Packets read: {}",
-            self.get_packets_sent(),
-            self.get_packets_read()
+            "\t[PC]\n\t\tPackets sent: {}\n\t\tPackets read: {}",
+            self.pc_stats.packets_sent(),
+            self.pc_stats.packets_read()
         );
-        self.robot_status.print();
+        println!(
+            "\t[MCU]\n\t\tPackets sent: {}\n\t\tPackets read: {}",
+            self.mcu_stats.packets_sent(),
+            self.mcu_stats.packets_read()
+        );
     }
 }

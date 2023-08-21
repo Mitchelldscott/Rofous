@@ -2,6 +2,7 @@
 #define PID_FILTER_H
 
 #include "math.h"
+#include "task_manager/task.h"
 
 struct PIDFilter {
     float K[4] = {0.0, 0.0, 0.0, 0.0}; // P, I, D, F

@@ -1,6 +1,6 @@
 extern crate yaml_rust;
 
-use crate::utilities::data_structures::*;
+use crate::hid_comms::data_structures::*;
 use std::{env, fs};
 use yaml_rust::{yaml::Yaml, YamlLoader};
 
@@ -10,7 +10,7 @@ use yaml_rust::{yaml::Yaml, YamlLoader};
 pub struct BuffYamlUtil {
     pub yaml_path: String,
     pub node_data: Yaml,
-    pub process_data: Yaml,
+    pub task_data: Yaml,
 }
 
 impl BuffYamlUtil {
@@ -32,9 +32,9 @@ impl BuffYamlUtil {
             .as_str(),
         );
 
-        let process_string = BuffYamlUtil::read_yaml_as_string(
+        let task_string = BuffYamlUtil::read_yaml_as_string(
             format!(
-                "{}/buffpy/data/robots/{}/process.yaml",
+                "{}/buffpy/data/robots/{}/firmware_tasks.yaml",
                 project_root, robot_name
             )
             .as_str(),
@@ -43,7 +43,7 @@ impl BuffYamlUtil {
         BuffYamlUtil {
             yaml_path: yaml_path,
             node_data: YamlLoader::load_from_str(node_string.as_str()).unwrap()[0].clone(),
-            process_data: YamlLoader::load_from_str(process_string.as_str()).unwrap()[0].clone(),
+            task_data: YamlLoader::load_from_str(task_string.as_str()).unwrap()[0].clone(),
         }
     }
 
@@ -121,12 +121,12 @@ impl BuffYamlUtil {
             .collect()
     }
 
-    pub fn parse_processes(data: &Yaml) -> Vec<EmbeddedProcess> {
+    // clean up at some point, use a function to search a string in the hash of an item or something
+    pub fn parse_tasks(data: &Yaml) -> Vec<EmbeddedTask> {
         data.as_hash()
             .unwrap()
             .iter()
             .map(|(key, value)| {
-                // println!("new process: {:?}", key.as_str().unwrap());
                 let name = key.as_str().unwrap();
                 let mut inputs = vec![];
                 let mut outputs = vec![];
@@ -134,8 +134,10 @@ impl BuffYamlUtil {
                 let mut driver = "UNKNOWN".to_string();
 
                 value.as_vec().unwrap().iter().for_each(|item| {
-                    item.as_hash().unwrap().iter().for_each(|(k, v)| {
-                        match k.as_str().unwrap() {
+                    item.as_hash()
+                        .unwrap()
+                        .iter()
+                        .for_each(|(k, v)| match k.as_str().unwrap() {
                             "inputs" => {
                                 inputs = v
                                     .as_vec()
@@ -144,7 +146,6 @@ impl BuffYamlUtil {
                                     .iter()
                                     .map(|name| name.as_str().unwrap().to_string())
                                     .collect();
-                                // println!("\tinputs: {:?}", v.as_vec().unwrap());
                             }
                             "outputs" => {
                                 outputs = v
@@ -154,9 +155,8 @@ impl BuffYamlUtil {
                                     .iter()
                                     .map(|name| name.as_str().unwrap().to_string())
                                     .collect();
-                                // println!("\toutputs: {:?}", v.as_vec().unwrap());
                             }
-                            "config" => {
+                            "parameters" => {
                                 v.as_vec().unwrap().iter().for_each(|x| match x {
                                     Yaml::Real(_) => config.push(x.as_f64().unwrap()),
                                     Yaml::Array(a) => {
@@ -164,46 +164,19 @@ impl BuffYamlUtil {
                                     }
                                     _ => {}
                                 });
-                                // println!("\tconfig: {:?}", config);
                             }
-                            // "input_shapes" => {
-                            //     input_shapes = v
-                            //         .as_vec()
-                            //         .unwrap()
-                            //         .iter()
-                            //         .map(|x| x.as_i64().unwrap() as usize)
-                            //         .collect();
-                            // }
-                            // "output_shapes" => {
-                            //     output_shapes = v
-                            //         .as_vec()
-                            //         .unwrap()
-                            //         .iter()
-                            //         .map(|x| x.as_i64().unwrap() as usize)
-                            //         .collect();
-                            // }
                             "driver" => {
                                 driver = v.as_str().unwrap().to_string();
-                                // println!("\ttype: {:?}", v.as_str().unwrap());
                             }
                             _ => {}
-                        }
-                    });
+                        });
                 });
-                EmbeddedProcess::named(name.to_string(), driver, inputs, outputs, config)
+                EmbeddedTask::named(name.to_string(), driver, inputs, outputs, config)
             })
             .collect()
     }
 
-    // pub fn load_sensors(&self) -> Vec<EmbeddedDevice> {
-    //     BuffYamlUtil::parse_device_items(&self.sensor_data)
-    // }
-
-    // pub fn load_motors(&self) -> Vec<EmbeddedDevice> {
-    //     BuffYamlUtil::parse_device_items(&self.motor_data)
-    // }
-
-    pub fn load_processes(&self) -> Vec<EmbeddedProcess> {
-        BuffYamlUtil::parse_processes(&self.process_data)
+    pub fn load_tasks(&self) -> Vec<EmbeddedTask> {
+        BuffYamlUtil::parse_tasks(&self.task_data)
     }
 }

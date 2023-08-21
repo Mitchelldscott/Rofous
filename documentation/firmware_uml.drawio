@@ -1,0 +1,190 @@
+<mxfile compressed="false" host="Electron" modified="2023-08-21T17:07:24.041Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.6.5 Chrome/114.0.5735.243 Electron/25.3.1 Safari/537.36" version="21.6.5" etag="nXx9n9PRGX43mtv0Y4TA" type="device">
+  <diagram id="Page-1" name="Page-1">
+    <mxGraphModel dx="847" dy="703" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="1">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <object label="main" id="main">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+            <mxGeometry x="360" y="133" width="85" height="50" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="lsm6dsox" id="lsm6dsox">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+            <mxGeometry x="520" y="267" width="85" height="50" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="hid_comms" id="hid_comms">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+            <mxGeometry x="230" y="240" width="85" height="50" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="bytebuffer" id="bytebuffer">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+            <mxGeometry x="70" y="380" width="85" height="50" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="vector" id="vector">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+            <mxGeometry x="310" y="460" width="85" height="50" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="timing" id="timing">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+            <mxGeometry x="248" y="530" width="85" height="50" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="blink" id="blink">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+            <mxGeometry x="110" y="240" width="85" height="50" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="splash" id="splash">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+            <mxGeometry x="210" y="133" width="85" height="50" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="assertions" id="assertions">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+            <mxGeometry x="180" y="380" width="85" height="50" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="task_manager" id="task_manager">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+            <mxGeometry x="360" y="240" width="85" height="50" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="task" id="task">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+            <mxGeometry x="371" y="380" width="85" height="50" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="task_node" id="task_node">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+            <mxGeometry x="520" y="183" width="85" height="50" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="task_factory" id="task_factory">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+            <mxGeometry x="700" y="267" width="85" height="50" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="linear_algebra" id="linear_algebra">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+            <mxGeometry x="520" y="585" width="85" height="50" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="lp_filter" id="lp_filter">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+            <mxGeometry x="520" y="410" width="85" height="50" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="complimentary_filter" id="complimentary_filter">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+            <mxGeometry x="520" y="490" width="85" height="50" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="pid_filter" id="pid_filter">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+            <mxGeometry x="520" y="340" width="85" height="50" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="cpp" source="splash" target="main" id="82d823bac7dff0ec343103e3ffc9d3ef">
+          <mxCell style="Line End=1" parent="1" source="splash" target="main" edge="1">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="cpp" source="task_manager" target="main" id="cf575b5564b26beabd22c54dcd9d4671">
+          <mxCell style="Line End=1" parent="1" source="task_manager" target="main" edge="1">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="h" source="task" target="lsm6dsox" id="84607c7021ad15fc54e3cadc8faa6b77">
+          <mxCell style="Line End=1" parent="1" source="task" target="lsm6dsox" edge="1">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="h" source="bytebuffer" target="hid_comms" id="ddce11f8176b91049c3e0e48e2b762e6">
+          <mxCell style="Line End=1" parent="1" source="bytebuffer" target="hid_comms" edge="1">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="h" source="blink" target="hid_comms" id="02494775d8e126b61477e618f6bf719d">
+          <mxCell style="Line End=1" parent="1" source="blink" target="hid_comms" edge="1">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="h" source="timing" target="hid_comms" id="84f5fdad6da1c3cdf57d45a8cd388cf3">
+          <mxCell style="Line End=1" parent="1" source="timing" target="hid_comms" edge="1">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="h" source="vector" target="hid_comms" id="a60b4e2a7cc7fe9dde0a70425ef3aafe">
+          <mxCell style="Line End=1" parent="1" source="vector" target="hid_comms" edge="1">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="cpp" source="assertions" target="hid_comms" id="32cc97d6df2c23b3048555f6ca7cc94f">
+          <mxCell style="Line End=1" parent="1" source="assertions" target="hid_comms" edge="1">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="h" source="vector" target="task" id="549a3035425725b8626a6bdcc562e3c8">
+          <mxCell style="Line End=1" parent="1" source="vector" target="task" edge="1">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="h" source="task_factory" target="task_node" id="71d86e3d1a757e465acad8cb06a3b75a">
+          <mxCell style="Line End=1" parent="1" source="task_factory" target="task_node" edge="1">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="h" source="lsm6dsox" target="task_factory" id="a4c82f83eedb37eb32b2cc22951fb16d">
+          <mxCell style="Line End=1" parent="1" source="lsm6dsox" target="task_factory" edge="1">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="h" source="complimentary_filter" target="task_factory" id="113f8e8cf3cf25a3870561620d3b15d1">
+          <mxCell style="Line End=1" parent="1" source="complimentary_filter" target="task_factory" edge="1">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="h" source="hid_comms" target="task_manager" id="5b4312b365c924acf1dbf0686290bb54">
+          <mxCell style="Line End=1" parent="1" source="hid_comms" target="task_manager" edge="1">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="h" source="task_node" target="task_manager" id="0a43d1c8bc91d298c8043597f9a91444">
+          <mxCell style="Line End=1" edge="1" parent="1" source="task_node" target="task_manager">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="h" source="task" target="lp_filter" id="95eda6dabd1e19c3d5030d1524b700a2">
+          <mxCell style="Line End=1" parent="1" source="task" target="lp_filter" edge="1">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="h" source="timing" target="complimentary_filter" id="d8a48aded5b4fc68d2318749a01f4014">
+          <mxCell style="Line End=1" parent="1" source="timing" target="complimentary_filter" edge="1">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="h" source="task" target="complimentary_filter" id="da176e045e723e43af2cdb424871fc2e">
+          <mxCell style="Line End=1" parent="1" source="task" target="complimentary_filter" edge="1">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="h" source="linear_algebra" target="complimentary_filter" id="c929a060123022003efed96936cdd367">
+          <mxCell style="Line End=1" parent="1" source="linear_algebra" target="complimentary_filter" edge="1">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="h" source="task" target="pid_filter" id="a111fdc70553fac347a3b431cec5ecd0">
+          <mxCell style="Line End=1" parent="1" source="task" target="pid_filter" edge="1">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

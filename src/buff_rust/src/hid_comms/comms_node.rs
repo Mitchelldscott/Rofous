@@ -1,45 +1,36 @@
-use buff_rust::hid_comms::{hid_layer::*, hid_reader::*, hid_ros::*, hid_writer::*};
+use buff_rust::hid_comms::hid_interface::*;
 use std::thread::Builder;
 
 fn main() {
     /*
         Start an hid layer
     */
-    let (layer, writer_rx) = HidLayer::new("penguin");
-    let mut hidreader = HidReader::new(layer.clone());
-    let mut hidwriter = HidWriter::new(layer.clone(), writer_rx);
-    let mut hidros = HidROS::new(layer.clone());
+    let (interface, mut reader, mut writer) = HidInterface::new("Penguin");
 
-    let hidreader_handle = Builder::new()
+    interface.layer.print();
+
+    let reader_handle = Builder::new()
         .name("HID Reader".to_string())
         .spawn(move || {
-            hidreader.pipeline();
+            reader.pipeline();
         })
         .unwrap();
 
-    let hidwriter_handle = Builder::new()
+    let writer_handle = Builder::new()
         .name("HID Writer".to_string())
         .spawn(move || {
-            hidwriter.pipeline();
+            writer.pipeline();
         })
         .unwrap();
 
-    let ros_handle = Builder::new()
-        .name("HID ROS".to_string())
-        .spawn(move || {
-            hidros.pipeline();
-        })
-        .unwrap();
+    // let interface_sim = Builder::new()
+    //     .name("HID Control".to_string())
+    //     .spawn(move || {
+    //         sim_interface(interface);
+    //     })
+    //     .unwrap();
 
-    let control_handle = Builder::new()
-        .name("HID Control".to_string())
-        .spawn(move || {
-            layer.control_pipeline();
-        })
-        .unwrap();
-
-    hidreader_handle.join().expect("HID Reader failed");
-    hidwriter_handle.join().expect("HID Writer failed");
-    ros_handle.join().expect("HID ROS failed");
-    control_handle.join().expect("HID Control failed");
+    reader_handle.join().expect("HID Reader failed");
+    // interface_sim.join().expect("HID Control failed");
+    writer_handle.join().expect("HID Writer failed");
 }

@@ -1,15 +1,15 @@
 ##############################
 #
 #
-#         Estimators
+#         Sensors
 #
 #
 ##############################
 lsm6dsox:
-  - config: [0]
+  - driver: LSM
   - inputs: []
   - outputs: [imu]
-  - driver: LSM
+  - parameters: [0]
 
 ##############################
 #
@@ -19,10 +19,10 @@ lsm6dsox:
 #
 ##############################
 attitude_estimator:
- - config: [0.6]
+ - driver: CMF
  - inputs: [attitude, imu]
  - outputs: [attitude]
- - driver: CMF
+ - parameters: [0.6]
 
 ##############################
 #

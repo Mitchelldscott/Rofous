@@ -19,10 +19,10 @@ buff_nodes:
     files: [comms_node]
 
 # Examle of includig ros
-# Maybe some kind of option to shut this down via cmdline
-ros_nodes:
-  rqt_plot:
-    files: [rqt_gui]
-    package: rqt_gui
-    args: ['--perspective-file', '${PROJECT_ROOT}/buffpy/data/robots/dyse.perspective']
+# Maybe need some kind of option to shut this down via cmdline
+# ros_nodes:
+#   rqt_plot:
+#     files: [rqt_gui]
+#     package: rqt_gui
+#     args: ['--perspective-file', '${PROJECT_ROOT}/buffpy/data/robots/dyse.perspective']
 

@@ -1,8 +1,7 @@
 #include <Adafruit_LIS3MDL.h>
 #include <Adafruit_LSM6DSOX.h>
 
-#include "utilities/vector.h"
-#include "syncor/process.h"
+#include "task_manager/task.h"
 
 
 #ifndef BUFF_LSM6DSOX_H
@@ -101,8 +100,9 @@ typedef enum {
 } lis3mdl_operationmode_t; */
 #define IMU_M_OP_MODE LIS3MDL_CONTINUOUSMODE
 
-class LSM6DSOX: public Process {
+class LSM6DSOX: public Task {
 	private:
+		char key[3] = {'L', 'S', 'M'};
 		int sensor_index;
 		float accel[LSM6DSOX_SENSOR_DOF];
 		float gyro[LSM6DSOX_SENSOR_DOF];

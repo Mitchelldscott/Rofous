@@ -1,39 +1,34 @@
+#include "bytebuffer.h"
+#include "utilities/blink.h"
+#include "utilities/timing.h"
+#include "utilities/vector.h"
+#include "task_manager/task_node.h"
 
-#ifndef HID_COMMS
-#define HID_COMMS
+#ifndef HIDCOMMS_H
+#define HIDCOMMS_H
 
-struct HidProcessParams {
-	String proc_key;
-	int proc_id;
+#define HID_REFRESH_RATE 500.0
+
+extern float hid_errors;
+
+struct FWTaskPacket {
+	int task_id;
+	int packet_type;
+	
+	String key;
 	int n_inputs;
-	int n_configs;
 	Vector<int> inputs;
-}
 
-struct HidProcessConfig {
-	int proc_id;
 	int chunk_id;
-	int n_configs;
-	Vector<float> config;
-}
-
-struct HidProcessInfo {
-	int proc_id;
-	float timestamp;
-	Vector<float> info;
-}
-
-Vector<HidProcessParams*> hid_process_queue;
-Vector<HidProcessConfig*> hid_config_queue;
-Vector<HidProcessInfo*> hid_context_buffer;
-Vector<HidProcessInfo*> hid_output_buffer;
-
-FTYK hid_timers;
-HidReport report;
+	int chunk_size;
+	Vector<float> parameters;
+};
 
 void push_hid();
-void init_process_hid();
-void config_process_hid();
-void enable_hid_interrupts();
+void init_task_hid();
+void config_task_hid();
+void reset_hid_stats();
+void dump_vector(Vector<float>*);
+Vector<FWTaskPacket*>* enable_hid_interrupts(Vector<int>*, Vector<TaskNode*>*);
 
 #endif

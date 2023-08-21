@@ -1,6 +1,7 @@
 #ifndef LP_FILTER_H
 #define LP_FILTER_H
 
+#include "task_manager/task.h"
 
 class LPFilter {
 private:

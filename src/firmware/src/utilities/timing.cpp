@@ -1,3 +1,16 @@
+/********************************************************************************
+ * 
+ *      ____                     ____          __           __       _          
+ *	   / __ \__  __________     /  _/___  ____/ /_  _______/ /______(_)__  _____
+ *	  / / / / / / / ___/ _ \    / // __ \/ __  / / / / ___/ __/ ___/ / _ \/ ___/
+ *	 / /_/ / /_/ (__  )  __/  _/ // / / / /_/ / /_/ (__  ) /_/ /  / /  __(__  ) 
+ *	/_____/\__, /____/\___/  /___/_/ /_/\__,_/\__,_/____/\__/_/  /_/\___/____/  
+ *	      /____/                                                                
+ * 
+ * 
+ * 
+ ********************************************************************************/
+
 #include "timing.h"
 
 
@@ -13,7 +26,8 @@ FTYK::FTYK() {
 			it will need to be called often (maybe sysgraph needs a timer case check).
 	*/
 	for (size_t i = 0; i < MAX_NUM_TIMERS; i++) {
-		timers[i] = ARM_DWT_CYCCNT;
+		cyccnt_mark[i] = ARM_DWT_CYCCNT;
+		accumulator[i] = 0;
 	}
 }
 
@@ -24,7 +38,9 @@ void FTYK::set(int idx) {
 		@param:
 			idx: (int) index of the timer to set.
 	*/
-	timers[idx] = ARM_DWT_CYCCNT;
+	cyccnt_mark[idx] = ARM_DWT_CYCCNT;
+	active_timers[idx] = 1;
+	accumulator[idx] = 0;
 }
 
 void FTYK::mark(int idx) {
@@ -36,13 +52,27 @@ void FTYK::mark(int idx) {
 	print(idx);
 }
 
-int FTYK::cycles(int idx) {
+float FTYK::cycles(int idx) {
 	/*
 		  Get the number of cycles since last timer.set().
+		returns the cycle count as a float to avoid overflows.
 		@param:
 			idx: (int) index of the timer to get cycles from.
+		@return:
+			cyccnt: (float) cyles since the timer was set
 	*/
-	return ARM_DWT_CYCCNT - timers[idx];
+	float cyccnt = ARM_DWT_CYCCNT;
+	// 
+	if (cyccnt < cyccnt_mark[idx]) {
+		accumulator[idx] += MAX_CYCCNT + cyccnt - cyccnt_mark[idx];
+		cyccnt_mark[idx] = cyccnt;
+	}
+	else {
+		accumulator[idx] += cyccnt - cyccnt_mark[idx];
+		cyccnt_mark[idx] = cyccnt;
+	}
+
+	return accumulator[idx];// + cyccnt - cyccnt_mark[idx];
 }
 
 float FTYK::nanos(int idx) {
@@ -88,9 +118,12 @@ float FTYK::delay_micros(int idx, float duration){
 	@param
 		duration: (uint32_t) microseconds to wait (from when set() was called)
 	*/
-	int tmp = cycles(idx);
+	static int i = 0;
+	float tmp = cycles(idx);
 	while(CYCLES_2_US(tmp) < duration) {
 		tmp = cycles(idx);
+		cycles(i);
+		i = (i + 1) % MAX_NUM_TIMERS;
 	}
 	return CYCLES_2_US(tmp);
 }
@@ -102,18 +135,21 @@ float FTYK::delay_millis(int idx, float duration){
 	@param
 		duration: (uint32_t) milliseconds to wait (from when set() was called)
 	*/
-	int tmp = cycles(idx);
+	static int i = 0;
+	float tmp = cycles(idx);
 	while(CYCLES_2_MS(tmp) < duration) {
 		tmp = cycles(idx);
+		cycles(i);
+		i = (i + 1) % MAX_NUM_TIMERS;
 	}
 	return CYCLES_2_MS(tmp);
 }
 
 void FTYK::print(int idx) {
-	int cyccnt = cycles(idx);
+	float cyccnt = cycles(idx);
 	float ns = CYCLES_2_NS(cyccnt);
 	Serial.printf("Timer %i\n", idx);
-	Serial.printf("%f s | %f ms | %f us | %f ns | %i cycles\n", 
+	Serial.printf("%f s | %f ms | %f us | %f ns | %f cycles\n", 
 		NS_2_S(ns),
 		NS_2_MS(ns),
 		NS_2_US(ns),
@@ -121,10 +157,10 @@ void FTYK::print(int idx) {
 }
 
 void FTYK::print(int idx, String title) {
-	int cyccnt = cycles(idx);
+	float cyccnt = cycles(idx);
 	float ns = CYCLES_2_NS(cyccnt);
 	Serial.print(title); Serial.printf(" Timer %i\n", idx);
-	Serial.printf("%f s | %f ms | %f us | %f ns | %i cycles\n", 
+	Serial.printf("%f s | %f ms | %f us | %f ns | %f cycles\n", 
 		NS_2_S(ns),
 		NS_2_MS(ns),
 		NS_2_US(ns),

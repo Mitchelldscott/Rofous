@@ -32,20 +32,20 @@
 #include "imxrt.h"
 #include "pins_arduino.h"
 
-#define HIGH			1
-#define LOW			0
-#define INPUT			0
-#define OUTPUT			1
+#define HIGH				1
+#define LOW					0
+#define INPUT				0
+#define OUTPUT				1
 #define INPUT_PULLUP		2
 #define INPUT_PULLDOWN		3
 #define OUTPUT_OPENDRAIN	4
 #define INPUT_DISABLE		5
-#define LSBFIRST		0
-#define MSBFIRST		1
-#define _BV(n)			(1<<(n))
-#define CHANGE			4
-#define FALLING			2
-#define RISING			3
+#define LSBFIRST			0
+#define MSBFIRST			1
+#define _BV(n)				(1<<(n))
+#define CHANGE				4
+#define FALLING				2
+#define RISING				3
 
 
 #if defined(__IMXRT1062__) && defined(ARDUINO_TEENSY40)
@@ -432,16 +432,16 @@
 #define CORE_PIN39_CONFIG	IOMUXC_SW_MUX_CTL_PAD_GPIO_SD_B0_04
 
 // pad config registers control pullup/pulldown/keeper, drive strength, etc
-#define CORE_PIN0_PADCONFIG	IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_03
-#define CORE_PIN1_PADCONFIG	IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_02
-#define CORE_PIN2_PADCONFIG	IOMUXC_SW_PAD_CTL_PAD_GPIO_EMC_04
-#define CORE_PIN3_PADCONFIG	IOMUXC_SW_PAD_CTL_PAD_GPIO_EMC_05
-#define CORE_PIN4_PADCONFIG	IOMUXC_SW_PAD_CTL_PAD_GPIO_EMC_06
-#define CORE_PIN5_PADCONFIG	IOMUXC_SW_PAD_CTL_PAD_GPIO_EMC_08
-#define CORE_PIN6_PADCONFIG	IOMUXC_SW_PAD_CTL_PAD_GPIO_B0_10
-#define CORE_PIN7_PADCONFIG	IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_01
-#define CORE_PIN8_PADCONFIG	IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_00
-#define CORE_PIN9_PADCONFIG	IOMUXC_SW_PAD_CTL_PAD_GPIO_B0_11
+#define CORE_PIN0_PADCONFIG		IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_03
+#define CORE_PIN1_PADCONFIG		IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_02
+#define CORE_PIN2_PADCONFIG		IOMUXC_SW_PAD_CTL_PAD_GPIO_EMC_04
+#define CORE_PIN3_PADCONFIG		IOMUXC_SW_PAD_CTL_PAD_GPIO_EMC_05
+#define CORE_PIN4_PADCONFIG		IOMUXC_SW_PAD_CTL_PAD_GPIO_EMC_06
+#define CORE_PIN5_PADCONFIG		IOMUXC_SW_PAD_CTL_PAD_GPIO_EMC_08
+#define CORE_PIN6_PADCONFIG		IOMUXC_SW_PAD_CTL_PAD_GPIO_B0_10
+#define CORE_PIN7_PADCONFIG		IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_01
+#define CORE_PIN8_PADCONFIG		IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_00
+#define CORE_PIN9_PADCONFIG		IOMUXC_SW_PAD_CTL_PAD_GPIO_B0_11
 #define CORE_PIN10_PADCONFIG	IOMUXC_SW_PAD_CTL_PAD_GPIO_B0_00
 #define CORE_PIN11_PADCONFIG	IOMUXC_SW_PAD_CTL_PAD_GPIO_B0_02
 #define CORE_PIN12_PADCONFIG	IOMUXC_SW_PAD_CTL_PAD_GPIO_B0_01
@@ -2377,15 +2377,15 @@ extern void shiftOut_msbFirst(uint8_t dataPin, uint8_t clockPin, uint8_t value) 
 
 static inline void shiftOut(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint8_t value)
 {
-        if (__builtin_constant_p(bitOrder)) {
-                if (bitOrder == LSBFIRST) {
-                        shiftOut_lsbFirst(dataPin, clockPin, value);
-                } else {
-                        shiftOut_msbFirst(dataPin, clockPin, value);
-                }
-        } else {
-                _shiftOut(dataPin, clockPin, bitOrder, value);
-        }
+		if (__builtin_constant_p(bitOrder)) {
+				if (bitOrder == LSBFIRST) {
+						shiftOut_lsbFirst(dataPin, clockPin, value);
+				} else {
+						shiftOut_msbFirst(dataPin, clockPin, value);
+				}
+		} else {
+				_shiftOut(dataPin, clockPin, bitOrder, value);
+		}
 }
 
 // Receive 8 bits from a shift register connected to 2 digital pins.  bitOrder
@@ -2397,15 +2397,15 @@ extern uint8_t shiftIn_msbFirst(uint8_t dataPin, uint8_t clockPin) __attribute__
 
 static inline uint8_t shiftIn(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder)
 {
-        if (__builtin_constant_p(bitOrder)) {
-                if (bitOrder == LSBFIRST) {
-                        return shiftIn_lsbFirst(dataPin, clockPin);
-                } else {
-                        return shiftIn_msbFirst(dataPin, clockPin);
-                }
-        } else {
-                return _shiftIn(dataPin, clockPin, bitOrder);
-        }
+		if (__builtin_constant_p(bitOrder)) {
+				if (bitOrder == LSBFIRST) {
+						return shiftIn_lsbFirst(dataPin, clockPin);
+				} else {
+						return shiftIn_msbFirst(dataPin, clockPin);
+				}
+		} else {
+				return _shiftIn(dataPin, clockPin, bitOrder);
+		}
 }
 
 void _reboot_Teensyduino_(void) __attribute__((noreturn));
@@ -2499,9 +2499,9 @@ uint32_t makeTime(const DateTimeFields &tm); // convert DateTimeFields to 32 bit
 class teensy3_clock_class
 {
 public:
-        static unsigned long get(void) __attribute__((always_inline)) { return rtc_get(); }
-        static void set(unsigned long t) __attribute__((always_inline)) { rtc_set(t); }
-        static void compensate(int adj) __attribute__((always_inline)) { rtc_compensate(adj); }
+		static unsigned long get(void) __attribute__((always_inline)) { return rtc_get(); }
+		static void set(unsigned long t) __attribute__((always_inline)) { rtc_set(t); }
+		static void compensate(int adj) __attribute__((always_inline)) { rtc_compensate(adj); }
 };
 extern teensy3_clock_class Teensy3Clock;
 

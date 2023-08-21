@@ -1,15 +1,25 @@
+/********************************************************************************
+ *
+ *      ____                     ____          __           __       _
+ *     / __ \__  __________     /  _/___  ____/ /_  _______/ /______(_)__  _____
+ *    / / / / / / / ___/ _ \    / // __ \/ __  / / / / ___/ __/ ___/ / _ \/ ___/
+ *   / /_/ / /_/ (__  )  __/  _/ // / / / /_/ / /_/ (__  ) /_/ /  / /  __(__  )
+ *  /_____/\__, /____/\___/  /___/_/ /_/\__,_/\__,_/____/\__/_/  /_/\___/____/
+ *        /____/
+ *
+ *
+ *
+ ********************************************************************************/
+
 #![allow(unused_imports)]
 extern crate hidapi;
 
 use hidapi::{HidApi, HidDevice};
 
 use crate::{
-    hid_comms::{
-        data_structures::*, hid_layer::*, hid_reader::*, hid_ros::*, hid_writer::*,
-    },
-    utilities::buffers::ByteBuffer,
+    hid_comms::{data_structures::*, hid_interface::*, hid_layer::*, hid_reader::*, hid_writer::*},
+    utilities::{data_structures::*, loaders::*},
 };
-use crate::utilities::loaders::*;
 
 use std::{
     sync::{
@@ -25,18 +35,21 @@ use std::{
 const VERBOSITY: usize = 1;
 
 #[cfg(test)]
-pub mod robot_status_tests {
+pub mod robot_fw {
     use super::*;
 
     #[test]
-    pub fn robot_status_load() {
-        let rs = RobotStatus::new("penguin");
-        rs.process_init_packets().iter().for_each(|packet| {
+    pub fn robot_fw_load() {
+        let rs = RobotFirmware::new("penguin");
+
+        rs.print();
+
+        rs.task_init_packets().iter().for_each(|packet| {
             packet.print();
         });
 
-        rs.process_request_packets().iter().for_each(|packet| {
-            packet.print();
+        (0..rs.tasks.len()).for_each(|i| {
+            rs.get_request(i as u8);
         })
     }
 }
@@ -48,185 +61,207 @@ pub mod robot_status_tests {
 /// Dump packets to the Teensy at 1ms, each packet contains a counter
 /// and timestamp.
 #[cfg(test)]
-pub mod teensy_dev_tests {
+pub mod dead_read_write {
     // Note this useful idiom: importing names from outer (for mod tests) scope.
     use super::*;
 
-    // pub fn writer_dev_pipeline(writer: HidWriter) {
-    //     println!("HID-writer Live");
-
-    //     let mut write_count = 0.0;
-
-    //     let mut loopt = Instant::now();
-    //     let t = Instant::now();
-    //     while t.elapsed().as_secs() < 5 && !writer.layer.is_shutdown() {
-
-    //         if layer.is_connected() {
-    //             write_count += 1.0;
-    //             writer.output.puts(0, vec![255, 255]);
-    //             writer.output.put_floats(2, vec![write_count, self.layer.lifetime()]);
-    //             writer.write();
-    //         }
-
-    //         if layer.delay(loopt) > TEENSY_CYCLE_TIME_US {
-    //             println!("HID Writer over cycled {}", loopt.elapsed().as_micros());
-    //         }
-    //         loopt = Instant::now();
-    //     }
-
-    //     println!("HID-writer Shutdown");
-    // }
-
-    pub fn sim_control_pipeline(layer: HidLayer) {
-        while !layer.is_connected() {}
-
-        println!("HID-CTRL Live");
-
-        let mut write_count = 0.0;
-        let mut buffer = ByteBuffer::new(64);
-        buffer.put(0, 255);
-        buffer.put(1, 255);
-
-        let mut loopt = Instant::now();
-        let t = Instant::now();
-        while t.elapsed().as_secs() < 5 && !layer.is_shutdown() {
-
-            if layer.is_connected() {
-                write_count += 1.0;
-                buffer.put_floats(2, vec![write_count, layer.lifetime()]);
-                layer.writer_tx(buffer.clone());
-            }
-
-            if layer.delay(loopt) > TEENSY_CYCLE_TIME_US {
-                println!("HID Control over cycled {}", loopt.elapsed().as_micros());
-            }
-            loopt = Instant::now();
-        }
-
-        layer.shutdown();
-        println!("HID Control sim shutdown");
-        layer.print();
-    }
-
     #[test]
-    pub fn hid_control_test() {
+    pub fn hid_read_write_spawner() {
         /*
             Start an hid layer
         */
-        let (layer, writer_rx) = HidLayer::new("penguin");
-        layer.print();
-        let sim_layer = layer.clone();
-        let mut hidreader = HidReader::new(layer.clone());
-        let mut hidwriter = HidWriter::new(layer, writer_rx);
+        // let (layer, writer_rx) = HidLayer::new("penguin");
+        // let sim_layer = layer.clone();
+        // let mut hidreader = HidReader::new(layer.clone());
+        // let mut hidwriter = HidWriter::new(layer, writer_rx);
 
-        let hidreader_handle = Builder::new()
+        let (mut interface, mut reader, mut writer) = HidInterface::new("penguin");
+
+        interface.layer.print();
+
+        let reader_handle = Builder::new()
             .name("HID Reader".to_string())
             .spawn(move || {
-                hidreader.pipeline();
+                reader.pipeline();
             })
             .unwrap();
 
-        let hidwriter_handle = Builder::new()
+        let writer_handle = Builder::new()
             .name("HID Writer".to_string())
             .spawn(move || {
-                hidwriter.pipeline();
+                writer.pipeline();
             })
             .unwrap();
 
         let t = Instant::now();
-        while t.elapsed().as_secs() < 5 && !sim_layer.is_shutdown() {}
-        sim_layer.shutdown();
+        while t.elapsed().as_secs() < 30 && !interface.layer.control_flags.is_shutdown() {
+            let loopt = Instant::now();
+            interface.check_feedback();
+            interface.layer.delay(loopt);
+        }
+        interface.layer.control_flags.shutdown();
 
-        // let pipeline_sim = Builder::new()
-        //     .name("HID Control".to_string())
-        //     .spawn(move || {
-        //         sim_control_pipeline(sim_layer);
-        //     })
-        //     .unwrap();
-
-        hidreader_handle.join().expect("HID Reader failed");
-        // pipeline_sim.join().expect("HID Sim failed");
-        hidwriter_handle.join().expect("HID Writer failed");
+        reader_handle.join().expect("[HID-Reader]: failed");
+        writer_handle.join().expect("[HID-Writer]: failed");
+        interface.layer.print();
     }
 }
 
 #[cfg(test)]
-pub mod teensy_comms_tests {
+pub mod dead_comms {
     // Note this useful idiom: importing names from outer (for mod tests) scope.
     use super::*;
 
-    pub fn sim_control_pipeline(layer: HidLayer) {
-        let initializers = layer.get_initializers();
+    pub fn sim_interface(mut interface: HidInterface) {
+        while !interface.layer.control_flags.is_connected() {}
 
-        while !layer.is_connected() {}
-
-        println!("HID-SIM Live");
-
-        initializers.iter().for_each(|init| {
-            let t = Instant::now();
-            // init.print();
-            layer.writer_tx(init.clone());
-            layer.delay(t);
-        });
-
-        let mut current_report = 0;
-        let reports = layer.get_requests();
+        println!("[HID-Control]: Live");
 
         let t = Instant::now();
 
-        while t.elapsed().as_secs() < 5 && !layer.is_shutdown() {
+        while t.elapsed().as_secs() < 10 && !interface.layer.control_flags.is_shutdown() {
             let loopt = Instant::now();
 
-            // println!("{:?}", reports[current_report]);
-            if layer.is_connected() {
-                layer.writer_tx(reports[current_report].clone());
+            if interface.layer.control_flags.is_connected() {
+                let mut buffer = ByteBuffer::hid();
+                buffer.puts(0, vec![255, 255]);
+                buffer.put_float(2, interface.layer.pc_stats.packets_sent());
+                interface.writer_tx(buffer);
+                interface.check_feedback();
             }
-            current_report = (current_report + 1) % reports.len();
 
-            if layer.delay(loopt) > TEENSY_CYCLE_TIME_US {
-                println!("HID Control over cycled {}", loopt.elapsed().as_micros());
-            }
+            interface.layer.delay(loopt);
+            // if interface.delay(t) > TEENSY_CYCLE_TIME_US {
+            //     println!("HID Control over cycled {}", t.elapsed().as_micros());
+            // }
         }
 
-        layer.shutdown();
-        println!("HID Control sim shutdown");
-        layer.print();
+        interface.layer.control_flags.shutdown();
+        println!("[HID-Control]: shutdown");
+        interface.layer.print();
     }
 
     #[test]
-    pub fn hid_control_test() {
+    pub fn hid_spawner() {
         /*
             Start an hid layer
         */
-        let (layer, writer_rx) = HidLayer::new("penguin");
-        layer.print();
-        let sim_layer = layer.clone();
-        let mut hidreader = HidReader::new(layer.clone());
-        let mut hidwriter = HidWriter::new(layer, writer_rx);
+        // let (layer, writer_rx) = HidLayer::new("penguin");
+        // let sim_layer = layer.clone();
+        // let mut hidreader = HidReader::new(layer.clone());
+        // let mut hidwriter = HidWriter::new(layer, writer_rx);
 
-        let hidreader_handle = Builder::new()
+        let (interface, mut reader, mut writer) = HidInterface::new("penguin");
+
+        interface.layer.print();
+
+        let reader_handle = Builder::new()
             .name("HID Reader".to_string())
             .spawn(move || {
-                hidreader.pipeline();
+                reader.pipeline();
             })
             .unwrap();
 
-        let hidwriter_handle = Builder::new()
+        let writer_handle = Builder::new()
             .name("HID Writer".to_string())
             .spawn(move || {
-                hidwriter.pipeline();
+                writer.pipeline();
             })
             .unwrap();
 
-        let pipeline_sim = Builder::new()
+        let interface_sim = Builder::new()
             .name("HID Control".to_string())
             .spawn(move || {
-                sim_control_pipeline(sim_layer);
+                sim_interface(interface);
             })
             .unwrap();
 
-        hidreader_handle.join().expect("HID Reader failed");
-        pipeline_sim.join().expect("HID Sim failed");
-        hidwriter_handle.join().expect("HID Writer failed");
+        reader_handle.join().expect("HID Reader failed");
+        interface_sim.join().expect("HID Control failed");
+        writer_handle.join().expect("HID Writer failed");
+    }
+}
+
+#[cfg(test)]
+pub mod live_comms {
+    // Note this useful idiom: importing names from outer (for mod tests) scope.
+    use super::*;
+
+    pub fn sim_interface(mut interface: HidInterface) {
+        let initializers = interface.get_initializers();
+
+        while !interface.layer.control_flags.is_connected() {}
+
+        println!("[HID-Control]: Live");
+
+        // Not as worried about efficiency here
+        // Also it hard to know how many init packets
+        // there will be... so K.I.S.S.
+        initializers.iter().for_each(|init| {
+            let t = Instant::now();
+            interface.writer_tx(init.clone());
+            interface.layer.delay(t);
+        });
+
+        let lifetime = Instant::now();
+        let mut t = Instant::now();
+
+        while lifetime.elapsed().as_secs() < 10 && !interface.layer.control_flags.is_shutdown() {
+            let loopt = Instant::now();
+
+            if interface.layer.control_flags.is_connected() {
+                interface.send_request();
+                interface.check_feedback();
+                if t.elapsed().as_secs() > 1 {
+                    interface.print();
+                    t = Instant::now();
+                }
+            }
+
+            interface.layer.delay(loopt);
+            // if t.elapsed().as_micros() as f64 > TEENSY_CYCLE_TIME_US {
+            //     println!("HID Control over cycled {} ms", (t.elapsed().as_micros() as f64) * 1E-3);
+            // }
+        }
+
+        interface.layer.control_flags.shutdown();
+        println!("[HID-Control]: shutdown");
+        interface.layer.print();
+    }
+
+    #[test]
+    pub fn hid_spawner() {
+        /*
+            Start an hid layer
+        */
+
+        let (interface, mut reader, mut writer) = HidInterface::new("penguin");
+
+        interface.layer.print();
+
+        let reader_handle = Builder::new()
+            .name("HID Reader".to_string())
+            .spawn(move || {
+                reader.pipeline();
+            })
+            .unwrap();
+
+        let writer_handle = Builder::new()
+            .name("HID Writer".to_string())
+            .spawn(move || {
+                writer.pipeline();
+            })
+            .unwrap();
+
+        let interface_sim = Builder::new()
+            .name("HID Control".to_string())
+            .spawn(move || {
+                sim_interface(interface);
+            })
+            .unwrap();
+
+        reader_handle.join().expect("[HID-Reader]: failed");
+        interface_sim.join().expect("[HID-Control]: failed");
+        writer_handle.join().expect("[HID-Writer]: failed");
     }
 }

@@ -62,6 +62,11 @@ if [[ -f /opt/ros/${ROS_DISTRO}/setup.bash ]]; then
 	source /opt/ros/${ROS_DISTRO}/setup.bash
 fi
 
+# set ROS package path to buff-code so it can see buffpy
+if [[ "${ROS_PACKAGE_PATH}" != *"rufous"* ]]; then
+	export ROS_PACKAGE_PATH="${PROJECT_ROOT}:${ROS_PACKAGE_PATH}"
+fi
+
 if [[ "$1" == "reset" ]]; then
 	if [[ -f "/usr/local/bin/buffpy" ]]; then
 		${SUDO} rm -rf "/usr/local/bin/buffpy"
@@ -76,6 +81,7 @@ if [[ ! -f "/usr/local/bin/buffpy" ]]; then
 	echo "/usr/bin/env python3 \${PROJECT_ROOT}/buffpy/src/cli.py \$@" | ${SUDO} tee "/usr/local/bin/buffpy"
 	${SUDO} chmod +x "/usr/local/bin/buffpy"
 fi 
+
 if [[ ! -f "/usr/local/bin/run" ]]; then
 	${SUDO} touch "/usr/local/bin/run"
 	echo "/usr/bin/env python3 \${PROJECT_ROOT}/buffpy/src/robot_spawner.py \$@" | ${SUDO} tee "/usr/local/bin/run"
@@ -86,13 +92,9 @@ fi
 if [[ "${PYTHONPATH}" != *"${PROJECT_ROOT}/buffpy/lib:"* ]]; then	
 	export PYTHONPATH="${PROJECT_ROOT}/buffpy/lib:${PYTHONPATH}" 
 fi
+
 if [[ "${PYTHONPATH}" != *"${PROJECT_ROOT}/buffpy/src:"* ]]; then	
 	export PYTHONPATH="${PROJECT_ROOT}/buffpy/src:${PYTHONPATH}" 
-fi
-
-# set ROS package path to buff-code so it can see buffpy
-if [[ "${ROS_PACKAGE_PATH}" != *"rufous"* ]]; then
-	export ROS_PACKAGE_PATH="${PROJECT_ROOT}:${ROS_PACKAGE_PATH}"
 fi
 
 #################### Cargo setup ####################

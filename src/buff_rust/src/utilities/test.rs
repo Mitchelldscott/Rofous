@@ -1,5 +1,5 @@
 #![allow(unused_imports)]
-use crate::utilities::{buffers::*, loaders::*};
+use crate::utilities::{data_structures::*, loaders::*};
 use rand::Rng;
 use std::env;
 
@@ -18,7 +18,7 @@ pub mod byu_tests {
 
         assert_eq!(byu.load_string("robot_type"), "demo");
 
-        byu.load_processes();
+        byu.load_tasks();
     }
 }
 
@@ -26,60 +26,6 @@ pub mod byu_tests {
 pub mod buffer_tests {
     // Note this useful idiom: importing names from outer (for mod tests) scope.
     use super::*;
-
-    #[test]
-    pub fn page_buffer_test() {
-        /*
-            test the hid buffer object
-        */
-        let mut page_buff = PageBuffer::new();
-        page_buff.put(123);
-        page_buff.put(234);
-        // does put increment seek_ptr?
-        assert_eq!(page_buff.seek_ptr, 2);
-        // does put actually put the data?
-        assert_eq!(page_buff.data[0], 123);
-        assert_eq!(page_buff.data[1], 234);
-
-        for _ in 0..62 {
-            page_buff.seek(None);
-        }
-        // does seek wrap around?
-        assert_eq!(page_buff.seek_ptr, 0);
-        // does seek return the value it seeked past?
-        assert_eq!(page_buff.seek(None), 123);
-        assert_eq!(page_buff.seek(None), 234);
-
-        page_buff.data[61] = 52;
-        // does seek return the value it seeked past when it's passed an index?
-        assert_eq!(page_buff.seek(Some(61)), 52);
-        // does seek set seek_ptr appropriately when it's passed an index?
-        assert_eq!(page_buff.seek_ptr, 62);
-
-        page_buff.puts(vec![6, 7, 8]);
-        // does puts modify seek_ptr appropriately?
-        assert_eq!(page_buff.seek_ptr, 1);
-        // does puts actually put the data there?
-        assert_eq!(page_buff.data[62], 6);
-        assert_eq!(page_buff.data[63], 7);
-        assert_eq!(page_buff.data[0], 8);
-
-        page_buff.seek_ptr = 59;
-        // does check_of return false when it obviously doesn't overflow?
-        assert_eq!(page_buff.check_of(0), false);
-        // does check_of return false when it's just one away from overflowing?
-        assert_eq!(page_buff.check_of(5), false);
-        // does check_of return true when it overflows by one?
-        assert_eq!(page_buff.check_of(6), true);
-        // does check_of return true when it obviously does overflow?
-        assert_eq!(page_buff.check_of(20), true);
-
-        page_buff.reset();
-        let new_page_buff = PageBuffer::new();
-        assert_eq!(page_buff.data, new_page_buff.data);
-        assert_eq!(page_buff.update_flag, new_page_buff.update_flag);
-        assert_eq!(page_buff.seek_ptr, new_page_buff.seek_ptr);
-    }
 
     ///
     /// Test the byte buffer

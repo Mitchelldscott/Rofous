@@ -1,4 +1,5 @@
 #include "blink.h"
+#include <Arduino.h>
 
 uint32_t blinker_timer_mark;
 bool blinker_status;

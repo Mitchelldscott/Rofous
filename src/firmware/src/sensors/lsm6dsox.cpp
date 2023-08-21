@@ -54,10 +54,15 @@ LSM6DSOX::LSM6DSOX() {
 											false, // don't latch
 											true); // enabled!
 
-	dimensions.reset(PROCESS_DIMENSIONS);
+	dimensions.reset(TASK_DIMENSIONS);
 	dimensions[INPUT_DIMENSION] = 0;
 	dimensions[CONTEXT_DIMENSION] = 1;
 	dimensions[OUTPUT_DIMENSION] = LSM6DSOX_DOF;
+	dimensions[PARAMS_DIMENSION] = 0;
+
+	// key[0] = 'L';
+	// key[1] = 'S';
+	// key[2] = 'M';
 }
 
 void LSM6DSOX::read_lsm6dsox_accel(){
@@ -139,12 +144,11 @@ void LSM6DSOX::run(Vector<float>* unused, Vector<float>* output) {
 
 
 void LSM6DSOX::print() {
-	Serial.println("LSM6DSOX");
-	Serial.printf("\tsensor_index: %i\n", sensor_index);
-	Serial.printf("\taccel: [%f, %f, %f]\n", accel[0], accel[1], accel[2]);
-	Serial.printf("\tgyro: [%f, %f, %f]\n", gyro[0], gyro[1], gyro[2]);
-	Serial.printf("\tmag: [%f, %f, %f]\n", mag[0], mag[1], mag[2]);
-	// data.print();
+	printf("LSM6DSOX\n");
+	printf("\tsensor_index: %i\n", sensor_index);
+	printf("\taccel: [%f, %f, %f]\n", accel[0], accel[1], accel[2]);
+	printf("\tgyro: [%f, %f, %f]\n", gyro[0], gyro[1], gyro[2]);
+	printf("\tmag: [%f, %f, %f]\n", mag[0], mag[1], mag[2]);
 }
 
 
