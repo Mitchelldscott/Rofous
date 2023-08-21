@@ -170,7 +170,8 @@ pub struct EmbeddedTask {
     pub input_names: Vec<String>,
     pub output_names: Vec<String>,
 
-    pub timestamp: f64,
+    pub output_timestamp: f64,
+    pub context_timestamp: f64,
 }
 
 impl EmbeddedTask {
@@ -183,18 +184,9 @@ impl EmbeddedTask {
             parameters: vec![],
             input_names: vec![],
             output_names: vec![],
-            timestamp: 0.0,
+            output_timestamp: 0.0,
+            context_timestamp: 0.0,
         }
-    }
-
-    pub fn set_config(&mut self, config: Vec<f64>) {
-        if config.len() > MAX_PARAMETERS {
-            panic!(
-                "{:?} configuration exceeds maximum parameters ({})",
-                self.name, MAX_PARAMETERS
-            );
-        }
-        self.parameters = config;
     }
 
     pub fn named(
@@ -212,8 +204,19 @@ impl EmbeddedTask {
             parameters: config,
             input_names: input_names,
             output_names: output_names,
-            timestamp: 0.0,
+            output_timestamp: 0.0,
+            context_timestamp: 0.0,
         }
+    }
+
+    pub fn set_config(&mut self, config: Vec<f64>) {
+        if config.len() > MAX_PARAMETERS {
+            panic!(
+                "{:?} configuration exceeds maximum parameters ({})",
+                self.name, MAX_PARAMETERS
+            );
+        }
+        self.parameters = config;
     }
 
     pub fn driver(&self) -> Vec<u8> {
@@ -231,19 +234,19 @@ impl EmbeddedTask {
     pub fn update_output(&mut self, length: usize, data: Vec<f64>, time: f64) {
         // println!("New output {:?}: {} {:?}", self.name, length, data);
         self.output = data[0..length].to_vec();
-        self.timestamp = time;
+        self.output_timestamp = time;
     }
 
     pub fn update_context(&mut self, length: usize, data: Vec<f64>, time: f64) {
         // println!("New context {:?}: {} {:?}", self.name, length, data);
         self.context = data[0..length].to_vec();
-        self.timestamp = time;
+        self.context_timestamp = time;
     }
 
     pub fn print(&self) {
         println!("{:?}: {:?} [{}]", self.name, self.driver, self.timestamp);
-        println!("\toutput:\n\t\t{:?}", self.output);
-        println!("\tcontext:\n\t\t{:?}", self.context);
+        println!("\toutput: [{}]\n\t\t{:?}", self.output_timestamp, self.output);
+        println!("\tcontext: [{}]\n\t\t{:?}", self.context_timestamp, self.context);
         println!("\tparameters:\n\t\t{:?}", self.parameters);
     }
 }
