@@ -5,7 +5,7 @@ fn main() {
     /*
         Start an hid layer
     */
-    let (interface, mut reader, mut writer) = HidInterface::new("Penguin");
+    let (mut interface, mut reader, mut writer) = HidInterface::new("penguin");
 
     interface.layer.print();
 
@@ -23,14 +23,14 @@ fn main() {
         })
         .unwrap();
 
-    // let interface_sim = Builder::new()
-    //     .name("HID Control".to_string())
-    //     .spawn(move || {
-    //         sim_interface(interface);
-    //     })
-    //     .unwrap();
+    let interface_handle = Builder::new()
+        .name("HID Control".to_string())
+        .spawn(move || {
+            interface.pipeline();
+        })
+        .unwrap();
 
     reader_handle.join().expect("HID Reader failed");
-    // interface_sim.join().expect("HID Control failed");
+    interface_handle.join().expect("HID Control failed");
     writer_handle.join().expect("HID Writer failed");
 }

@@ -190,7 +190,7 @@ impl HidReader {
         println!("[HID-reader]: Live");
 
         self.spin();
-        
+
         println!("[HID-reader]: Shutdown");
     }
 }

@@ -17,9 +17,12 @@ use crate::{
     hid_comms::{data_structures::*, hid_layer::*, hid_reader::*, hid_writer::*},
     utilities::data_structures::*,
 };
-use std::sync::{
-    mpsc,
-    mpsc::{Receiver, Sender},
+use std::{
+    sync::{
+        mpsc,
+        mpsc::{Receiver, Sender},
+    },
+    time::Instant,
 };
 
 pub static MCU_NO_COMMS_TIMEOUT_S: u64 = 10;
@@ -85,10 +88,6 @@ impl HidInterface {
         &self.robot_fw.tasks[index].context
     }
 
-    pub fn task_timestamp(&self, index: usize) -> f64 {
-        self.robot_fw.tasks[index].timestamp
-    }
-
     pub fn check_feedback(&mut self) {
         match self.parser_rx.try_recv() {
             Ok(report) => {
@@ -112,37 +111,38 @@ impl HidInterface {
         self.robot_fw.print();
     }
 
-    // pub fn control_pipeline(&self) {
-    //     let initializers = self.get_initializers();
+    pub fn pipeline(&mut self) {
+        let initializers = self.get_initializers();
 
-    //     while !self.control_flags.is_connected() {}
+        while !self.layer.control_flags.is_connected() {}
 
-    //     println!("HID-SIM Live");
+        println!("[HID-Control]: Live");
 
-    //     initializers.iter().for_each(|init| {
-    //         let t = Instant::now();
-    //         self.writer_tx(init.clone());
-    //         self.delay(t);
-    //     });
+        // Not as worried about efficiency here
+        // Also it hard to know how many init packets
+        // there will be... so K.I.S.S.
+        initializers.iter().for_each(|init| {
+            let t = Instant::now();
+            self.writer_tx(init.clone());
+            self.layer.delay(t);
+        });
 
-    //     let mut current_request = 0;
-    //     let reports = self.get_requests();
+        while !self.layer.control_flags.is_shutdown() {
+            let loopt = Instant::now();
 
-    //     while !self.control_flags.is_shutdown() {
-    //         let loopt = Instant::now();
+            if self.layer.control_flags.is_connected() {
+                self.send_request();
+                self.check_feedback();
+            }
 
-    //         if self.control_flags.is_connected() {
-    //             self.writer_tx(reports[current_request].clone());
-    //         }
-    //         current_request = (current_request + 1) % reports.len();
+            self.layer.delay(loopt);
+            // if t.elapsed().as_micros() as f64 > TEENSY_CYCLE_TIME_US {
+            //     println!("HID Control over cycled {} ms", (t.elapsed().as_micros() as f64) * 1E-3);
+            // }
+        }
 
-    //         if self.delay(loopt) > TEENSY_CYCLE_TIME_US {
-    //             println!("HID Control over cycled {}", loopt.elapsed().as_micros());
-    //         }
-    //     }
-
-    //     self.control_flags.shutdown();
-    //     println!("HID Control shutdown");
-    //     self.print();
-    // }
+        self.layer.control_flags.shutdown();
+        println!("[HID-Control]: shutdown");
+        self.layer.print();
+    }
 }

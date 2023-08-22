@@ -59,7 +59,9 @@ impl HidWriter {
 
     pub fn reconnect(&mut self) {
         // check reconnect after 1000 cycles
-        if !self.layer.control_flags.is_shutdown() && self.timestamp.elapsed().as_millis() as f64 > self.layer.sample_time {
+        if !self.layer.control_flags.is_shutdown()
+            && self.timestamp.elapsed().as_millis() as f64 > self.layer.sample_time
+        {
             if self.layer.control_flags.is_connected() {
                 println!(
                     "[HID-Writer]: disconnecting, hasn't written for {}s",

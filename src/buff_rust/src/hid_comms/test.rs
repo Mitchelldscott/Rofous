@@ -265,3 +265,82 @@ pub mod live_comms {
         writer_handle.join().expect("[HID-Writer]: failed");
     }
 }
+
+#[cfg(test)]
+pub mod live_record {
+    // Note this useful idiom: importing names from outer (for mod tests) scope.
+    use super::*;
+
+    pub fn sim_interface(mut interface: HidInterface) {
+        let initializers = interface.get_initializers();
+
+        while !interface.layer.control_flags.is_connected() {}
+
+        println!("[HID-Control]: Live");
+
+        // Not as worried about efficiency here
+        // Also it hard to know how many init packets
+        // there will be... so K.I.S.S.
+        initializers.iter().for_each(|init| {
+            let t = Instant::now();
+            interface.writer_tx(init.clone());
+            interface.layer.delay(t);
+        });
+
+        let lifetime = Instant::now();
+
+        while lifetime.elapsed().as_secs() < 10 && !interface.layer.control_flags.is_shutdown() {
+            let loopt = Instant::now();
+
+            if interface.layer.control_flags.is_connected() {
+                interface.send_request();
+                interface.check_feedback();
+            }
+
+            interface.layer.delay(loopt);
+            // if t.elapsed().as_micros() as f64 > TEENSY_CYCLE_TIME_US {
+            //     println!("HID Control over cycled {} ms", (t.elapsed().as_micros() as f64) * 1E-3);
+            // }
+        }
+
+        interface.layer.control_flags.shutdown();
+        println!("[HID-Control]: shutdown");
+        interface.layer.print();
+    }
+
+    #[test]
+    pub fn hid_spawner() {
+        /*
+            Start an hid layer
+        */
+
+        let (interface, mut reader, mut writer) = HidInterface::new("penguin");
+
+        interface.layer.print();
+
+        let reader_handle = Builder::new()
+            .name("HID Reader".to_string())
+            .spawn(move || {
+                reader.pipeline();
+            })
+            .unwrap();
+
+        let writer_handle = Builder::new()
+            .name("HID Writer".to_string())
+            .spawn(move || {
+                writer.pipeline();
+            })
+            .unwrap();
+
+        let interface_sim = Builder::new()
+            .name("HID Control".to_string())
+            .spawn(move || {
+                sim_interface(interface);
+            })
+            .unwrap();
+
+        reader_handle.join().expect("[HID-Reader]: failed");
+        interface_sim.join().expect("[HID-Control]: failed");
+        writer_handle.join().expect("[HID-Writer]: failed");
+    }
+}

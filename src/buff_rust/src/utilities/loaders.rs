@@ -1,11 +1,36 @@
 extern crate yaml_rust;
 
 use crate::hid_comms::data_structures::*;
-use std::{env, fs};
+use glob::glob;
+use std::{env, fs, path};
 use yaml_rust::{yaml::Yaml, YamlLoader};
 
-// Define a struct that can clean up the way we load things
-// from ros param server
+pub static MAX_RECORDS_PER_CSV: u16 = 1000;
+pub static MAX_FILES_PER_RUN: u16 = 120;
+
+// pub fn assert_dir(path: &path::Path) {
+//     match path.exists() {
+//         Ok(exists) => {
+//             if !exists {
+//                 let prefix = path;
+//                 fs::create_dir_all(prefix).unwrap();
+//             }
+//         }
+//         _ => {}
+//     }
+// }
+
+pub fn assert_path(path: &path::Path) {
+    if !path.exists() {
+        fs::create_dir_all(path).unwrap();
+    }
+}
+
+pub fn assert_file(path: &path::Path) {
+    if !path.exists() {
+        fs::File::create(path).unwrap();
+    }
+}
 
 pub struct BuffYamlUtil {
     pub yaml_path: String,
@@ -178,5 +203,94 @@ impl BuffYamlUtil {
 
     pub fn load_tasks(&self) -> Vec<EmbeddedTask> {
         BuffYamlUtil::parse_tasks(&self.task_data)
+    }
+}
+
+// #[derive(Clone)]
+pub struct CsvUtil {
+    run: u16,
+    name: String,
+    file_count: u16,
+    record_count: u16,
+    labels: Vec<String>,
+    writer: csv::Writer<fs::File>,
+}
+
+impl CsvUtil {
+    pub fn new_file(name: &str, run: u16, file_count: u16) -> csv::Writer<fs::File> {
+        let project_root = env::var("PROJECT_ROOT").expect("Project root not set");
+        let path = format!(
+            "{}/data/{}/{}-{}/{}-{}.csv",
+            project_root, name, name, run, name, file_count
+        );
+
+        assert_file(&path::Path::new(&path));
+
+        csv::Writer::from_path(path).unwrap()
+    }
+
+    pub fn new_run(name: &str) -> u16 {
+        let project_root = env::var("PROJECT_ROOT").expect("Project root not set");
+
+        let data_path = format!("{}/data/{}-*/", project_root, name);
+        let run = glob(&data_path).unwrap().count() as u16;
+
+        let ppath = format!("{}/data/{}/{}-{}/", project_root, name, name, run);
+        let pppath = format!("{}/data/{}/", project_root, name);
+
+        assert_path(&path::Path::new(&pppath));
+        assert_path(&path::Path::new(&ppath));
+
+        run
+    }
+
+    pub fn new(name: &str, labels: Vec<String>) -> CsvUtil {
+        let run = CsvUtil::new_run(name);
+        let writer = CsvUtil::new_file(name, run, 0);
+
+        CsvUtil {
+            run: run,
+            name: name.to_string(),
+            file_count: 0,
+            record_count: 0, // always start with a fresh run
+            labels: labels,
+            writer: writer,
+        }
+    }
+
+    pub fn new_labels(&mut self, labels: Vec<String>) {
+        self.labels = labels;
+    }
+
+    pub fn write_record(&mut self, record: Vec<f64>) {
+        if self.labels.len() > 1 {
+            if self.record_count == 0 {
+                self.writer.write_record(&self.labels).unwrap();
+            }
+
+            self.writer
+                .write_record(
+                    record
+                        .iter()
+                        .map(|x| x.to_string())
+                        .collect::<Vec<String>>(),
+                )
+                .expect("[CsvUtil]: Failed to write");
+
+            self.record_count += 1;
+        }
+
+        if self.record_count > MAX_RECORDS_PER_CSV {
+            self.writer.flush().unwrap();
+            self.record_count = 0;
+            self.file_count += 1;
+
+            if self.file_count > MAX_FILES_PER_RUN {
+                self.file_count = 0;
+                self.run = CsvUtil::new_run(&self.name);
+            }
+
+            self.writer = CsvUtil::new_file(&self.name, self.run, self.file_count);
+        }
     }
 }

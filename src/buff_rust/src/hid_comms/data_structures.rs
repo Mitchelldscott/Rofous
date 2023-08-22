@@ -158,7 +158,6 @@ impl HidControlFlags {
     }
 }
 
-#[derive(Clone)]
 pub struct EmbeddedTask {
     pub name: String,
     pub driver: String,
@@ -172,12 +171,15 @@ pub struct EmbeddedTask {
 
     pub output_timestamp: f64,
     pub context_timestamp: f64,
+
+    pub output_writer: CsvUtil,
+    pub context_writer: CsvUtil,
 }
 
 impl EmbeddedTask {
     pub fn default() -> EmbeddedTask {
         EmbeddedTask {
-            name: "UED".to_string(),
+            name: "UET".to_string(),
             driver: "UNKNOWN".to_string(),
             output: vec![],
             context: vec![],
@@ -186,6 +188,8 @@ impl EmbeddedTask {
             output_names: vec![],
             output_timestamp: 0.0,
             context_timestamp: 0.0,
+            output_writer: CsvUtil::new("UET-output", vec![]),
+            context_writer: CsvUtil::new("UET-context", vec![]),
         }
     }
 
@@ -197,7 +201,7 @@ impl EmbeddedTask {
         config: Vec<f64>,
     ) -> EmbeddedTask {
         EmbeddedTask {
-            name: name,
+            name: name.clone(),
             driver: driver,
             output: vec![],
             context: vec![],
@@ -206,6 +210,8 @@ impl EmbeddedTask {
             output_names: output_names,
             output_timestamp: 0.0,
             context_timestamp: 0.0,
+            output_writer: CsvUtil::new(format!("{}-output", name.clone()).as_str(), vec![]),
+            context_writer: CsvUtil::new(format!("{}-context", name).as_str(), vec![]),
         }
     }
 
@@ -244,14 +250,53 @@ impl EmbeddedTask {
     }
 
     pub fn print(&self) {
-        println!("{:?}: {:?} [{}]", self.name, self.driver, self.timestamp);
-        println!("\toutput: [{}]\n\t\t{:?}", self.output_timestamp, self.output);
-        println!("\tcontext: [{}]\n\t\t{:?}", self.context_timestamp, self.context);
+        println!("{:?}: {:?}", self.name, self.driver);
+        println!(
+            "\toutput: [{}]\n\t\t{:?}",
+            self.output_timestamp, self.output
+        );
+        println!(
+            "\tcontext: [{}]\n\t\t{:?}",
+            self.context_timestamp, self.context
+        );
         println!("\tparameters:\n\t\t{:?}", self.parameters);
+    }
+
+    pub fn make_labels(&self) -> (Vec<String>, Vec<String>) {
+        (
+            (0..self.output.len())
+                .map(|i| format!("{}[{}]", self.output_names[0], i))
+                .chain(["timestamp".to_string()])
+                .collect(),
+            (0..self.context.len())
+                .map(|i| format!("{}[{}]", self.name, i))
+                .chain(["timestamp".to_string()])
+                .collect(),
+        )
+    }
+
+    pub fn save(&mut self) {
+        let (output_labels, context_labels) = self.make_labels();
+        self.output_writer.new_labels(output_labels);
+        self.context_writer.new_labels(context_labels);
+
+        self.output_writer.write_record(
+            self.output
+                .iter()
+                .map(|x| *x)
+                .chain([self.output_timestamp])
+                .collect(),
+        );
+        self.context_writer.write_record(
+            self.context
+                .iter()
+                .map(|x| *x)
+                .chain([self.context_timestamp])
+                .collect(),
+        );
     }
 }
 
-#[derive(Clone)]
 pub struct RobotFirmware {
     pub tasks: Vec<EmbeddedTask>,
 }
@@ -372,21 +417,20 @@ impl RobotFirmware {
     }
 
     pub fn parse_request_feedback(&mut self, report: ByteBuffer, mcu_stats: &HidStats) {
-        let rtype = report.get(0);
+        let rid = report.get(0);
         let mode = report.get(1);
         let mcu_lifetime = report.get_float(60);
         let prev_mcu_lifetime = mcu_stats.lifetime();
 
         let lifetime_diff = mcu_lifetime - prev_mcu_lifetime;
-        if lifetime_diff >= 0.00075 {
+        if lifetime_diff >= 0.0015 {
             println!("MCU Lifetime jump: {}", lifetime_diff);
         }
 
-        if rtype == INIT_REPORT_ID {
+        if rid == INIT_REPORT_ID {
             if mode == INIT_REPORT_ID {
-                let prev_mcu_write_count = mcu_stats.packets_sent();
-
                 let mcu_write_count = report.get_float(2);
+                let prev_mcu_write_count = mcu_stats.packets_sent();
                 let packet_diff = mcu_write_count - prev_mcu_write_count;
                 if packet_diff > 1.0 {
                     println!("MCU Packet write difference: {}", packet_diff);
@@ -395,7 +439,7 @@ impl RobotFirmware {
                 mcu_stats.set_packets_sent(mcu_write_count);
                 mcu_stats.set_packets_read(report.get_float(6));
             }
-        } else if rtype == TASK_REPORT_ID {
+        } else if rid == TASK_REPORT_ID {
             if mode == READ_CONTEXT_MODE {
                 self.tasks[report.get(2) as usize].update_context(
                     report.get(3) as usize,
@@ -410,7 +454,9 @@ impl RobotFirmware {
                     report.get_floats(4, MAX_FLOAT_DATA),
                     mcu_lifetime,
                 );
+                self.tasks[report.get(2) as usize].save();
             }
+
             mcu_stats.update_packets_sent(1.0); // only works if we don't miss packets
             mcu_stats.update_packets_read(1.0);
         }
