@@ -1,6 +1,11 @@
-**/.DS_Store
 buffpy/lib/**
 buffpy/bin/**
+
+**/.DS_Store
 **/__pycache__
+
 src/firmware/build/
+
+src/buff_rust/.cargo
 src/buff_rust/target/
+src/buff_rust/Cargo.lock
