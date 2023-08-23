@@ -209,6 +209,10 @@ clean:
 	@$(LOGSTRING) "[MAKE]\tCleaning build/"
 	@$(CLEANDIR) "$(BUILD_PATH)/$(dir $(TARGET))"
 
+clean_lib:
+	@$(LOGSTRING) "[MAKE]\tCleaning build/libraries"
+	@$(CLEANDIR) "$(BUILD_PATH)/libraries"
+
 clean_hex:
 	@$(LOGSTRING) "[MAKE]\tCleaning hex"
 	@$(CLEANUP) "$(BUILD_PATH)/$(TARGET).hex"
