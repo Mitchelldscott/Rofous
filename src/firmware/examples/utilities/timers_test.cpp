@@ -49,9 +49,9 @@ int main() {
 	int loop_count = 0;
 	float prev_lifetime = 0;
 
-	int t = micros();
 	timers.set(0);
 	timers.set(1);
+	int t = micros();
 	while (loop_count < NUM_TEST_LOOPS) {
 
 		errors += assert_geq<float>(lifetime, prev_lifetime, "Lifetime value not increasing");
@@ -72,17 +72,16 @@ int main() {
 	int t1 = micros();
 
 	printf("\n");
-	errors += assert_eq<float>(lifetime, TEST_DURATION_S, 1E-3, "Lifetime did not match expected");
-	errors += assert_eq<float>(lifetime, float(t1 - t) * 1E-6, 1E-6, "Lifetime did not match micros");
-	errors += assert_eq<float>(lifetime, timers.secs(0), 1E-6, "Lifetime drifted from timer0");
+	errors += assert_eq<float>(lifetime, TEST_DURATION_S, 1E-3, "Lifetime != expected");
+	errors += assert_eq<float>(lifetime, float(t1 - t) * 1E-6, 1E-6, "Lifetime != micros");
+	errors += assert_eq<float>(lifetime, timers.secs(0), 1E-6, "Lifetime != timer0");
 
 	timers.print(0, "\nFull");
 	timers.print(1, "Loop");
 	printf("Loops: %i\n", loop_count);
 	printf("Lifetime: %f\n", lifetime);
 
-	printf("\nFinished tests\n");
-	printf("%i failed\n", errors);
+	printf("\n===== Finished tests, %i failed =====\n", errors);
 
 	return 0;
 }
