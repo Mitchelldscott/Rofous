@@ -53,11 +53,8 @@ pub static SETUP_CONFIG_MODE: u8 = 2;
 ///     packet.put(0, TASK_REPORT_ID);
 ///     packet.put(1, REPORT_MODE);
 /// '''
-pub static READ_CONTEXT_MODE: u8 = 1;
-pub static READ_OUTPUT_MODE: u8 = 2;
-pub static WRITE_INPUT_MODE: u8 = 3;
-pub static WRITE_CONTEXT_MODE: u8 = 4;
-pub static WRITE_OUTPUT_MODE: u8 = 5;
+pub static CONTEXT_MODE: u8 = 1;
+pub static OUTPUT_MODE: u8 = 2;
 
 #[derive(Clone)]
 pub struct HidStats {
@@ -171,9 +168,8 @@ pub struct EmbeddedTask {
 
     pub output_timestamp: f64,
     pub context_timestamp: f64,
-
-    pub output_writer: CsvUtil,
-    pub context_writer: CsvUtil,
+    // pub output_writer: CsvUtil,
+    // pub context_writer: CsvUtil,
 }
 
 impl EmbeddedTask {
@@ -188,8 +184,8 @@ impl EmbeddedTask {
             output_names: vec![],
             output_timestamp: 0.0,
             context_timestamp: 0.0,
-            output_writer: CsvUtil::new("UET-output", vec![]),
-            context_writer: CsvUtil::new("UET-context", vec![]),
+            // output_writer: CsvUtil::new("UET-output", vec![]),
+            // context_writer: CsvUtil::new("UET-context", vec![]),
         }
     }
 
@@ -210,8 +206,8 @@ impl EmbeddedTask {
             output_names: output_names,
             output_timestamp: 0.0,
             context_timestamp: 0.0,
-            output_writer: CsvUtil::new(format!("{}-output", name.clone()).as_str(), vec![]),
-            context_writer: CsvUtil::new(format!("{}-context", name).as_str(), vec![]),
+            // output_writer: CsvUtil::new(format!("{}-output", name.clone()).as_str(), vec![]),
+            // context_writer: CsvUtil::new(format!("{}-context", name).as_str(), vec![]),
         }
     }
 
@@ -275,26 +271,26 @@ impl EmbeddedTask {
         )
     }
 
-    pub fn save(&mut self) {
-        let (output_labels, context_labels) = self.make_labels();
-        self.output_writer.new_labels(output_labels);
-        self.context_writer.new_labels(context_labels);
+    // pub fn save(&mut self) {
+    //     let (output_labels, context_labels) = self.make_labels();
+    //     self.output_writer.new_labels(output_labels);
+    //     self.context_writer.new_labels(context_labels);
 
-        self.output_writer.write_record(
-            self.output
-                .iter()
-                .map(|x| *x)
-                .chain([self.output_timestamp])
-                .collect(),
-        );
-        self.context_writer.write_record(
-            self.context
-                .iter()
-                .map(|x| *x)
-                .chain([self.context_timestamp])
-                .collect(),
-        );
-    }
+    //     self.output_writer.write_record(
+    //         self.output
+    //             .iter()
+    //             .map(|x| *x)
+    //             .chain([self.output_timestamp])
+    //             .collect(),
+    //     );
+    //     self.context_writer.write_record(
+    //         self.context
+    //             .iter()
+    //             .map(|x| *x)
+    //             .chain([self.context_timestamp])
+    //             .collect(),
+    //     );
+    // }
 }
 
 pub struct RobotFirmware {
@@ -340,6 +336,15 @@ impl RobotFirmware {
         });
 
         result
+    }
+
+    pub fn id_of(&self, name: &str) -> usize {
+        self.tasks
+            .iter()
+            .enumerate()
+            .find(|(_, task)| name == task.name)
+            .expect("Cannot find index of task")
+            .0
     }
 
     pub fn get_task_initializers(
@@ -408,7 +413,37 @@ impl RobotFirmware {
 
     pub fn get_request(&self, i: u8) -> ByteBuffer {
         let mut buffer = ByteBuffer::hid();
-        buffer.puts(0, vec![TASK_REPORT_ID, READ_CONTEXT_MODE + (i % 2), i / 2]);
+        buffer.puts(0, vec![TASK_REPORT_ID, CONTEXT_MODE + (i % 2), i / 2]);
+        buffer
+    }
+
+    pub fn get_context_overwrite_latch(&self, i: u8) -> ByteBuffer {
+        let mut buffer = ByteBuffer::hid();
+        buffer.puts(
+            0,
+            vec![
+                TASK_REPORT_ID,
+                CONTEXT_MODE,
+                i,
+                1,
+                self.tasks[i as usize].context.len() as u8,
+            ],
+        );
+        buffer
+    }
+
+    pub fn get_output_overwrite_latch(&self, i: u8) -> ByteBuffer {
+        let mut buffer = ByteBuffer::hid();
+        buffer.puts(
+            0,
+            vec![
+                TASK_REPORT_ID,
+                OUTPUT_MODE,
+                i,
+                1,
+                self.tasks[i as usize].output.len() as u8,
+            ],
+        );
         buffer
     }
 
@@ -421,26 +456,27 @@ impl RobotFirmware {
         let mode = report.get(1);
         let mcu_lifetime = report.get_float(60);
         let prev_mcu_lifetime = mcu_stats.lifetime();
+        mcu_stats.set_lifetime(mcu_lifetime);
 
         let lifetime_diff = mcu_lifetime - prev_mcu_lifetime;
-        if lifetime_diff >= 0.0015 {
+        if lifetime_diff >= 0.004 {
             println!("MCU Lifetime jump: {}", lifetime_diff);
         }
 
         if rid == INIT_REPORT_ID {
             if mode == INIT_REPORT_ID {
                 let mcu_write_count = report.get_float(2);
-                let prev_mcu_write_count = mcu_stats.packets_sent();
-                let packet_diff = mcu_write_count - prev_mcu_write_count;
-                if packet_diff > 1.0 {
-                    println!("MCU Packet write difference: {}", packet_diff);
-                }
+                // let prev_mcu_write_count = mcu_stats.packets_sent();
+                // let packet_diff = mcu_write_count - prev_mcu_write_count;
+                // if packet_diff > 1.0 {
+                //     println!("MCU Packet write difference: {}", packet_diff);
+                // }
 
                 mcu_stats.set_packets_sent(mcu_write_count);
                 mcu_stats.set_packets_read(report.get_float(6));
             }
         } else if rid == TASK_REPORT_ID {
-            if mode == READ_CONTEXT_MODE {
+            if mode == CONTEXT_MODE {
                 self.tasks[report.get(2) as usize].update_context(
                     report.get(3) as usize,
                     report.get_floats(4, MAX_FLOAT_DATA),
@@ -448,20 +484,18 @@ impl RobotFirmware {
                 );
             }
 
-            if mode == READ_OUTPUT_MODE {
+            if mode == OUTPUT_MODE {
                 self.tasks[report.get(2) as usize].update_output(
                     report.get(3) as usize,
                     report.get_floats(4, MAX_FLOAT_DATA),
                     mcu_lifetime,
                 );
-                self.tasks[report.get(2) as usize].save();
+                // self.tasks[report.get(2) as usize].save();
             }
 
             mcu_stats.update_packets_sent(1.0); // only works if we don't miss packets
             mcu_stats.update_packets_read(1.0);
         }
-
-        mcu_stats.set_lifetime(mcu_lifetime);
     }
 
     pub fn print(&self) {

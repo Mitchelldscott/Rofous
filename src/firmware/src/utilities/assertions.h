@@ -21,13 +21,13 @@
 */
 
 #define TEST_INFO_SCALAR(msg, a) { \
-	Serial.print("[TEST INFO]\t"); \
+	Serial.print("[TEST ERROR]\t"); \
 	Serial.print(msg); \
 	Serial.printf(": %.6f\n", float(a)); \
 }
 
 #define TEST_INFO(msg, op, a, b) { \
-	Serial.print("[TEST INFO]\t"); \
+	Serial.print("[TEST ERROR]\t"); \
 	Serial.print(msg); \
 	Serial.printf(": %.6f %s %.6f\n", float(a), op, float(b)); \
 }

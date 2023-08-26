@@ -1,26 +1,19 @@
-/********************************************************************************
- * 
- *      ____                     ____          __           __       _          
- *	   / __ \__  __________     /  _/___  ____/ /_  _______/ /______(_)__  _____
- *	  / / / / / / / ___/ _ \    / // __ \/ __  / / / / ___/ __/ ___/ / _ \/ ___/
- *	 / /_/ / /_/ (__  )  __/  _/ // / / / /_/ / /_/ (__  ) /_/ /  / /  __(__  ) 
- *	/_____/\__, /____/\___/  /___/_/ /_/\__,_/\__,_/____/\__/_/  /_/\___/____/  
- *	      /____/                                                                
- * 
- * 
- * 
- ********************************************************************************/
-
 #include "task_manager/task_factory.h"
 
 Task* new_task(String key){
-	if (key == LSM6DSOX_DRIVER_KEY) {
-		return new LSM6DSOX();
-	}
-	else if (key == COMPFLTR_DRIVER_KEY) {
-		return new ComplimentaryFilter();
-	}
-	else {
-		return nullptr;
-	}
+    if (key == LSM6DSOX_DRIVER_KEY) {
+        return new LSM6DSOX();
+    }
+    else if (key == PWM_DRIVER_KEY) {
+        return new PwmDriver();
+    }
+    else if (key == COMPFLTR_DRIVER_KEY) {
+        return new ComplimentaryFilter();
+    }
+    else if (key == CONSTANT_DRIVER_KEY) {
+        return new ConstTask();
+    }
+    else {
+        return nullptr;
+    }
 }

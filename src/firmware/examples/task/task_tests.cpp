@@ -1,13 +1,7 @@
-#include <Arduino.h>
-
 #include "utilities/splash.h"
-#include "utilities/vector.h"
 #include "utilities/assertions.h"
-#include "task_manager/task.h"
-#include "task_manager/task_factory.h"
-#include "algorithms/complimentary_filter.h"
 
-#include "sensors/lsm6dsox.h"
+#include "task_manager/task_factory.h"
 
 
 int simple_proc_test(Task* p) {
@@ -27,6 +21,7 @@ int simple_proc_test(Task* p) {
 	p->run(&inputs, &outputs);
 	p->run(&inputs, &outputs);
 	p->run(&inputs, &outputs);
+	p->run(&inputs, &outputs); // run four times to fill output and have non-zero context (specific to lsm6dsox)
 
 	p->context(&context);
 	errors += assert_neq<float>(context.as_array(), 0.0f, "task post run non-empty context test", context.size());

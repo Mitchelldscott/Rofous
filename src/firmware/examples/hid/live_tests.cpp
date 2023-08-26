@@ -16,7 +16,7 @@
 #include "utilities/assertions.h"
 #include "hid_comms/hid_comms.h"
 
-#define MASTER_CYCLE_TIME_MS 	500
+#define MASTER_CYCLE_TIME_MS 	10
 #define MASTER_CYCLE_TIME_S 	(MASTER_CYCLE_TIME_MS * 1E-3)
 #define MASTER_CYCLE_TIME_US 	(MASTER_CYCLE_TIME_MS * 1E3 )
 #define MASTER_CYCLE_TIME_ERR 	(MASTER_CYCLE_TIME_MS + 0.01)
@@ -24,7 +24,55 @@
 #define TEST_DURATION_S			30
 
 FTYK timers;
+int connected = 0;
 
+void task_publish_handler(CommsPipeline* comms_pipe, int id, Vector<float>& output, Vector<float>& context) {
+	TaskFeedback* task_fb = new TaskFeedback;
+	task_fb->task_id = id;
+	task_fb->output = output;
+	task_fb->context = context;
+	task_fb->timestamp = -1;
+
+	noInterrupts();
+	comms_pipe->feedback.push(task_fb);
+	interrupts();
+}
+
+void task_setup_handler(CommsPipeline* comms_pipe) {
+	// consume all input packets
+	noInterrupts();
+	int n_items = comms_pipe->setup_queue.size();
+	interrupts();
+
+	if (n_items <= 0) {
+		return;
+	}
+
+	for (int i = 0; i < n_items; i++) {
+		noInterrupts();
+		TaskSetupPacket* p = comms_pipe->setup_queue.pop();
+		interrupts();
+
+		printf("Consuming %i/%i items\n", i, n_items);
+
+
+		if (p->packet_type == 0) {
+			Vector<float> output(9);
+			Vector<float> context(4);
+			task_publish_handler(comms_pipe, p->task_id, output, context);
+			printf("New feedback queue %i\n", comms_pipe->feedback.size());
+		}
+
+		if (p->packet_type == 2) {
+			noInterrupts();
+			comms_pipe->feedback[i]->output = p->data;
+			interrupts();
+		}
+		
+		delete p;
+	}
+	connected = 1;
+}
 
 // Runs once
 int main() {
@@ -34,21 +82,31 @@ int main() {
 
 	unit_test_splash("Live comms", TEST_DURATION_S);
 
-	Vector<FWTaskPacket*>* task_control_queue = enable_hid_interrupts();
+	CommsPipeline* comms_pipe = enable_hid_interrupts();
 
 	while (!usb_rawhid_available()) {};
 
+	int update = 0;
 	timers.set(0);
 	timers.set(1);
 	while (lifetime < TEST_DURATION_S) {
-		printf("queue length: %i\n", task_control_queue->size());
+
+		task_setup_handler(comms_pipe);
+
+		if (connected) {
+			update = (update + 1) % 2;
+			noInterrupts();
+			comms_pipe->recent_update = update;
+			interrupts();	
+		}
+		
 		lifetime += MS_2_S(timers.delay_millis(1, MASTER_CYCLE_TIME_MS));
 		errors += assert_leq<float>(timers.millis(1), MASTER_CYCLE_TIME_ERR, "Teensy overcycled"); 
 		timers.set(1);
 	}
 
-	Serial.println(" * Finished tests");
-	Serial.printf(" * %i failed\n", errors + hid_errors);
+	printf(" * Finished tests in %fs\n", lifetime);
+	printf(" * %i failed\n", int(errors + hid_errors));
 
 	return 0;
 }

@@ -102,7 +102,7 @@ void Task::run(Vector<float>* input, Vector<float>* output) {
 			input: (Vector<float>*) flattened Vector of input data for Task
 			output: (Vector<float>*) flattened Vector of output data from Task
 	*/
-	printf("Task Base Object: Run");
+	printf("Task Base Object: Run\n");
 	output->reset(0);
 }
 
@@ -115,10 +115,9 @@ template <> void Vector<Task*>::print() {
 	}
 
 	printf("Task Vector [%i]: [\n", length);
-	for (int i = 0; i < length-1; i++) {
+	for (int i = 0; i < length; i++) {
 		buffer[i]->print();
 	}
-	buffer[length-1]->print();
 	printf("]\n");
 }
 

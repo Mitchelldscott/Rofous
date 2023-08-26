@@ -103,8 +103,15 @@ impl HidInterface {
     }
 
     pub fn send_request(&mut self) {
+        if self.current_request >= self.robot_fw.tasks.len() as u8 {}
         self.writer_tx(self.robot_fw.get_request(self.current_request));
         self.current_request = (self.current_request + 1) % (2 * self.robot_fw.tasks.len() as u8);
+    }
+
+    pub fn send_control(&mut self, i: usize, data: Vec<f64>) {
+        let mut packet = self.robot_fw.get_output_overwrite_latch(i as u8);
+        packet.put_floats(5, data);
+        self.writer_tx(packet);
     }
 
     pub fn print(&self) {
@@ -112,6 +119,7 @@ impl HidInterface {
     }
 
     pub fn pipeline(&mut self) {
+        let mut loop_count = 0;
         let initializers = self.get_initializers();
 
         while !self.layer.control_flags.is_connected() {}
@@ -131,10 +139,20 @@ impl HidInterface {
             let loopt = Instant::now();
 
             if self.layer.control_flags.is_connected() {
-                self.send_request();
+                if loop_count % 100 == 0 {
+                    self.send_control(
+                        self.robot_fw.id_of("lsm6dsox"),
+                        vec![0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                    );
+                }
                 self.check_feedback();
             }
 
+            loop_count += 1;
+            if loop_count > 40000 {
+                self.layer.print();
+                loop_count = 0;
+            }
             self.layer.delay(loopt);
             // if t.elapsed().as_micros() as f64 > TEENSY_CYCLE_TIME_US {
             //     println!("HID Control over cycled {} ms", (t.elapsed().as_micros() as f64) * 1E-3);

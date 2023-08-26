@@ -117,6 +117,7 @@ template <typename T> class Vector {
 			*/
 			T tmp[length];
 			memcpy(tmp, buffer, length * sizeof(T));
+			
 			reset(length + n);
 			memcpy(buffer, tmp, (length - n) * sizeof(T));
 			memcpy(&buffer[(length - n)], data, n * sizeof(T));
@@ -135,15 +136,11 @@ template <typename T> class Vector {
 			T tmp1[n];
 			T* tmp2 = data.as_array();
 
+			memcpy(tmp1, buffer, n * sizeof(T));			
+
 			reset(n + m);
-			for (int i = 0; i < n; i++) {
-				buffer[i] = tmp1[i];
-			}
-			for (int i = 0; i < m; i++) {
-				buffer[i+n] = tmp2[i];
-			}
-			// memcpy(buffer, tmp1, n * sizeof(T));
-			// memcpy(&buffer[n], tmp2, m * sizeof(T));
+			memcpy(buffer, tmp1, n * sizeof(T));
+			memcpy(&buffer[n], tmp2, m * sizeof(T));
 		}
 
 		void append(Vector<T>* data) {
@@ -158,6 +155,8 @@ template <typename T> class Vector {
 
 			T tmp1[n];
 			T* tmp2 = data->as_array();
+
+			memcpy(tmp1, buffer, n * sizeof(T));			
 
 			reset(n + m);
 			memcpy(buffer, tmp1, n * sizeof(T));
@@ -248,11 +247,15 @@ template <typename T> class Vector {
 		}
 
 		T pop() {
-			T tmp[length-1];
-			T value = buffer[0];
-			slice(tmp, 1, length-1);
-			from_array(tmp, length-1);
-			return value;
+			if (length > 0) {
+				T tmp[length-1];
+				T value = buffer[0];
+				slice(tmp, 1, length-1);
+				from_array(tmp, length-1);
+				return value;
+			}
+			printf("invalid pop %i\n", length);
+			exit(0);
 		}
 
 		///// operators /////
@@ -273,6 +276,16 @@ template <typename T> class Vector {
 			
 			printf("invalid index %i:%i\n", index, length);
 			exit(0);
+		}
+
+		void operator=(Vector<T>* data) {
+			/*
+				  = Operator overload. Will reset this vector to the
+				same size as data.
+				@param
+					data: (Vector<T>&) data to copy
+			*/
+			from_array(data->as_array(), data->size());
 		}
 
 		void operator=(Vector<T>& data) {

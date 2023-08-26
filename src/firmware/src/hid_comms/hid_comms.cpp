@@ -27,12 +27,9 @@ FTYK hid_timers;
 ByteBuffer<64> buffer;
 IntervalTimer hid_interval_timer;
 
-Vector<int>* node_ids_p;
-Vector<TaskNode*>* nodes_p;
-Vector<FWTaskPacket*> task_control_queue;
+CommsPipeline pipeline;
 
 void push_hid() {
-	int index = 0;
 
 	if(!usb_rawhid_available()) {
 		// printf("RawHID not available %f\n", hid_timers.secs(1));
@@ -40,19 +37,20 @@ void push_hid() {
 			reset_hid_stats();
 			hid_timers.set(1);
 		}
+		// printf("USB not available\n");
 		return;
 	}
 
 	hid_timers.set(1);
-	
 
 	switch (usb_rawhid_recv(buffer.buffer(), 0)) {
 		case 64:
 			blink();										// only blink when connected to hid
 			mcu_read_count += 1;
+			// printf("Recieved Report %i, %i\n", buffer.get<byte>(0), buffer.get<byte>(1));
+
 			switch (buffer.get<byte>(0)) {
 				case 255:
-					// printf("Recieved Config Report\n");
 					switch (buffer.get<byte>(1)) {
 						case 1:
 							init_task_hid();
@@ -62,48 +60,19 @@ void push_hid() {
 							config_task_hid();
 							break;
 
-						case 255:
-							// write count is a better interpretation of connection, don't want to force lifetimes equal
-							// hid_errors += assert_eq<float>(buffer.get<float>(2), mcu_write_count, 1, "pc vs mcu write count");
-							// hid_errors += assert_eq<float>(buffer.get<float>(2), pc_write_count, 1, "pc write count jump");
-							// hid_errors += assert_eq<float>(buffer.get<float>(60), pc_lifetime, 0.001, "pc lifetime jump");
-							pc_write_count = buffer.get<float>(2);
-							pc_read_count = buffer.get<float>(6);
-							// assert_leq<float>(abs(pc_lifetime - hid_lifetime), 0.001, "pc time - mcu time\t\t");
-							buffer.put<float>(2, mcu_write_count);
-							buffer.put<float>(6, mcu_read_count);
-							break;
-
 						default:
 							break;
 					}
 					break;
 
 				case 1:
-					index = node_ids_p->find(buffer.get<byte>(2));
-					// printf("node index: %i %i\n", buffer.get<byte>(2), index);
-					// printf("nodes: %i\n", nodes_p->size());
-					if (index >= 0 && nodes_p->size() > index) {
-						switch (buffer.get<byte>(1)) {
-							case 1:
-									dump_vector((*nodes_p)[index]->context());
-									// dump_vector(hid_context_buffer[index]->info());
-								break;
-
-							case 2:
-									dump_vector((*nodes_p)[index]->output());
-									// dump_vector(hid_output_buffer[index]->info());
-								break;
-
-							default:
-								break;
-						}
-					}
+					overwrite_task_hid();
 					break;
 
 				case 13:
 					reset_hid_stats();
-					break;
+					send_hid_status();
+					return;
 
 				default:
 					break;
@@ -115,6 +84,49 @@ void push_hid() {
 			break;
 	}
 
+	// constantly dump output/context
+	if (pipeline.feedback.size() > 0) {
+		send_hid_feedback();
+	}
+	else {
+		send_hid_status();
+	}
+
+}
+
+void send_hid_status() {
+	// printf("Sending status\n");
+
+	buffer.put<byte>(0, 255);
+	buffer.put<byte>(1, 255);
+	buffer.put<float>(2, mcu_write_count);
+	buffer.put<float>(6, mcu_read_count);
+	send_hid_with_timestamp();
+}
+
+void send_hid_feedback() {
+	static int task_num = 0;
+	static int context_alt = 0;
+
+	buffer.put<byte>(0, 1);
+	buffer.put<byte>(1, context_alt+1);
+	buffer.put<byte>(2, pipeline.feedback[task_num]->task_id);
+	switch (context_alt) {
+		case 0:
+			dump_vector(&pipeline.feedback[task_num]->context);
+			context_alt = 1;
+			break;
+
+		default:
+			dump_vector(&pipeline.feedback[task_num]->output);
+			context_alt = 0;
+			task_num = (task_num + 1) % pipeline.feedback.size();
+			break;
+	}
+	send_hid_with_timestamp();
+}
+
+void send_hid_with_timestamp() {
 	pc_lifetime = buffer.get<float>(60);
 	hid_lifetime += hid_timers.secs(0);
 	hid_timers.set(0);
@@ -130,7 +142,7 @@ void push_hid() {
 void init_task_hid() {
 
 	// printf("Init Task %i\n", buffer.get<byte>(2));
-	FWTaskPacket* task = new FWTaskPacket;
+	TaskSetupPacket* task = new TaskSetupPacket;
 	
 	task->packet_type = 0;
 	task->key = buffer.get<char>(3);
@@ -143,13 +155,13 @@ void init_task_hid() {
 		task->inputs.push(buffer.get<byte>(i + 7));
 	}
 
-	// push to new node queue
-	task_control_queue.push(task);
+	// push to setup queue
+	pipeline.setup_queue.push(task);
 }
 
 void config_task_hid() {
 
-	FWTaskPacket* task = new FWTaskPacket;
+	TaskSetupPacket* task = new TaskSetupPacket;
 
 	task->packet_type = 1;
 	task->task_id = buffer.get<byte>(2);
@@ -160,8 +172,26 @@ void config_task_hid() {
 		task->parameters.push(buffer.get<float>((4 * i) + 5));
 	}
 
-	// push config packet to config queue
-	task_control_queue.push(task);
+	// push config packet to setup queue
+	pipeline.setup_queue.push(task);
+}
+
+void overwrite_task_hid() {
+
+	TaskSetupPacket* task = new TaskSetupPacket;
+
+	task->packet_type = 2;
+	task->context_alt = buffer.get<byte>(1);
+	task->task_id = buffer.get<byte>(2);
+	task->latch = buffer.get<byte>(3);
+	task->data_len = buffer.get<byte>(4);
+
+	for (int i = 0; i < task->data_len; i++) {
+		task->data.push(buffer.get<float>((4 * i) + 5));
+	}
+
+	// push config packet to setup queue
+	pipeline.setup_queue.push(task);
 }
 
 void reset_hid_stats() {
@@ -179,10 +209,23 @@ void dump_vector(Vector<float>* data) {
 	buffer.put<float>(4, data->size(), data->as_array());
 }
 
-Vector<FWTaskPacket*>* enable_hid_interrupts(Vector<int>* ids_ptr, Vector<TaskNode*>* node_ptr) {
-	nodes_p = node_ptr;
-	node_ids_p = ids_ptr;
-	task_control_queue.reset(0);
+CommsPipeline* enable_hid_interrupts() {
+	pipeline.recent_update = -1;
+	pipeline.feedback.reset(0);
+	pipeline.setup_queue.reset(0);
 	hid_interval_timer.begin(push_hid, HID_REFRESH_RATE);
-	return &task_control_queue;
+	return &pipeline;
+}
+
+template <> void Vector<TaskSetupPacket*>::print() {
+	if (length == 0) {
+		printf("Task Setup Vector [empty]\n");
+		return;
+	}
+
+	printf("Task Setup Vector [%i]: [\n", length);
+	for (int i = 0; i < length; i++) {
+		buffer[i]->print();
+	}
+	printf("]\n");
 }

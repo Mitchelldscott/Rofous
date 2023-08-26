@@ -1,9 +1,9 @@
+#ifndef COMP_FILTER_H
+#define COMP_FILTER_H
+
 #include "utilities/timing.h"
 #include "task_manager/task.h"
 #include "algorithms/linear_algebra.h"
-
-#ifndef COMP_FILTER_H
-#define COMP_FILTER_H
 
 #define ATTITUDE_DIM 	3
 #define CMF_STATE_SIZE 	6

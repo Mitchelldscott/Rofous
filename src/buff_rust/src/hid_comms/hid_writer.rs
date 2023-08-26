@@ -136,6 +136,8 @@ impl HidWriter {
             self.write();
 
             self.layer.delay(t);
+            // t = Instant::now(); // try double delay
+            // self.layer.delay(t);
             // if t.elapsed().as_micros() > 550 {
             //     println!(
             //         "HID Writer over cycled {}ms",

@@ -1,11 +1,10 @@
+#ifndef BUFF_LSM6DSOX_H
+#define BUFF_LSM6DSOX_H
+
 #include <Adafruit_LIS3MDL.h>
 #include <Adafruit_LSM6DSOX.h>
 
 #include "task_manager/task.h"
-
-
-#ifndef BUFF_LSM6DSOX_H
-#define BUFF_LSM6DSOX_H
 
 #define LSM6DSOX_DOF 9
 #define LSM6DSOX_N_SENSORS 3

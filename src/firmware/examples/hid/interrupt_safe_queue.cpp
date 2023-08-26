@@ -16,15 +16,22 @@
 #include "utilities/assertions.h"
 #include "hid_comms/hid_comms.h"
 
-#define MASTER_CYCLE_TIME_MS 	10
+#define MASTER_CYCLE_TIME_MS 	500
 #define MASTER_CYCLE_TIME_S 	(MASTER_CYCLE_TIME_MS * 1E-3)
-#define MASTER_CYCLE_TIME_US 	(MASTER_CYCLE_TIME_MS * 1E3)
-#define MASTER_CYCLE_TIME_ERR 	(MASTER_CYCLE_TIME_MS + 1)
+#define MASTER_CYCLE_TIME_US 	(MASTER_CYCLE_TIME_MS * 1E3 )
+#define MASTER_CYCLE_TIME_ERR 	(MASTER_CYCLE_TIME_MS + 0.01)
 
 #define TEST_DURATION_S			30
 
 FTYK timers;
 
+
+struct DummyObject {
+	Vector<float> arr1;
+	Vector<float> arr2;
+}
+
+Vector<DummyObject*> pipeline;
 
 // Runs once
 int main() {
@@ -32,25 +39,28 @@ int main() {
 	int errors = 0;
 	float lifetime = 0;
 
-	unit_test_splash("Dead comms", TEST_DURATION_S);
+	unit_test_splash("Interrupt safe queue", TEST_DURATION_S);
 
-	CommsPipeline* comms_pipe = enable_hid_interrupts();
-	while (!usb_rawhid_available()) {};
+	Vector<float> output;
+	Vector<float> context;
 
 	timers.set(0);
 	timers.set(1);
 	while (lifetime < TEST_DURATION_S) {
 
-		float cycletime = timers.delay_millis(1, MASTER_CYCLE_TIME_MS);
+		task_setup_handler(comms_pipe);
+
+		task_publish_handler(comms_pipe, 0, output, context);
+		task_publish_handler(comms_pipe, 1, output, context);
+
+		lifetime += MS_2_S(timers.delay_millis(1, MASTER_CYCLE_TIME_MS));
+		errors += assert_leq<float>(timers.millis(1), MASTER_CYCLE_TIME_ERR, "Teensy overcycled"); 
 		timers.set(1);
-		lifetime += MS_2_S(cycletime);
-		errors += assert_leq<float>(cycletime, MASTER_CYCLE_TIME_ERR, "Teensy overcycled (ms)"); 		
 	}
 
-	printf(" * Finished tests\n");
-	printf(" * %i failed\n", int(errors + hid_errors));
+	Serial.println(" * Finished tests");
+	Serial.printf(" * %i failed\n", errors + hid_errors);
 
-	while(1){};
 	return 0;
 }
 

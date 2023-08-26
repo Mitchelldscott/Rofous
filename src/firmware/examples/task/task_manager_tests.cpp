@@ -9,80 +9,97 @@
 
 
 FTYK timers;
-Vector<FWTaskPacket*>* queue;
+CommsPipeline* comms_pipe;
 
 int main() {
-	while(!Serial){}
+	int errors = 0;
 
-	unit_test_splash("Task Manager", 0);
+	unit_test_splash("Task Manager", -1);
 	
 	int cmf_inputs[2] = {9, 10};
 
-	FWTaskPacket* lsm = new FWTaskPacket;
+	TaskSetupPacket* lsm = new TaskSetupPacket;
 	lsm->key = "LSM";
 	lsm->task_id = 10;
 	lsm->n_inputs = 0;
+	lsm->packet_type = 0;
 
-	FWTaskPacket* cmf = new FWTaskPacket;
+	TaskSetupPacket* cmf = new TaskSetupPacket;
 	cmf->key = "CMF";
 	cmf->task_id = 9;
 	cmf->n_inputs = 2;
 	cmf->inputs.from_array(cmf_inputs, 2);
+	cmf->packet_type = 0;
 
-	FWTaskPacket* cmf_params = new FWTaskPacket;
+	TaskSetupPacket* cmf_params = new TaskSetupPacket;
 	cmf_params->task_id = 9;
 	cmf_params->chunk_id = 0;
 	cmf_params->chunk_size = 1;
 	cmf_params->parameters.reset(1);
 	cmf_params->parameters[0] = 0.6;
+	cmf_params->packet_type = 1;
 
 	printf("\n=== Add nodes and parameters manually ===\n");
 
 	timers.set(0);
-	queue = init_task_manager();
-	assert_leq<float>(timers.micros(0), 2, "TM init timer");
+	comms_pipe = init_task_manager();
+	errors += assert_leq<float>(timers.micros(0), 2, "TM init timer");
 	
 	timers.set(1);
 	add_task(lsm);
-	assert_leq<float>(timers.millis(1), 50, "LSM add timer");
+	errors += assert_leq<float>(timers.millis(1), 15, "LSM add timer");
 
 	timers.set(1);
 	add_task(cmf);
-	assert_leq<float>(timers.micros(1), 6, "CMF add timer");
+	errors += assert_leq<float>(timers.micros(1), 7, "CMF add timer");
 
 	timers.set(1);
 	update_task(cmf_params);
-	assert_leq<float>(timers.micros(1), 2, "CMF update timer");
+	errors += assert_leq<float>(timers.micros(1), 2, "CMF update timer");
 
 	for (int i = 0; i < 3; i++) {
 		timers.set(1);
 		spin();
-		assert_leq<float>(timers.delay_millis(1, MASTER_CYCLE_TIME_MS), MASTER_CYCLE_TIME_ERR, "Task run timing test");
+		errors += assert_leq<float>(timers.delay_millis(1, MASTER_CYCLE_TIME_MS), MASTER_CYCLE_TIME_ERR, "Task run timing test");
 	}
 
 	dump_all_tasks();
 
-	printf("\n=== Reset nodes and update parameters from the queue ===\n");
+	printf("\n=== Reset nodes and update parameters from the comms_pipeline ===\n");
 
 	// reset the tasks so they require a reconfig
-	timers.set(1);
-	add_task(lsm);
-	assert_leq<float>(timers.millis(1), 50, "LSM reset timer");
-
-	timers.set(1);
-	add_task(cmf);
-	assert_leq<float>(timers.micros(1), 6, "CMF reset timer");
-
-	queue->push(cmf_params);
+	comms_pipe->setup_queue.push(lsm);
+	comms_pipe->setup_queue.push(cmf);
+	comms_pipe->setup_queue.push(cmf_params);
 
 	dump_all_tasks();
 
-	timers.set(1);
-	spin();
-	assert_leq<float>(timers.delay_millis(1, MASTER_CYCLE_TIME_MS), MASTER_CYCLE_TIME_ERR, "Task run timing test");
-
-	dump_all_tasks();
-
-	printf("=== Finished Task Manager tests ===\n");
+	for (int i = 0; i < 5; i++) {
+		timers.set(1);
+		spin();
+		errors += assert_leq<float>(timers.delay_millis(1, MASTER_CYCLE_TIME_MS), MASTER_CYCLE_TIME_ERR, "Task run timing test");
+	}
 	
+	dump_all_tasks();
+
+	TaskSetupPacket* output_lock = new TaskSetupPacket;
+	output_lock->task_id = 10;
+	output_lock->data_len = 9;
+	output_lock->context_alt = 1;
+	for (int i = 0; i < 9; i++) {
+		output_lock->data.push(9);
+	}
+
+	comms_pipe->setup_queue.push(output_lock);
+
+	for (int i = 0; i < 5; i++) {
+		timers.set(1);
+		spin();
+		errors += assert_leq<float>(timers.delay_millis(1, MASTER_CYCLE_TIME_MS), MASTER_CYCLE_TIME_ERR, "Task run timing test");
+	}
+	
+	dump_all_tasks();
+
+
+	printf("=== Finished Task Manager tests with %i errors ===\n", errors);
 }

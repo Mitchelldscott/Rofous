@@ -24,6 +24,26 @@ attitude_estimator:
  - outputs: [attitude]
  - parameters: [0.6]
 
+
+##############################
+#
+#
+#         Motor Drivers
+#
+#
+##############################
+motor_controller:
+ - driver: VAL
+ - inputs: []
+ - outputs: [servo_cmd]
+ - parameters: [1]
+
+servo_motor:
+ - driver: PWM
+ - inputs: [servo_cmd]
+ - outputs: [pwm_signal1]
+ - parameters: [9]
+
 ##############################
 #
 #

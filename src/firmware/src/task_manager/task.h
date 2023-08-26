@@ -41,6 +41,8 @@ class Task {
 		virtual void setup(Vector<float>*);
 		virtual void context(Vector<float>*);
 		virtual void run(Vector<float>*, Vector<float>*);
+
+		int operator [](int index) { return dimensions[index]; }
 };
 
 #endif

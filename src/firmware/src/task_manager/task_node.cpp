@@ -11,12 +11,7 @@
  * 
  ********************************************************************************/
 
-// #include <Arduino.h>
-
-// #include "utilities/vector.h"
 #include "task_manager/task_node.h"
-
-// #include "sensors/lsm6dsox.h"
 
 TaskNode::TaskNode() {
 	/*
@@ -25,7 +20,7 @@ TaskNode::TaskNode() {
 	*/
 	inputs.reset(0);
 	output_buffer.reset(0);
-	config_buffer.reset(0);
+	parameter_buffer.reset(0);
 }
 
 TaskNode::TaskNode(Task* p, int n_inputs, int* input_ids) {
@@ -40,8 +35,12 @@ TaskNode::TaskNode(Task* p, int n_inputs, int* input_ids) {
 	*/
 	
 	set_task(p);
-	set_config();
+	reset_config();
 	set_inputs(input_ids, n_inputs);
+}
+
+void TaskNode::latch(int value) {
+	is_latched = value;
 }
 
 int TaskNode::n_inputs() {
@@ -50,34 +49,7 @@ int TaskNode::n_inputs() {
 		@return
 			size: (int) number of nodes to recieve input from.
 	*/
-	return inputs.size();
-}
-
-int TaskNode::input_dim() {
-	/*
-		Get the size of desired input buffer.
-		@return
-			size: (int) user defined size of input vector.
-	*/
-	return task->input_dim();
-}
-
-int TaskNode::context_dim() {
-	/*
-		Get the size of desired context buffer.
-		@return
-			size: (int) user defined size of context vector.
-	*/
-	return task->context_dim();
-}
-
-int TaskNode::output_dim() {
-	/*
-		Get the size of desired output buffer.
-		@return
-			size: (int) user defined size of output vector.
-	*/
-	return task->output_dim();
+	return input_ids.size();
 }
 
 int TaskNode::input_id(int index) {
@@ -89,6 +61,18 @@ int TaskNode::input_id(int index) {
 	return input_ids[index];
 }
 
+void TaskNode::reset_config() {
+	/*
+		Zero the current config to ensure reinitialization.
+
+	*/
+	task->reset();
+	parameter_buffer.reset(0);
+	input_buffer.reset((*task)[INPUT_DIMENSION]);
+	output_buffer.reset((*task)[OUTPUT_DIMENSION]);
+	context_buffer.reset((*task)[CONTEXT_DIMENSION]);
+}
+
 bool TaskNode::is_configured() {
 	/*
 		Check if the tasks is configured. Needed because
@@ -96,43 +80,11 @@ bool TaskNode::is_configured() {
 		@return
 			status: (bool) if tasks is configured
 	*/
-	return task->params_dim() == config_buffer.size();
+	return (*task)[PARAMS_DIMENSION] == parameter_buffer.size();
 }
 
-Vector<float>* TaskNode::output() {
-	/*
-		Get a pointer to the output buffer
-		@return
-			output: (Vector<float>*) buffer of output data
-	*/
-	return &output_buffer;
-}
-
-Vector<float>* TaskNode::config() {
-	/*
-		Get a pointer to the setup buffer
-		@return
-			config: (Vector<float>*) buffer of setup data
-	*/
-	return &config_buffer;
-}
-
-Vector<float>* TaskNode::context() {
-	/*
-		Get a pointer to the context buffer
-		@return
-			context: (Vector<float>*) buffer of context data
-	*/
-	task->context(&context_buffer);
-	return &context_buffer;
-}
-
-void TaskNode::set_config() {
-	/*
-		Zero the current config to ensure reinitialization.
-
-	*/
-	task->reset();
+int TaskNode::n_links() {
+	return inputs.size();
 }
 
 void TaskNode::set_inputs(int* inputids, int n_inputs) {
@@ -145,6 +97,17 @@ void TaskNode::set_inputs(int* inputids, int n_inputs) {
 	input_ids.from_array(inputids, n_inputs);
 }
 
+void TaskNode::link_input(TaskNode* node) {
+	/*
+		Add a pointer to the node for faster lookup.
+		Must pass inputs to this in the same order as,
+		input_ids.
+		@param
+			node: (TaskNode*) pointer to an input node.
+	*/
+	inputs.push(node);
+}
+
 void TaskNode::set_task(Task* new_task) {
 	/*
 		Set the task that drives (input, config) -> (context, output).
@@ -155,7 +118,9 @@ void TaskNode::set_task(Task* new_task) {
 	*/
 	task = new_task;
 	task->reset();
-	output_buffer.reset(task->output_dim());
+	input_buffer.reset((*task)[INPUT_DIMENSION]);
+	output_buffer.reset((*task)[OUTPUT_DIMENSION]);
+	context_buffer.reset((*task)[CONTEXT_DIMENSION]);
 }
 
 bool TaskNode::setup_task() {
@@ -166,26 +131,38 @@ bool TaskNode::setup_task() {
 			status: (bool) if setup was called.
 	*/
 	if (is_configured()) {
-		task->setup(&config_buffer);
+		task->setup(&parameter_buffer);
 		return true;		
 	}
 	return false;
 }
 
-bool TaskNode::run_task(Vector<float>* input_buffer) {
+void TaskNode::collect_inputs() {
+	int curr_size = 0;
+	for (int i = 0; i < inputs.size(); i++) {
+		input_buffer.insert((*inputs[i])[OUTPUT_DIMENSION]->as_array(), curr_size, (*inputs[i])[OUTPUT_DIMENSION]->size());
+		curr_size += (*inputs[i])[OUTPUT_DIMENSION]->size();
+	}
+
+}
+
+bool TaskNode::run_task() {
 	/*
 		Call the tasks user defined run function. Does nothing if not configured
-		or if input size (generated) is not equal to input dimension (user defined).
+		or if inputs size is not equal to number of input ids.
 		@param
 			input_buffer: (Vector<float>*) concatenated outputs of tasks
-				listed in input_ids
+				listed in input_ids (always the correct shape)
 		@return
 			status: (bool) if run was called.
 	*/
 
-	if (is_configured() && input_buffer->size() == task->input_dim()) {
-		task->run(input_buffer, &output_buffer);
-		return true;		
+	if (is_configured() && inputs.size() == input_ids.size()) {
+			collect_inputs();
+			if (!is_latched) {
+				task->run(&input_buffer, &output_buffer);
+			}
+			return true;
 	}
 
 	return false;
@@ -216,9 +193,8 @@ template <> void Vector<TaskNode*>::print() {
 	}
 
 	printf("Task Vector [%i]: [\n", length);
-	for (int i = 0; i < length-1; i++) {
+	for (int i = 0; i < length; i++) {
 		buffer[i]->print();
 	}
-	buffer[length-1]->print();
 	printf("]\n");
 }

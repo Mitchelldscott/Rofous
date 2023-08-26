@@ -177,7 +177,7 @@ impl HidReader {
             // }
         }
 
-        self.wait_for_report_reply(13, 500);
+        self.wait_for_report_reply(255, 500);
     }
 
     /// Sends robot status report packet to [HidROS], waits for the reply packet,

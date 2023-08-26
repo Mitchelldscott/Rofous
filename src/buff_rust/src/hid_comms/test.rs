@@ -33,6 +33,7 @@ use std::{
 
 #[allow(dead_code)]
 const VERBOSITY: usize = 1;
+const TEST_DURATION: u64 = 30;
 
 #[cfg(test)]
 pub mod robot_fw {
@@ -94,7 +95,8 @@ pub mod dead_read_write {
             .unwrap();
 
         let t = Instant::now();
-        while t.elapsed().as_secs() < 30 && !interface.layer.control_flags.is_shutdown() {
+        while t.elapsed().as_secs() < TEST_DURATION && !interface.layer.control_flags.is_shutdown()
+        {
             let loopt = Instant::now();
             interface.check_feedback();
             interface.layer.delay(loopt);
@@ -119,7 +121,8 @@ pub mod dead_comms {
 
         let t = Instant::now();
 
-        while t.elapsed().as_secs() < 10 && !interface.layer.control_flags.is_shutdown() {
+        while t.elapsed().as_secs() < TEST_DURATION && !interface.layer.control_flags.is_shutdown()
+        {
             let loopt = Instant::now();
 
             if interface.layer.control_flags.is_connected() {
@@ -206,13 +209,16 @@ pub mod live_comms {
         let lifetime = Instant::now();
         let mut t = Instant::now();
 
-        while lifetime.elapsed().as_secs() < 10 && !interface.layer.control_flags.is_shutdown() {
+        while lifetime.elapsed().as_secs() < TEST_DURATION
+            && !interface.layer.control_flags.is_shutdown()
+        {
             let loopt = Instant::now();
 
             if interface.layer.control_flags.is_connected() {
-                interface.send_request();
                 interface.check_feedback();
-                if t.elapsed().as_secs() > 1 {
+                if t.elapsed().as_secs() >= 5 {
+                    interface.send_control(0, vec![0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]);
+                    interface.layer.print();
                     interface.print();
                     t = Instant::now();
                 }
@@ -289,11 +295,13 @@ pub mod live_record {
 
         let lifetime = Instant::now();
 
-        while lifetime.elapsed().as_secs() < 10 && !interface.layer.control_flags.is_shutdown() {
+        while lifetime.elapsed().as_secs() < TEST_DURATION
+            && !interface.layer.control_flags.is_shutdown()
+        {
             let loopt = Instant::now();
 
             if interface.layer.control_flags.is_connected() {
-                interface.send_request();
+                // interface.send_request();
                 interface.check_feedback();
             }
 

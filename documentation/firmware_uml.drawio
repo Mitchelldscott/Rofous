@@ -1,190 +1,1581 @@
-<mxfile compressed="false" host="Electron" modified="2023-08-21T17:07:24.041Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.6.5 Chrome/114.0.5735.243 Electron/25.3.1 Safari/537.36" version="21.6.5" etag="nXx9n9PRGX43mtv0Y4TA" type="device">
-  <diagram id="Page-1" name="Page-1">
-    <mxGraphModel dx="847" dy="703" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="1">
-      <root>
-        <mxCell id="0" />
-        <mxCell id="1" parent="0" />
-        <object label="main" id="main">
-          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-            <mxGeometry x="360" y="133" width="85" height="50" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="lsm6dsox" id="lsm6dsox">
-          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-            <mxGeometry x="520" y="267" width="85" height="50" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="hid_comms" id="hid_comms">
-          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-            <mxGeometry x="230" y="240" width="85" height="50" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="bytebuffer" id="bytebuffer">
-          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-            <mxGeometry x="70" y="380" width="85" height="50" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="vector" id="vector">
-          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-            <mxGeometry x="310" y="460" width="85" height="50" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="timing" id="timing">
-          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-            <mxGeometry x="248" y="530" width="85" height="50" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="blink" id="blink">
-          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-            <mxGeometry x="110" y="240" width="85" height="50" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="splash" id="splash">
-          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-            <mxGeometry x="210" y="133" width="85" height="50" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="assertions" id="assertions">
-          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-            <mxGeometry x="180" y="380" width="85" height="50" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="task_manager" id="task_manager">
-          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-            <mxGeometry x="360" y="240" width="85" height="50" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="task" id="task">
-          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-            <mxGeometry x="371" y="380" width="85" height="50" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="task_node" id="task_node">
-          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-            <mxGeometry x="520" y="183" width="85" height="50" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="task_factory" id="task_factory">
-          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-            <mxGeometry x="700" y="267" width="85" height="50" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="linear_algebra" id="linear_algebra">
-          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-            <mxGeometry x="520" y="585" width="85" height="50" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="lp_filter" id="lp_filter">
-          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-            <mxGeometry x="520" y="410" width="85" height="50" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="complimentary_filter" id="complimentary_filter">
-          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-            <mxGeometry x="520" y="490" width="85" height="50" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="pid_filter" id="pid_filter">
-          <mxCell style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-            <mxGeometry x="520" y="340" width="85" height="50" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="cpp" source="splash" target="main" id="82d823bac7dff0ec343103e3ffc9d3ef">
-          <mxCell style="Line End=1" parent="1" source="splash" target="main" edge="1">
-            <mxGeometry relative="1" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="cpp" source="task_manager" target="main" id="cf575b5564b26beabd22c54dcd9d4671">
-          <mxCell style="Line End=1" parent="1" source="task_manager" target="main" edge="1">
-            <mxGeometry relative="1" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="h" source="task" target="lsm6dsox" id="84607c7021ad15fc54e3cadc8faa6b77">
-          <mxCell style="Line End=1" parent="1" source="task" target="lsm6dsox" edge="1">
-            <mxGeometry relative="1" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="h" source="bytebuffer" target="hid_comms" id="ddce11f8176b91049c3e0e48e2b762e6">
-          <mxCell style="Line End=1" parent="1" source="bytebuffer" target="hid_comms" edge="1">
-            <mxGeometry relative="1" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="h" source="blink" target="hid_comms" id="02494775d8e126b61477e618f6bf719d">
-          <mxCell style="Line End=1" parent="1" source="blink" target="hid_comms" edge="1">
-            <mxGeometry relative="1" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="h" source="timing" target="hid_comms" id="84f5fdad6da1c3cdf57d45a8cd388cf3">
-          <mxCell style="Line End=1" parent="1" source="timing" target="hid_comms" edge="1">
-            <mxGeometry relative="1" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="h" source="vector" target="hid_comms" id="a60b4e2a7cc7fe9dde0a70425ef3aafe">
-          <mxCell style="Line End=1" parent="1" source="vector" target="hid_comms" edge="1">
-            <mxGeometry relative="1" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="cpp" source="assertions" target="hid_comms" id="32cc97d6df2c23b3048555f6ca7cc94f">
-          <mxCell style="Line End=1" parent="1" source="assertions" target="hid_comms" edge="1">
-            <mxGeometry relative="1" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="h" source="vector" target="task" id="549a3035425725b8626a6bdcc562e3c8">
-          <mxCell style="Line End=1" parent="1" source="vector" target="task" edge="1">
-            <mxGeometry relative="1" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="h" source="task_factory" target="task_node" id="71d86e3d1a757e465acad8cb06a3b75a">
-          <mxCell style="Line End=1" parent="1" source="task_factory" target="task_node" edge="1">
-            <mxGeometry relative="1" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="h" source="lsm6dsox" target="task_factory" id="a4c82f83eedb37eb32b2cc22951fb16d">
-          <mxCell style="Line End=1" parent="1" source="lsm6dsox" target="task_factory" edge="1">
-            <mxGeometry relative="1" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="h" source="complimentary_filter" target="task_factory" id="113f8e8cf3cf25a3870561620d3b15d1">
-          <mxCell style="Line End=1" parent="1" source="complimentary_filter" target="task_factory" edge="1">
-            <mxGeometry relative="1" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="h" source="hid_comms" target="task_manager" id="5b4312b365c924acf1dbf0686290bb54">
-          <mxCell style="Line End=1" parent="1" source="hid_comms" target="task_manager" edge="1">
-            <mxGeometry relative="1" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="h" source="task_node" target="task_manager" id="0a43d1c8bc91d298c8043597f9a91444">
-          <mxCell style="Line End=1" edge="1" parent="1" source="task_node" target="task_manager">
-            <mxGeometry relative="1" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="h" source="task" target="lp_filter" id="95eda6dabd1e19c3d5030d1524b700a2">
-          <mxCell style="Line End=1" parent="1" source="task" target="lp_filter" edge="1">
-            <mxGeometry relative="1" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="h" source="timing" target="complimentary_filter" id="d8a48aded5b4fc68d2318749a01f4014">
-          <mxCell style="Line End=1" parent="1" source="timing" target="complimentary_filter" edge="1">
-            <mxGeometry relative="1" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="h" source="task" target="complimentary_filter" id="da176e045e723e43af2cdb424871fc2e">
-          <mxCell style="Line End=1" parent="1" source="task" target="complimentary_filter" edge="1">
-            <mxGeometry relative="1" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="h" source="linear_algebra" target="complimentary_filter" id="c929a060123022003efed96936cdd367">
-          <mxCell style="Line End=1" parent="1" source="linear_algebra" target="complimentary_filter" edge="1">
-            <mxGeometry relative="1" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="h" source="task" target="pid_filter" id="a111fdc70553fac347a3b431cec5ecd0">
-          <mxCell style="Line End=1" parent="1" source="task" target="pid_filter" edge="1">
-            <mxGeometry relative="1" as="geometry" />
-          </mxCell>
-        </object>
-      </root>
-    </mxGraphModel>
-  </diagram>
-</mxfile>
+<mxfile type="device" compressed="false">
+    <diagram id="Page-1" name="Page-1">
+      <mxGraphModel dx="600" dy="400" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="1">
+        <root>
+          <mxCell id="0" />   
+          <mxCell id="1" parent="0" />
+        <object id="HardwareSerial6" label="HardwareSerial6">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="116" y="80" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="usb_desc" label="usb_desc">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="100" y="400" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="Arduino" label="Arduino">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="260" y="384" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="Time" label="Time">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="212" y="80" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="Print" label="Print">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="292" y="192" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="usb_midi" label="usb_midi">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="132" y="368" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="usb_inst" label="usb_inst">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="468" y="80" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="eeprom" label="eeprom">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="180" y="400" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="serialEvent8" label="serialEvent8">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="180" y="96" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="IPAddress" label="IPAddress">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="100" y="384" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="HardwareSerial7" label="HardwareSerial7">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="308" y="96" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="elapsedMillis" label="elapsedMillis">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="132" y="400" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="Printable" label="Printable">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="132" y="320" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="HardwareSerial2" label="HardwareSerial2">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="116" y="112" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="sm_util" label="sm_util">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="148" y="112" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="Stream" label="Stream">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="484" y="368" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="cmsis_gcc" label="cmsis_gcc">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="356" y="0" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="serialEvent4" label="serialEvent4">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="244" y="112" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="serialEventUSB2" label="serialEventUSB2">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="276" y="112" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="serialEventUSB1" label="serialEventUSB1">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="308" y="112" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="Client" label="Client">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="404" y="112" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="usb_mouse" label="usb_mouse">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="500" y="384" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="sm_realloc_move" label="sm_realloc_move">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="148" y="128" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="usb_audio" label="usb_audio">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="404" y="256" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="WProgram" label="WProgram">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="468" y="144" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="IntervalTimer" label="IntervalTimer">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="244" y="336" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="core_cm7" label="core_cm7">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="100" y="16" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="keylayouts" label="keylayouts">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="260" y="320" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="delay" label="delay">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="180" y="160" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="bootdata" label="bootdata">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="148" y="16" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="sm_calloc" label="sm_calloc">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="212" y="160" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="sm_malloc_stats" label="sm_malloc_stats">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="244" y="160" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="EventResponder" label="EventResponder">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="468" y="304" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="memset" label="memset">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="212" y="16" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="Mouse" label="Mouse">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="228" y="16" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="memcpy-armv7m" label="memcpy-armv7m">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="244" y="16" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="debugprintf" label="debugprintf">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="500" y="160" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="serialEvent6" label="serialEvent6">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="148" y="176" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="wiring" label="wiring">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="388" y="320" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="imxrt" label="imxrt">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="324" y="384" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="usb_joystick" label="usb_joystick">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="276" y="368" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="WString" label="WString">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="164" y="320" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="usb_flightsim" label="usb_flightsim">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="148" y="400" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="sm_realloc" label="sm_realloc">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="500" y="176" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="avr_functions" label="avr_functions">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="164" y="400" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="fuse" label="fuse">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="148" y="192" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="math_helper" label="math_helper">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="180" y="192" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="usb_rawhid" label="usb_rawhid">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="500" y="352" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="serialEvent3" label="serialEvent3">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="276" y="192" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="Server" label="Server">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="308" y="192" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="extmem" label="extmem">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="372" y="192" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="DMAChannel" label="DMAChannel">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="148" y="384" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="pwm" label="pwm">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="468" y="192" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="serialEvent1" label="serialEvent1">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="116" y="208" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="usb_serial" label="usb_serial">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="164" y="288" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="arm_common_tables" label="arm_common_tables">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="420" y="240" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="smalloc" label="smalloc">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="484" y="272" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="interrupt" label="interrupt">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="372" y="208" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="imxrt1062_mm" label="imxrt1062_mm">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="196" y="32" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="sm_pool" label="sm_pool">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="404" y="208" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="Makefile" label="Makefile">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="228" y="32" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="usb_mtp" label="usb_mtp">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="468" y="288" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="usb" label="usb">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="180" y="240" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="AudioStream" label="AudioStream">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="308" y="288" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="avr_emulation" label="avr_emulation">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="196" y="400" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="usb_keyboard" label="usb_keyboard">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="340" y="320" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="arm_const_structs" label="arm_const_structs">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="436" y="240" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="analog" label="analog">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="180" y="256" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="yield" label="yield">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="244" y="256" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="HardwareSerial4" label="HardwareSerial4">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="308" y="256" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="HardwareSerial" label="HardwareSerial">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="292" y="384" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="sm_hash" label="sm_hash">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="500" y="256" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="smalloc_i" label="smalloc_i">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="100" y="368" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="usb_serial2" label="usb_serial2">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="276" y="272" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="rtc" label="rtc">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="340" y="272" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="startup" label="startup">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="116" y="288" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="usb_serial3" label="usb_serial3">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="276" y="288" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="sm_zalloc" label="sm_zalloc">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="340" y="288" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="sm_realloc_i" label="sm_realloc_i">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="500" y="288" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="WCharacter" label="WCharacter">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="324" y="144" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="usb_seremu" label="usb_seremu">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="372" y="304" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="HardwareSerial3" label="HardwareSerial3">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="308" y="304" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="core_cmInstr" label="core_cmInstr">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="452" y="384" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="serialEvent5" label="serialEvent5">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="436" y="304" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="HardwareSerial5" label="HardwareSerial5">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="116" y="320" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="CrashReport" label="CrashReport">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="308" y="352" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="Keyboard" label="Keyboard">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="228" y="48" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="wiring_private" label="wiring_private">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="244" y="48" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="clockspeed" label="clockspeed">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="436" y="320" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="serialEvent" label="serialEvent">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="468" y="320" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="pgmspace" label="pgmspace">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="388" y="384" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="usb_touch" label="usb_touch">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="404" y="368" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="pins_arduino" label="pins_arduino">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="164" y="336" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="FS" label="FS">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="116" y="336" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="core_pins" label="core_pins">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="356" y="384" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="sm_alloc_valid" label="sm_alloc_valid">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="212" y="336" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="digital" label="digital">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="276" y="336" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="core_id" label="core_id">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="196" y="176" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="serialEvent7" label="serialEvent7">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="340" y="336" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="usb_dev" label="usb_dev">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="292" y="368" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="nonstd" label="nonstd">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="500" y="336" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="binary" label="binary">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="164" y="176" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="sm_free" label="sm_free">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="276" y="352" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="imxrt1062" label="imxrt1062">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="500" y="48" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="usb_names" label="usb_names">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="100" y="352" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="sm_malloc" label="sm_malloc">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="340" y="352" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="Blink" label="Blink">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="372" y="352" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="sm_szalloc" label="sm_szalloc">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="116" y="368" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="MIDIUSB" label="MIDIUSB">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="148" y="368" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="new" label="new">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="180" y="64" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="HardwareSerial8" label="HardwareSerial8">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="468" y="368" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="Udp" label="Udp">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="116" y="384" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="serialEvent2" label="serialEvent2">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="212" y="384" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="WMath" label="WMath">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="244" y="64" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="Tone" label="Tone">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="244" y="384" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="HardwareSerial1" label="HardwareSerial1">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="308" y="384" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="tempmon" label="tempmon">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="436" y="384" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="imxrt1062_t41" label="imxrt1062_t41">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="308" y="64" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="arm_math" label="arm_math">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="468" y="384" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="libc" label="libc">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="340" y="64" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="printf" label="printf">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="420" y="384" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="atomic" label="atomic">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="372" y="64" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="parity" label="parity">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="388" y="64" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="crc16" label="crc16">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="404" y="64" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="sleep" label="sleep">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="420" y="64" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="power" label="power">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="436" y="64" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="io" label="io">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="212" y="400" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="wdt" label="wdt">
+      <mxCell style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="468" y="64" width="85" height="50" as="geometry" />
+      </mxCell>
+    </object><object id="9f915a122254d4243dfba0c056acb0c0" label="cpp" source="Arduino" target="HardwareSerial6">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="HardwareSerial6">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="43bb56b29fea2acf6e72baf20f71c651" label="cpp" source="HardwareSerial" target="HardwareSerial6">
+      <mxCell style="Line End=1" edge="1" parent="1" source="HardwareSerial" target="HardwareSerial6">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="6010b6b82c1bb90d1c52a43467b99fb9" label="h" source="WProgram" target="Arduino">
+      <mxCell style="Line End=1" edge="1" parent="1" source="WProgram" target="Arduino">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="c0c5337e4cfa73e4106e79b6a2ec59d3" label="h" source="pins_arduino" target="Arduino">
+      <mxCell style="Line End=1" edge="1" parent="1" source="pins_arduino" target="Arduino">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="540df331211880e836e4278145834ce1" label="cpp" source="Arduino" target="Time">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="Time">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="4793e55593eb35d5a1b768e1ffc64dc1" label="cpp" source="Arduino" target="Print">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="Print">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="2f307dc6e3aae530eec6870d191ae049" label="cpp" source="printf" target="Print">
+      <mxCell style="Line End=1" edge="1" parent="1" source="printf" target="Print">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="2525f793c28342260dade0b7823304a2" label="c" source="usb_dev" target="usb_midi">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_dev" target="usb_midi">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="f4c7b6f40b4a9de98325e4d61ad78119" label="c" source="core_pins" target="usb_midi">
+      <mxCell style="Line End=1" edge="1" parent="1" source="core_pins" target="usb_midi">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="9cd39f227c677b51478ca0fc6251659b" label="c" source="pgmspace" target="usb_midi">
+      <mxCell style="Line End=1" edge="1" parent="1" source="pgmspace" target="usb_midi">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="46c526460989ba90ae475b16780e8adb" label="c" source="printf" target="usb_midi">
+      <mxCell style="Line End=1" edge="1" parent="1" source="printf" target="usb_midi">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="e11b60e7899a01f994dbdcfcf70ef5c9" label="cpp" source="Arduino" target="usb_inst">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="usb_inst">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="fe83178cee7512313f9cda85688465b8" label="cpp" source="usb_desc" target="usb_inst">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_desc" target="usb_inst">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="85029849dbc13a9e9d83b52cc1201b5d" label="c" source="imxrt" target="eeprom">
+      <mxCell style="Line End=1" edge="1" parent="1" source="imxrt" target="eeprom">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="0f95c71ad2d9fdbc95ad8d08cdcf33c7" label="c" source="printf" target="eeprom">
+      <mxCell style="Line End=1" edge="1" parent="1" source="printf" target="eeprom">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="89d87cb10364c1ee052a09be9cd2bdfd" label="cpp" source="Arduino" target="serialEvent8">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="serialEvent8">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="16c69a13f659ce695ad71e89e0804109" label="cpp" source="HardwareSerial" target="serialEvent8">
+      <mxCell style="Line End=1" edge="1" parent="1" source="HardwareSerial" target="serialEvent8">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="ff87cc6193aa55464bb58f4f7edf0be0" label="h" source="Printable" target="IPAddress">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Printable" target="IPAddress">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="6d06a146b5da01d51ea3afd6dea967e8" label="h" source="WString" target="IPAddress">
+      <mxCell style="Line End=1" edge="1" parent="1" source="WString" target="IPAddress">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="b503a5f0a532ab510a16c86409064464" label="cpp" source="Arduino" target="HardwareSerial7">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="HardwareSerial7">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="493632d069e3b1c00ccadd8e8f357578" label="cpp" source="HardwareSerial" target="HardwareSerial7">
+      <mxCell style="Line End=1" edge="1" parent="1" source="HardwareSerial" target="HardwareSerial7">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="30ebd96b8fedb475b80eb5083303c58c" label="h" source="Arduino" target="elapsedMillis">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="elapsedMillis">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="baad1a64f470f8876f0851b79af396a1" label="h" source="WProgram" target="elapsedMillis">
+      <mxCell style="Line End=1" edge="1" parent="1" source="WProgram" target="elapsedMillis">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="80124a47880dd8f78c5aa043e7de7937" label="h" source="core_id" target="Print">
+      <mxCell style="Line End=1" edge="1" parent="1" source="core_id" target="Print">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="bd3823af9919171cf05da81769f61a74" label="h" source="WString" target="Print">
+      <mxCell style="Line End=1" edge="1" parent="1" source="WString" target="Print">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="1b22bcfe5b85b67bafed1f2e327e80d8" label="h" source="Printable" target="Print">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Printable" target="Print">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="e1aa62597ef49e491342fb497fb493b6" label="cpp" source="Arduino" target="HardwareSerial2">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="HardwareSerial2">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="1a3106b29ae28bb684627767b35642cb" label="cpp" source="HardwareSerial" target="HardwareSerial2">
+      <mxCell style="Line End=1" edge="1" parent="1" source="HardwareSerial" target="HardwareSerial2">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="5c6868006a8e9ab80abd2ea93a23c3b3" label="c" source="smalloc_i" target="sm_util">
+      <mxCell style="Line End=1" edge="1" parent="1" source="smalloc_i" target="sm_util">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="677927fde9871199852d6eba1e5edeb6" label="h" source="Print" target="Stream">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Print" target="Stream">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="7fc045dd57e1814fbae8cb58ffbdec1a" label="cpp" source="Arduino" target="serialEvent4">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="serialEvent4">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="37baea2de8875878a77459ff24488ddb" label="cpp" source="HardwareSerial" target="serialEvent4">
+      <mxCell style="Line End=1" edge="1" parent="1" source="HardwareSerial" target="serialEvent4">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="601b4dcdfaf69e0a13a9f6365da2c8f8" label="cpp" source="Arduino" target="serialEventUSB2">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="serialEventUSB2">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="08ddffa96b6204e73e1e84308141034b" label="cpp" source="Arduino" target="serialEventUSB1">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="serialEventUSB1">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="a7d1c95eee19800dedd8ae8ebb856560" label="h" source="Print" target="Client">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Print" target="Client">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="1261990dce4be44275ea8aca57ef9a13" label="h" source="Stream" target="Client">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Stream" target="Client">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="99b5aca0df445a9900f6415f4d25e91b" label="h" source="IPAddress" target="Client">
+      <mxCell style="Line End=1" edge="1" parent="1" source="IPAddress" target="Client">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="b41ab328859d729f7824a82625af89d6" label="c" source="usb_dev" target="usb_mouse">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_dev" target="usb_mouse">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="657b9df4ad04514631815276c64e50aa" label="c" source="core_pins" target="usb_mouse">
+      <mxCell style="Line End=1" edge="1" parent="1" source="core_pins" target="usb_mouse">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="eca08e3ae07feb2c69aeb96ee5c4ef88" label="c" source="pgmspace" target="usb_mouse">
+      <mxCell style="Line End=1" edge="1" parent="1" source="pgmspace" target="usb_mouse">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="28a900bd0d4443b695e42a5e38769588" label="c" source="printf" target="usb_mouse">
+      <mxCell style="Line End=1" edge="1" parent="1" source="printf" target="usb_mouse">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="f0727bf4a6a4b2307daebc5123b96772" label="c" source="smalloc_i" target="sm_realloc_move">
+      <mxCell style="Line End=1" edge="1" parent="1" source="smalloc_i" target="sm_realloc_move">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="b63b97840df5261a316d19a927acc37b" label="h" source="usb_desc" target="usb_audio">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_desc" target="usb_audio">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="8136a543e3914946bcd0f2180a2fdd23" label="h" source="AudioStream" target="usb_audio">
+      <mxCell style="Line End=1" edge="1" parent="1" source="AudioStream" target="usb_audio">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="c2b04df8bc24af31b6ee53e61990e461" label="h" source="pgmspace" target="WProgram">
+      <mxCell style="Line End=1" edge="1" parent="1" source="pgmspace" target="WProgram">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="64c1e758b42262af2679bd22c8ffd083" label="h" source="interrupt" target="WProgram">
+      <mxCell style="Line End=1" edge="1" parent="1" source="interrupt" target="WProgram">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="285c446080527d8e61d1a43112231a5f" label="h" source="avr_functions" target="WProgram">
+      <mxCell style="Line End=1" edge="1" parent="1" source="avr_functions" target="WProgram">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="184d26311d12cf93e03add20517e3f43" label="h" source="wiring" target="WProgram">
+      <mxCell style="Line End=1" edge="1" parent="1" source="wiring" target="WProgram">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="435905bacb0e8cadb0ca359387de093a" label="h" source="HardwareSerial" target="WProgram">
+      <mxCell style="Line End=1" edge="1" parent="1" source="HardwareSerial" target="WProgram">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="915a0cb4c2b078d98ba051caed5a0ac8" label="h" source="avr_emulation" target="WProgram">
+      <mxCell style="Line End=1" edge="1" parent="1" source="avr_emulation" target="WProgram">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="17b20236602d9324600902428b8bc646" label="h" source="usb_serial" target="WProgram">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_serial" target="WProgram">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="3731343a2ea882844046a9a5f5933358" label="h" source="usb_seremu" target="WProgram">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_seremu" target="WProgram">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="a17659334928cee1a916b0e69ea6acd2" label="h" source="usb_keyboard" target="WProgram">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_keyboard" target="WProgram">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="0fadb4d0fe914a13ac871d31039836d5" label="h" source="usb_mouse" target="WProgram">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_mouse" target="WProgram">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="8ea22da80e456b9a78e24864ea3733a1" label="h" source="usb_joystick" target="WProgram">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_joystick" target="WProgram">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="f8f7de6420e0a9b5560813cc99a52642" label="h" source="usb_midi" target="WProgram">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_midi" target="WProgram">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="ca33a1d936af22c9e7e0b95ec5d57f64" label="h" source="usb_rawhid" target="WProgram">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_rawhid" target="WProgram">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="e8814ca10f1aedc7ed2e0356c5a5f5a6" label="h" source="usb_flightsim" target="WProgram">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_flightsim" target="WProgram">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="ecb261ec093bf3b612ada496190720d7" label="h" source="usb_audio" target="WProgram">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_audio" target="WProgram">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="e4983c1029ac86c23dd4436d172c01c1" label="h" source="usb_touch" target="WProgram">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_touch" target="WProgram">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="47efce19fcfb86c19ff501ae2fde45f5" label="h" source="WCharacter" target="WProgram">
+      <mxCell style="Line End=1" edge="1" parent="1" source="WCharacter" target="WProgram">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="6d2c3e0498aaee29219c3522085cc272" label="h" source="WString" target="WProgram">
+      <mxCell style="Line End=1" edge="1" parent="1" source="WString" target="WProgram">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="23b4c0327e2562e1bd91cf78f4a8658d" label="h" source="IntervalTimer" target="WProgram">
+      <mxCell style="Line End=1" edge="1" parent="1" source="IntervalTimer" target="WProgram">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="816d1d7277eed4751b7604de7ff3ffe0" label="h" source="CrashReport" target="WProgram">
+      <mxCell style="Line End=1" edge="1" parent="1" source="CrashReport" target="WProgram">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="cdb1db4929425ea145c2d978a63d32b0" label="h" source="pins_arduino" target="WProgram">
+      <mxCell style="Line End=1" edge="1" parent="1" source="pins_arduino" target="WProgram">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="baa12073767ae3661e9b818f3ce9606b" label="cpp" source="printf" target="IntervalTimer">
+      <mxCell style="Line End=1" edge="1" parent="1" source="printf" target="IntervalTimer">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="a77d814b93367a3a11a3a90290ccf43c" label="h" source="usb_desc" target="usb_midi">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_desc" target="usb_midi">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="149300e6318be532cb3ea5e9bb1f1cb4" label="c" source="pgmspace" target="keylayouts">
+      <mxCell style="Line End=1" edge="1" parent="1" source="pgmspace" target="keylayouts">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="e37789d277d58a9594d0f48cc84b5e13" label="c" source="core_pins" target="delay">
+      <mxCell style="Line End=1" edge="1" parent="1" source="core_pins" target="delay">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="25c44fcf7c0a5a0952b1d37824c862b8" label="c" source="smalloc_i" target="sm_calloc">
+      <mxCell style="Line End=1" edge="1" parent="1" source="smalloc_i" target="sm_calloc">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="66937e8f16b6cbc120b0f3434606d3e8" label="c" source="smalloc_i" target="sm_malloc_stats">
+      <mxCell style="Line End=1" edge="1" parent="1" source="smalloc_i" target="sm_malloc_stats">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="a1974763a4be17e4e4a2a22dd5e9dd63" label="h" source="Arduino" target="EventResponder">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="EventResponder">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="19fa49068b9f1f5ab4655f19f5e2c743" label="cpp" source="Arduino" target="IPAddress">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="IPAddress">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="6b9a0ba808a362b022df1bf28b0ca405" label="c" source="printf" target="debugprintf">
+      <mxCell style="Line End=1" edge="1" parent="1" source="printf" target="debugprintf">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="7199724575b75202265c0eb8af4ea088" label="c" source="pgmspace" target="debugprintf">
+      <mxCell style="Line End=1" edge="1" parent="1" source="pgmspace" target="debugprintf">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="3f83c753604391fa3b3914c6e95e410d" label="c" source="imxrt" target="debugprintf">
+      <mxCell style="Line End=1" edge="1" parent="1" source="imxrt" target="debugprintf">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="6cbb115ba482acf870e6c2d0f9984c18" label="c" source="usb_dev" target="debugprintf">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_dev" target="debugprintf">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="7ae831cb9ff8d0e60af9972af2904b7d" label="c" source="usb_serial" target="debugprintf">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_serial" target="debugprintf">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="79818ef124ad47c79e64a4041dfdbae1" label="c" source="usb_seremu" target="debugprintf">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_seremu" target="debugprintf">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="1038c82a4d74ca447532829b77fa3f23" label="cpp" source="Arduino" target="serialEvent6">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="serialEvent6">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="dddcb5e55a44cc022c698579d8f1a63d" label="cpp" source="HardwareSerial" target="serialEvent6">
+      <mxCell style="Line End=1" edge="1" parent="1" source="HardwareSerial" target="serialEvent6">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="10ce7627674eb04ff1aa79d7a3e45d68" label="h" source="binary" target="wiring">
+      <mxCell style="Line End=1" edge="1" parent="1" source="binary" target="wiring">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="81cf7f1ff38dddcf4d46a47a008c9103" label="h" source="core_id" target="wiring">
+      <mxCell style="Line End=1" edge="1" parent="1" source="core_id" target="wiring">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="5625154014e2a7fe946c7194a01fb5d2" label="h" source="core_pins" target="wiring">
+      <mxCell style="Line End=1" edge="1" parent="1" source="core_pins" target="wiring">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="0547821fab05329690cea0aaaf1575bc" label="h" source="usb_desc" target="usb_joystick">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_desc" target="usb_joystick">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="f269c301e28c1db066ce06a9af4f5a4b" label="h" source="avr_functions" target="WString">
+      <mxCell style="Line End=1" edge="1" parent="1" source="avr_functions" target="WString">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="bbe21cc5e54a095c0a064e208a6b4cb3" label="h" source="pgmspace" target="WString">
+      <mxCell style="Line End=1" edge="1" parent="1" source="pgmspace" target="WString">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="2a26366237ea181e595c87923f79860b" label="cpp" source="usb_dev" target="usb_flightsim">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_dev" target="usb_flightsim">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="0452c0cd996c59fd1005a06a848e2bf5" label="cpp" source="printf" target="usb_flightsim">
+      <mxCell style="Line End=1" edge="1" parent="1" source="printf" target="usb_flightsim">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="29027860387f18f5f7b02d54aaaa4a27" label="cpp" source="pgmspace" target="usb_flightsim">
+      <mxCell style="Line End=1" edge="1" parent="1" source="pgmspace" target="usb_flightsim">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="7c2d2f85fd424edbbd87cb2eecae26a7" label="cpp" source="core_pins" target="usb_flightsim">
+      <mxCell style="Line End=1" edge="1" parent="1" source="core_pins" target="usb_flightsim">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="0e53f677b119b986993f95abd4341cc1" label="c" source="smalloc_i" target="sm_realloc">
+      <mxCell style="Line End=1" edge="1" parent="1" source="smalloc_i" target="sm_realloc">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="f6911c12e7cd15c7749296d276217f35" label="c" source="core_pins" target="fuse">
+      <mxCell style="Line End=1" edge="1" parent="1" source="core_pins" target="fuse">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="0c869b64148377f5ef4fb62c33c04c3b" label="c" source="imxrt" target="fuse">
+      <mxCell style="Line End=1" edge="1" parent="1" source="imxrt" target="fuse">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="6f2146840854554b4b3f80fe6ef991b4" label="h" source="arm_math" target="math_helper">
+      <mxCell style="Line End=1" edge="1" parent="1" source="arm_math" target="math_helper">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="99e9a4d444b2974b291782a3e2937f2b" label="h" source="usb_desc" target="usb_rawhid">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_desc" target="usb_rawhid">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="67adccaf85271f9cd4dc9d6677bcef96" label="cpp" source="Arduino" target="serialEvent3">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="serialEvent3">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="f97e06035ff31c1495ca2cc8274a890b" label="cpp" source="HardwareSerial" target="serialEvent3">
+      <mxCell style="Line End=1" edge="1" parent="1" source="HardwareSerial" target="serialEvent3">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="5f55cd2e53e3e5bf684331ba37e3f03b" label="h" source="Print" target="Server">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Print" target="Server">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="fbcb97695318cdcdd8a3e971673e2959" label="c" source="smalloc" target="extmem">
+      <mxCell style="Line End=1" edge="1" parent="1" source="smalloc" target="extmem">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="f1280c798a128209c83806dbbd5bb926" label="c" source="wiring" target="extmem">
+      <mxCell style="Line End=1" edge="1" parent="1" source="wiring" target="extmem">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="b078fb7e68dcca34a9fec3127a68118f" label="c" source="imxrt" target="pwm">
+      <mxCell style="Line End=1" edge="1" parent="1" source="imxrt" target="pwm">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="474e5dc38a9de9a38e54c36e967b4935" label="c" source="core_pins" target="pwm">
+      <mxCell style="Line End=1" edge="1" parent="1" source="core_pins" target="pwm">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="71b02366ebcd3c46ecba645fc3381b08" label="c" source="printf" target="pwm">
+      <mxCell style="Line End=1" edge="1" parent="1" source="printf" target="pwm">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="a046e7ac01951d4ca353af2e6da02550" label="cpp" source="Arduino" target="serialEvent1">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="serialEvent1">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="dbb0728a0902767117be0eca1cdb1057" label="cpp" source="HardwareSerial" target="serialEvent1">
+      <mxCell style="Line End=1" edge="1" parent="1" source="HardwareSerial" target="serialEvent1">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="99b7f78b1e042fd653ea5406d06d8da3" label="c" source="usb_dev" target="usb_serial">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_dev" target="usb_serial">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="269b3a069989a855e591977a4e9c573b" label="c" source="pgmspace" target="usb_serial">
+      <mxCell style="Line End=1" edge="1" parent="1" source="pgmspace" target="usb_serial">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="3a8e0c8685a4fe833c3284bdc73b7afb" label="c" source="printf" target="usb_serial">
+      <mxCell style="Line End=1" edge="1" parent="1" source="printf" target="usb_serial">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="0cbfd43048e94d6e9e6be6a8b6cc1aeb" label="c" source="core_pins" target="usb_serial">
+      <mxCell style="Line End=1" edge="1" parent="1" source="core_pins" target="usb_serial">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="ddcb7e5df1a2a595280cac82c43a0295" label="h" source="arm_math" target="arm_common_tables">
+      <mxCell style="Line End=1" edge="1" parent="1" source="arm_math" target="arm_common_tables">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="bcb7c680ea879234bd1cb0b45e246631" label="c" source="Arduino" target="interrupt">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="interrupt">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="dafaa1b35fe08ec537112981a364682e" label="c" source="pins_arduino" target="interrupt">
+      <mxCell style="Line End=1" edge="1" parent="1" source="pins_arduino" target="interrupt">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="326337ac4ea755ea9e5789576d75703c" label="c" source="printf" target="interrupt">
+      <mxCell style="Line End=1" edge="1" parent="1" source="printf" target="interrupt">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="180caf94c03f21a6d713a166513c8da4" label="c" source="smalloc_i" target="sm_pool">
+      <mxCell style="Line End=1" edge="1" parent="1" source="smalloc_i" target="sm_pool">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="aa939d877a442b06b48ce93e284099d1" label="h" source="usb_desc" target="usb_serial">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_desc" target="usb_serial">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="d5fb890c4b84b78570deb8fa20df0daa" label="h" source="Stream" target="usb_serial">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Stream" target="usb_serial">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="98b4236f38aa4e5609753a83b5a6c1e5" label="h" source="usb_desc" target="usb_mtp">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_desc" target="usb_mtp">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="182fbe8e1da0a7bad12b459d88ee5364" label="c" source="usb_dev" target="usb">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_dev" target="usb">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="ffed79c9f7e59d05938565c7029d8946" label="c" source="usb_desc" target="usb">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_desc" target="usb">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="dd4064dc29b7e49f23a14bba66bb76be" label="c" source="usb_serial" target="usb">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_serial" target="usb">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="7244ae9023bddcaabec46fb01055de6a" label="c" source="usb_seremu" target="usb">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_seremu" target="usb">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="f7342acf5ba8a8571d68ca8d87886651" label="c" source="usb_rawhid" target="usb">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_rawhid" target="usb">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="efd3c08863ddc2523f05ffdef7c62d93" label="c" source="usb_keyboard" target="usb">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_keyboard" target="usb">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="09a0b3e21731a5b33fc54a96f0b0ff47" label="c" source="usb_mouse" target="usb">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_mouse" target="usb">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="3f4b862319d17a9ebe21b6c2bb4d2b9f" label="c" source="usb_joystick" target="usb">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_joystick" target="usb">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="ada74321553dddc6a3ff63a24c6904fa" label="c" source="usb_flightsim" target="usb">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_flightsim" target="usb">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="e53535b2ad14e943c7484d79d454d954" label="c" source="usb_touch" target="usb">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_touch" target="usb">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="d8fdf3ec4830ae756f4df9b684e98bf3" label="c" source="usb_midi" target="usb">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_midi" target="usb">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="675b6913f027dbdf39569dea4720bf3b" label="c" source="usb_audio" target="usb">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_audio" target="usb">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="58728c9efcc5191a12b226457b686681" label="c" source="usb_mtp" target="usb">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_mtp" target="usb">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="77fd1ac8d5483667414b288252b35a31" label="c" source="core_pins" target="usb">
+      <mxCell style="Line End=1" edge="1" parent="1" source="core_pins" target="usb">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="7c11769f345e7e23ad1d31a1ceaeba74" label="c" source="pgmspace" target="usb">
+      <mxCell style="Line End=1" edge="1" parent="1" source="pgmspace" target="usb">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="430659e1904d3d6a1808aed21e3a06fc" label="c" source="printf" target="usb">
+      <mxCell style="Line End=1" edge="1" parent="1" source="printf" target="usb">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="b147ff22990f8bc9b4a3e8b84fc86078" label="h" source="imxrt" target="avr_emulation">
+      <mxCell style="Line End=1" edge="1" parent="1" source="imxrt" target="avr_emulation">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="1833b4068ae41c8ded6ae84b380347ae" label="h" source="core_pins" target="avr_emulation">
+      <mxCell style="Line End=1" edge="1" parent="1" source="core_pins" target="avr_emulation">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="dab103f4164548a9d454dd12772cff93" label="h" source="pins_arduino" target="avr_emulation">
+      <mxCell style="Line End=1" edge="1" parent="1" source="pins_arduino" target="avr_emulation">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="0fe2a6aef688719c3214ac918568dc71" label="h" source="usb_desc" target="usb_keyboard">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_desc" target="usb_keyboard">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="ee099ede841598bdc72d701dffb60c3d" label="h" source="keylayouts" target="usb_keyboard">
+      <mxCell style="Line End=1" edge="1" parent="1" source="keylayouts" target="usb_keyboard">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="4e7cac1be1d2af18c08bf2ec7d064cda" label="h" source="Stream" target="usb_keyboard">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Stream" target="usb_keyboard">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="fad8f253284ee87285540b46549ea60c" label="h" source="arm_math" target="arm_const_structs">
+      <mxCell style="Line End=1" edge="1" parent="1" source="arm_math" target="arm_const_structs">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="9d0394a7d93e292ff921d125e7970240" label="h" source="arm_common_tables" target="arm_const_structs">
+      <mxCell style="Line End=1" edge="1" parent="1" source="arm_common_tables" target="arm_const_structs">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="2836308fa4a72c3743178f7b5b6ef93f" label="cpp" source="Arduino" target="WString">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="WString">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="8b4e9f240a07dc34130ce6d471114406" label="c" source="imxrt" target="analog">
+      <mxCell style="Line End=1" edge="1" parent="1" source="imxrt" target="analog">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="53c406a799cb8e08d8930440efdfd46b" label="c" source="core_pins" target="analog">
+      <mxCell style="Line End=1" edge="1" parent="1" source="core_pins" target="analog">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="b7923fef43f77856aab4143c2988a733" label="c" source="printf" target="analog">
+      <mxCell style="Line End=1" edge="1" parent="1" source="printf" target="analog">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="89f93b2e33b7b54d14bac354dbfe92e0" label="c" source="pgmspace" target="analog">
+      <mxCell style="Line End=1" edge="1" parent="1" source="pgmspace" target="analog">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="935c87a084f93ab506544d198c16913a" label="cpp" source="Arduino" target="yield">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="yield">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="e8c856f67e0ea86f2f96dc3a5250237d" label="cpp" source="EventResponder" target="yield">
+      <mxCell style="Line End=1" edge="1" parent="1" source="EventResponder" target="yield">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="af14cb658a575866ec1478ad3231ed84" label="cpp" source="Arduino" target="HardwareSerial4">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="HardwareSerial4">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="d80a919b0733b3a313dcfa0724ff8044" label="cpp" source="HardwareSerial" target="HardwareSerial4">
+      <mxCell style="Line End=1" edge="1" parent="1" source="HardwareSerial" target="HardwareSerial4">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="71a1aa3e84297a207cd71b958e5db8f5" label="cpp" source="Arduino" target="usb_audio">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="usb_audio">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="395094a9e98d21f15040cbf1bd2c5d6c" label="cpp" source="usb_dev" target="usb_audio">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_dev" target="usb_audio">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="ae2d91aa0d5a34058eb6327888d843d0" label="cpp" source="printf" target="usb_audio">
+      <mxCell style="Line End=1" edge="1" parent="1" source="printf" target="usb_audio">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="2e1909398654616fa40abefc25846e14" label="cpp" source="core_pins" target="HardwareSerial">
+      <mxCell style="Line End=1" edge="1" parent="1" source="core_pins" target="HardwareSerial">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="5c0eba3606e620f07640c71415db3358" label="cpp" source="Arduino" target="HardwareSerial">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="HardwareSerial">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="bbd678154ff37166e6d3abbe37c8aef3" label="c" source="smalloc_i" target="sm_hash">
+      <mxCell style="Line End=1" edge="1" parent="1" source="smalloc_i" target="sm_hash">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="3ee32167e3aceb644ffbbe9a0a7d96b6" label="h" source="smalloc" target="smalloc_i">
+      <mxCell style="Line End=1" edge="1" parent="1" source="smalloc" target="smalloc_i">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="4c39eca4a127bae3e7ec2bc60dc6124a" label="c" source="usb_dev" target="usb_serial2">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_dev" target="usb_serial2">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="9d60370b33a5f943192bde06ed64d8f2" label="c" source="usb_serial" target="usb_serial2">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_serial" target="usb_serial2">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="e4fed897cca459ab907283af7146a5e1" label="c" source="pgmspace" target="usb_serial2">
+      <mxCell style="Line End=1" edge="1" parent="1" source="pgmspace" target="usb_serial2">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="149fe6c90788377bab9402acf8c438bc" label="c" source="printf" target="usb_serial2">
+      <mxCell style="Line End=1" edge="1" parent="1" source="printf" target="usb_serial2">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="e3f9e8d467b240abad3ad8a14a70e9c4" label="c" source="core_pins" target="usb_serial2">
+      <mxCell style="Line End=1" edge="1" parent="1" source="core_pins" target="usb_serial2">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="c281c174214e530c7d0fafc26de39ebc" label="c" source="imxrt" target="rtc">
+      <mxCell style="Line End=1" edge="1" parent="1" source="imxrt" target="rtc">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="c0a7e5ec4b892c84bf8d6b82fa11f918" label="c" source="printf" target="rtc">
+      <mxCell style="Line End=1" edge="1" parent="1" source="printf" target="rtc">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="7ddf7b0b3996423ed8a929da55631af3" label="c" source="imxrt" target="startup">
+      <mxCell style="Line End=1" edge="1" parent="1" source="imxrt" target="startup">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="5c2477084ea875b01a24d4a0f0270c0e" label="c" source="wiring" target="startup">
+      <mxCell style="Line End=1" edge="1" parent="1" source="wiring" target="startup">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="aff8f9aec58070897adf0804387bde40" label="c" source="usb_dev" target="startup">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_dev" target="startup">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="3fff0d58bb23db6eebcea19db2dfc887" label="c" source="pgmspace" target="startup">
+      <mxCell style="Line End=1" edge="1" parent="1" source="pgmspace" target="startup">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="4eb3afc8bd901120fcd62227cffeb3a9" label="c" source="smalloc" target="startup">
+      <mxCell style="Line End=1" edge="1" parent="1" source="smalloc" target="startup">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="7a01def4cb3666b86e7230ecef3b9cce" label="c" source="printf" target="startup">
+      <mxCell style="Line End=1" edge="1" parent="1" source="printf" target="startup">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="d122d329ff1d9e49a661668a5efc9974" label="c" source="usb_dev" target="usb_serial3">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_dev" target="usb_serial3">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="759af20e5f1ddfb03d54b9ef8580db31" label="c" source="usb_serial" target="usb_serial3">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_serial" target="usb_serial3">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="035a50c2840a01836d3d772be1fa4c49" label="c" source="pgmspace" target="usb_serial3">
+      <mxCell style="Line End=1" edge="1" parent="1" source="pgmspace" target="usb_serial3">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="50dac27776fd1125aaba53fb6f74aaba" label="c" source="printf" target="usb_serial3">
+      <mxCell style="Line End=1" edge="1" parent="1" source="printf" target="usb_serial3">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="ed4cfe34a6582945dd20f7ad8773cdd5" label="c" source="core_pins" target="usb_serial3">
+      <mxCell style="Line End=1" edge="1" parent="1" source="core_pins" target="usb_serial3">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="41f1d7364e6d755f344728f1a7e0586d" label="cpp" source="Arduino" target="AudioStream">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="AudioStream">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="a2d30b8158277518b7dcdbccd680e8ee" label="c" source="smalloc_i" target="sm_zalloc">
+      <mxCell style="Line End=1" edge="1" parent="1" source="smalloc_i" target="sm_zalloc">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="194514ce0740bfe63a4d1d136e86315b" label="c" source="usb_dev" target="usb_mtp">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_dev" target="usb_mtp">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="7b409a901658df58abc11777e2449e3a" label="c" source="pgmspace" target="usb_mtp">
+      <mxCell style="Line End=1" edge="1" parent="1" source="pgmspace" target="usb_mtp">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="c13507a3ef76e5fbb4c7e6fa549fc62b" label="c" source="core_pins" target="usb_mtp">
+      <mxCell style="Line End=1" edge="1" parent="1" source="core_pins" target="usb_mtp">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="fba63ae1ece3a2e9d1a40a79bd1ea365" label="c" source="printf" target="usb_mtp">
+      <mxCell style="Line End=1" edge="1" parent="1" source="printf" target="usb_mtp">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="9e41ce729bed5778009cf99abdd8da66" label="c" source="smalloc_i" target="sm_realloc_i">
+      <mxCell style="Line End=1" edge="1" parent="1" source="smalloc_i" target="sm_realloc_i">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="2a2f993489abec5230274075930dc6ba" label="h" source="pgmspace" target="keylayouts">
+      <mxCell style="Line End=1" edge="1" parent="1" source="pgmspace" target="keylayouts">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="08bfb6d7035b4524e83fee728460677a" label="c" source="usb_dev" target="usb_seremu">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_dev" target="usb_seremu">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="5dafb3832ba403a89206fe542d90b93f" label="c" source="core_pins" target="usb_seremu">
+      <mxCell style="Line End=1" edge="1" parent="1" source="core_pins" target="usb_seremu">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="49d4a646c06bc35f3c88d31629768c30" label="c" source="pgmspace" target="usb_seremu">
+      <mxCell style="Line End=1" edge="1" parent="1" source="pgmspace" target="usb_seremu">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="90dfcef54b082def1f77c119ffae5e2f" label="c" source="printf" target="usb_seremu">
+      <mxCell style="Line End=1" edge="1" parent="1" source="printf" target="usb_seremu">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="fbbb72e43b445b05f2035715c50e3504" label="cpp" source="Arduino" target="HardwareSerial3">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="HardwareSerial3">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="4232f53c8c1fd5296b17e88849ad5e01" label="cpp" source="HardwareSerial" target="HardwareSerial3">
+      <mxCell style="Line End=1" edge="1" parent="1" source="HardwareSerial" target="HardwareSerial3">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="10a0f8b3b5cc2a8a939ab0c4dd5bfee6" label="h" source="usb_desc" target="usb_seremu">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_desc" target="usb_seremu">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="400d82b3c99165e4fd2d39f4cafef763" label="h" source="Stream" target="usb_seremu">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Stream" target="usb_seremu">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="a7c1be9b395a113efc862cdb8db72cbc" label="cpp" source="Arduino" target="serialEvent5">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="serialEvent5">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="8f0db1ebd17346e5fd8e84e413ed2e45" label="cpp" source="HardwareSerial" target="serialEvent5">
+      <mxCell style="Line End=1" edge="1" parent="1" source="HardwareSerial" target="serialEvent5">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="8149af17cd325c5d054575be6b1b9bd9" label="cpp" source="Arduino" target="EventResponder">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="EventResponder">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="c3ebfac32e8e6d13165a6d3dbf8ac719" label="cpp" source="Arduino" target="HardwareSerial5">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="HardwareSerial5">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="77fc07e07fbbba4cc31920a73d3683b8" label="cpp" source="HardwareSerial" target="HardwareSerial5">
+      <mxCell style="Line End=1" edge="1" parent="1" source="HardwareSerial" target="HardwareSerial5">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="7f53eea56e16f31526d7fd4b9a9f8c27" label="h" source="Printable" target="CrashReport">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Printable" target="CrashReport">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="acc4d1581d09704b0bf165939590ff4e" label="h" source="WString" target="CrashReport">
+      <mxCell style="Line End=1" edge="1" parent="1" source="WString" target="CrashReport">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="743d215669132968ab67e6df8cf087dc" label="c" source="usb_dev" target="usb_keyboard">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_dev" target="usb_keyboard">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="31653499941cafee06a4fef862c9bca5" label="c" source="core_pins" target="usb_keyboard">
+      <mxCell style="Line End=1" edge="1" parent="1" source="core_pins" target="usb_keyboard">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="bbe88a47d54e1119a36cb79e904cd77c" label="c" source="keylayouts" target="usb_keyboard">
+      <mxCell style="Line End=1" edge="1" parent="1" source="keylayouts" target="usb_keyboard">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="f748520735a59039058dd695820ee02a" label="c" source="pgmspace" target="usb_keyboard">
+      <mxCell style="Line End=1" edge="1" parent="1" source="pgmspace" target="usb_keyboard">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="a89f83548d1052523dfc4f24dd4bd937" label="c" source="printf" target="usb_keyboard">
+      <mxCell style="Line End=1" edge="1" parent="1" source="printf" target="usb_keyboard">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="3b6836c030c7a332b56bbb0fa242be2f" label="c" source="imxrt" target="clockspeed">
+      <mxCell style="Line End=1" edge="1" parent="1" source="imxrt" target="clockspeed">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="5249253018137bc0f30a52d910cfe6d2" label="c" source="wiring" target="clockspeed">
+      <mxCell style="Line End=1" edge="1" parent="1" source="wiring" target="clockspeed">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="037c3ee9c0953696ea1383524f44d612" label="c" source="printf" target="clockspeed">
+      <mxCell style="Line End=1" edge="1" parent="1" source="printf" target="clockspeed">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="051481cc3a50573b1ffc9c3253eab7fd" label="cpp" source="Arduino" target="serialEvent">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="serialEvent">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="771aaa30e5dcf5503bc6aca08c1f29a9" label="h" source="usb_desc" target="usb_touch">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_desc" target="usb_touch">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="1f32a72987ca91cd7b7bd326c3349d6b" label="h" source="Arduino" target="FS">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="FS">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="e01167bcdb9309979ecf2cc51aa3719d" label="h" source="imxrt" target="core_pins">
+      <mxCell style="Line End=1" edge="1" parent="1" source="imxrt" target="core_pins">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="7b8cc83769fe7967e65ebdd977891054" label="h" source="pins_arduino" target="core_pins">
+      <mxCell style="Line End=1" edge="1" parent="1" source="pins_arduino" target="core_pins">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="202a4c7c4b3ae8e62aca553cac433bbb" label="c" source="smalloc_i" target="sm_alloc_valid">
+      <mxCell style="Line End=1" edge="1" parent="1" source="smalloc_i" target="sm_alloc_valid">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="0b6b5b50d2fdb2abc38391918953dbd0" label="h" source="imxrt" target="IntervalTimer">
+      <mxCell style="Line End=1" edge="1" parent="1" source="imxrt" target="IntervalTimer">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="6b1fcc9028b23e2ec62a3b0bdf14d6dc" label="c" source="core_pins" target="digital">
+      <mxCell style="Line End=1" edge="1" parent="1" source="core_pins" target="digital">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="9f04f504e8417e11d9ebd9f226c113c9" label="cpp" source="Arduino" target="serialEvent7">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="serialEvent7">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="db9a96602beb757ebac39d59c842df4c" label="cpp" source="HardwareSerial" target="serialEvent7">
+      <mxCell style="Line End=1" edge="1" parent="1" source="HardwareSerial" target="serialEvent7">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="0bc9e2595906306b41b33949b463d356" label="h" source="imxrt" target="HardwareSerial">
+      <mxCell style="Line End=1" edge="1" parent="1" source="imxrt" target="HardwareSerial">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="f642673ca22bb75c2d933a7b02961325" label="h" source="Stream" target="HardwareSerial">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Stream" target="HardwareSerial">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="1ffec88f2c8a0e9287fcbba31454181d" label="h" source="core_pins" target="HardwareSerial">
+      <mxCell style="Line End=1" edge="1" parent="1" source="core_pins" target="HardwareSerial">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="c586e0d59688828600932aed2cb835f2" label="h" source="imxrt" target="usb_dev">
+      <mxCell style="Line End=1" edge="1" parent="1" source="imxrt" target="usb_dev">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="e2ab19cadd046f19802313f89deb8661" label="c" source="avr_functions" target="nonstd">
+      <mxCell style="Line End=1" edge="1" parent="1" source="avr_functions" target="nonstd">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="564d490500c4d09ed5b908a130873264" label="c" source="usb_names" target="usb_desc">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_names" target="usb_desc">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="5a7fef529c258072eb451f838ac74e50" label="c" source="imxrt" target="usb_desc">
+      <mxCell style="Line End=1" edge="1" parent="1" source="imxrt" target="usb_desc">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="30aa0fe633b13b9f8e8ed5e0338a7277" label="c" source="avr_functions" target="usb_desc">
+      <mxCell style="Line End=1" edge="1" parent="1" source="avr_functions" target="usb_desc">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="0d2ece04e2d187a6fa4d4f0e7ff6d654" label="c" source="pgmspace" target="usb_desc">
+      <mxCell style="Line End=1" edge="1" parent="1" source="pgmspace" target="usb_desc">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="079e096641f11f58e91a21e63ca594a3" label="cpp" source="Arduino" target="Stream">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="Stream">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="d4e4d80ec037e96dabc6b914b86a221e" label="c" source="smalloc_i" target="sm_free">
+      <mxCell style="Line End=1" edge="1" parent="1" source="smalloc_i" target="sm_free">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="02461b050285eddf27935ffe178088ff" label="cpp" source="Arduino" target="CrashReport">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="CrashReport">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="ac4afdc605b516dac4c171307f757f54" label="c" source="smalloc_i" target="sm_malloc">
+      <mxCell style="Line End=1" edge="1" parent="1" source="smalloc_i" target="sm_malloc">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="cc4f78a070061708af876b99330c471f" label="cc" source="Arduino" target="Blink">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="Blink">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="154cc7af42b82ff4bb1455adfe6118ad" label="c" source="usb_dev" target="usb_rawhid">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_dev" target="usb_rawhid">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="ad69429367579e788ef395a00800e164" label="c" source="pgmspace" target="usb_rawhid">
+      <mxCell style="Line End=1" edge="1" parent="1" source="pgmspace" target="usb_rawhid">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="66e52d69f0e6b0ab017d0a546de79aa5" label="c" source="core_pins" target="usb_rawhid">
+      <mxCell style="Line End=1" edge="1" parent="1" source="core_pins" target="usb_rawhid">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="8b47339531589389d7aec638ccbdea10" label="c" source="printf" target="usb_rawhid">
+      <mxCell style="Line End=1" edge="1" parent="1" source="printf" target="usb_rawhid">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="9472ddd0eb400ee7b5347e4864d1e0ea" label="c" source="smalloc_i" target="sm_szalloc">
+      <mxCell style="Line End=1" edge="1" parent="1" source="smalloc_i" target="sm_szalloc">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="179f697c021e3ead514f5c41b5fef442" label="h" source="usb_midi" target="MIDIUSB">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_midi" target="MIDIUSB">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="f321e4702a4ca66a92c3d1318112607c" label="c" source="usb_dev" target="usb_joystick">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_dev" target="usb_joystick">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="f958b07ddcb6b8bdc1ab3451ac02a136" label="c" source="core_pins" target="usb_joystick">
+      <mxCell style="Line End=1" edge="1" parent="1" source="core_pins" target="usb_joystick">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="252b96c401f5d14534ca1cbc5cab5323" label="c" source="pgmspace" target="usb_joystick">
+      <mxCell style="Line End=1" edge="1" parent="1" source="pgmspace" target="usb_joystick">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="6a7b9ddd6a8192a3a3af7387fbd9180f" label="c" source="printf" target="usb_joystick">
+      <mxCell style="Line End=1" edge="1" parent="1" source="printf" target="usb_joystick">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="6c8a6320260d1bad33294f275a2473e1" label="c" source="usb_dev" target="usb_touch">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_dev" target="usb_touch">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="9dfcc83c823b24cc49a808827c0e80da" label="c" source="core_pins" target="usb_touch">
+      <mxCell style="Line End=1" edge="1" parent="1" source="core_pins" target="usb_touch">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="969a7fe1bd8bde8b0f32e42eeaf09d30" label="c" source="pgmspace" target="usb_touch">
+      <mxCell style="Line End=1" edge="1" parent="1" source="pgmspace" target="usb_touch">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="6a0686820dceae6b40d508cf14494ed5" label="c" source="printf" target="usb_touch">
+      <mxCell style="Line End=1" edge="1" parent="1" source="printf" target="usb_touch">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="7a00d06858d4d1ac00267420ea3953ce" label="cpp" source="Arduino" target="HardwareSerial8">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="HardwareSerial8">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="b177c57df9ee825d12f952aa4787fa0a" label="cpp" source="HardwareSerial" target="HardwareSerial8">
+      <mxCell style="Line End=1" edge="1" parent="1" source="HardwareSerial" target="HardwareSerial8">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="99774255c3cd9c371112e63fabf85235" label="h" source="Stream" target="Udp">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Stream" target="Udp">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="42f5d96b1cb434ad098c2f9b03f0ed22" label="h" source="IPAddress" target="Udp">
+      <mxCell style="Line End=1" edge="1" parent="1" source="IPAddress" target="Udp">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="5e585ced502fabafca19b255b4c7a68e" label="h" source="imxrt" target="DMAChannel">
+      <mxCell style="Line End=1" edge="1" parent="1" source="imxrt" target="DMAChannel">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="17dcc875540d26f77fbff9591bf9057e" label="cpp" source="Arduino" target="serialEvent2">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="serialEvent2">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="5fd365d7b02ede76e7a1975094913458" label="cpp" source="HardwareSerial" target="serialEvent2">
+      <mxCell style="Line End=1" edge="1" parent="1" source="HardwareSerial" target="serialEvent2">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="4ee4ecdad9828b9ac8bf5b7ffd7a9a42" label="cpp" source="Arduino" target="Tone">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="Tone">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="1dc3c11d617e6de036cec514c9c80f8b" label="cpp" source="Arduino" target="HardwareSerial1">
+      <mxCell style="Line End=1" edge="1" parent="1" source="Arduino" target="HardwareSerial1">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="f29cec349f725ca002b941ae86206bb7" label="cpp" source="HardwareSerial" target="HardwareSerial1">
+      <mxCell style="Line End=1" edge="1" parent="1" source="HardwareSerial" target="HardwareSerial1">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="ae298185b2905da85dedeec77c99bf93" label="c" source="imxrt" target="tempmon">
+      <mxCell style="Line End=1" edge="1" parent="1" source="imxrt" target="tempmon">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="79f3b762c5f6609667bfb64cd75387f0" label="c" source="core_pins" target="tempmon">
+      <mxCell style="Line End=1" edge="1" parent="1" source="core_pins" target="tempmon">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="3e00df733e72f39fb304e7fa8a4dd5f6" label="c" source="pgmspace" target="tempmon">
+      <mxCell style="Line End=1" edge="1" parent="1" source="pgmspace" target="tempmon">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="15a02e609d85fbd6c9af96066baf2d53" label="c" source="printf" target="tempmon">
+      <mxCell style="Line End=1" edge="1" parent="1" source="printf" target="tempmon">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="b46ee5bce7c8c0c56da842346b655449" label="h" source="core_cmInstr" target="arm_math">
+      <mxCell style="Line End=1" edge="1" parent="1" source="core_cmInstr" target="arm_math">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="633520c5dab56ebd18881d3a3515feae" label="h" source="usb_desc" target="usb_mouse">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_desc" target="usb_mouse">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="e7809fbb219e60f7c63e517f0f6f86fd" label="h" source="usb_desc" target="usb_flightsim">
+      <mxCell style="Line End=1" edge="1" parent="1" source="usb_desc" target="usb_flightsim">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="6e12284984f6705fed18abc656b22fe9" label="h" source="elapsedMillis" target="usb_flightsim">
+      <mxCell style="Line End=1" edge="1" parent="1" source="elapsedMillis" target="usb_flightsim">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="9d90ecba40e4ab6c3b7176931fb475af" label="h" source="avr_functions" target="eeprom">
+      <mxCell style="Line End=1" edge="1" parent="1" source="avr_functions" target="eeprom">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object><object id="b584bf6c242cb1be75e87b091e9cd628" label="h" source="avr_emulation" target="io">
+      <mxCell style="Line End=1" edge="1" parent="1" source="avr_emulation" target="io">
+          <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+    </object></root>
+      </mxGraphModel>
+    </diagram></mxfile>

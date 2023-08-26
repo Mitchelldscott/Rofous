@@ -15,15 +15,15 @@
 #define SYS_GRAPH_OBJ
 
 #include "hid_comms/hid_comms.h"
-#include "task_manager/task_factory.h"
+#include "task_manager/task_node.h"
 
 #define MAXIMUM_NODES 10
 
-Vector<FWTaskPacket*>* init_task_manager();
+CommsPipeline* init_task_manager();
 
 int node_index(int);
-void add_task(FWTaskPacket*);
-void update_task(FWTaskPacket*);
+void add_task(TaskSetupPacket*);
+void update_task(TaskSetupPacket*);
 Vector<float> collect_outputs(int);
 
 void spin();
