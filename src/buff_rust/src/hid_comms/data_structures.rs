@@ -80,6 +80,10 @@ impl HidStats {
         *self.lifetime.write().unwrap() = t;
     }
 
+    pub fn update_lifetime(&self, t: f64) {
+        *self.lifetime.write().unwrap() += t;
+    }
+
     pub fn packets_sent(&self) -> f64 {
         *self.packets_sent.read().unwrap()
     }
@@ -102,6 +106,15 @@ impl HidStats {
 
     pub fn set_packets_read(&self, n: f64) {
         *self.packets_read.write().unwrap() = n;
+    }
+
+    pub fn print(&self) {
+        println!(
+            "\t\tLifetime: {}\n\t\tPackets sent: {}\n\t\tPackets read: {}",
+            self.lifetime(),
+            self.packets_sent(),
+            self.packets_read()
+        );
     }
 }
 
@@ -152,6 +165,15 @@ impl HidControlFlags {
 
     pub fn initialize(&self, status: bool) {
         *self.initialized.write().unwrap() = status;
+    }
+
+    pub fn print(&self) {
+        println!(
+            "\tShutdown: {}\n\tConnected: {}\n\tInitialized: {}",
+            self.is_shutdown(),
+            self.is_connected(),
+            self.is_initialized()
+        );
     }
 }
 

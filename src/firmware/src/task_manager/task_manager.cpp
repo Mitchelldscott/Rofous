@@ -58,12 +58,15 @@ void add_task(TaskSetupPacket* task_init) {
 		pipeline_internal->ids.push(task_init->task_id);
 		pipeline_internal->feedback.push(task_fb);
 		nodes.push(new TaskNode(new_task(task_init->key), task_init->n_inputs, task_init->inputs.as_array()));
+		index = nodes.size() - 1;
 		// printf("Pushed %i\n", task_init->task_id);
 	}
 	else { // Node exists so update it's params (and deconfig)
 		nodes[index]->reset_config();
 		nodes[index]->set_inputs(task_init->inputs.as_array(), task_init->n_inputs);
 	}
+
+	nodes[index]->latch(0); // always unlatch here
 
 }
 
@@ -145,9 +148,14 @@ void spin() {
 	for (int i = 0; i < nodes.size(); i++) {
 		// If task isn't fully linked to inputs this will link them (if the input tasks exist)
 		if (link_nodes(i)) {
+			// printf("Linked: %i\tc %i\ti %i\tl %i\n", i, nodes[i]->is_configured(), nodes[i]->n_inputs(), nodes[i]->n_links());
 			// pulls outputs from input tasks and runs the current task
 			if (nodes[i]->run_task()){
+				// printf("Ran: %i %i\n", i, nodes[i]->is_latched());
 				// put task output, context in the pipeline for publishing
+				// if (i == 2) {
+				// 	(*nodes[i])[OUTPUT_DIMENSION]->print();
+				// }
 				task_publish_handler(i);
 			}
 		}

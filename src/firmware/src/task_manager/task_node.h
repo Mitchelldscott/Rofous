@@ -18,7 +18,7 @@
 
 class TaskNode {
 	private:
-		int is_latched;
+		int latch_flag;
 
 		Task* task;					// The thing that does the jawns
 		Vector<int> input_ids;			// proc_ids of input nodes (maybe useless)
@@ -33,6 +33,7 @@ class TaskNode {
 		TaskNode(Task*, int, int*);
 
 		void latch(int);
+		bool is_latched();
 
 		int n_inputs();
 		int input_id(int);

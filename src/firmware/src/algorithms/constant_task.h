@@ -23,12 +23,12 @@ class ConstTask: public Task {
 
 		void setup(Vector<float>* config) {
 			value = (*config)[0];
+			// print();
 			// analogWriteResolution(12);
 		}
 
 		void context(Vector<float>* context) {
 			context->reset(dimensions[CONTEXT_DIMENSION]);
-			context->push(value);
 		}
 
 		void reset() {
@@ -40,7 +40,6 @@ class ConstTask: public Task {
 		}
 
 		void run(Vector<float>* inputs, Vector<float>* outputs) {
-			outputs->reset(1);
 			(*outputs)[0] = float(value);
 		}
 

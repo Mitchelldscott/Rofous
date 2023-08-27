@@ -119,26 +119,15 @@ impl HidLayer {
     }
 
     pub fn loop_delay(&self, time: Instant) {
-        self.pc_stats.set_lifetime(self.delay(time) * 1E-6);
+        self.pc_stats.update_lifetime(self.delay(time) * 1E-6);
     }
 
     pub fn print(&self) {
-        println!("[HID-Layer]: info");
-        println!(
-            "\tShutdown: {}\n\tConnected: {}\n\tInitialized: {}",
-            self.control_flags.is_shutdown(),
-            self.control_flags.is_connected(),
-            self.control_flags.is_initialized()
-        );
-        println!(
-            "\t[PC]\n\t\tPackets sent: {}\n\t\tPackets read: {}",
-            self.pc_stats.packets_sent(),
-            self.pc_stats.packets_read()
-        );
-        println!(
-            "\t[MCU]\n\t\tPackets sent: {}\n\t\tPackets read: {}",
-            self.mcu_stats.packets_sent(),
-            self.mcu_stats.packets_read()
-        );
+        println!("[HID-Layer]: {} {}", self.vid, self.pid);
+        self.control_flags.print();
+        println!("[PC]");
+        self.pc_stats.print();
+        println!("[MCU]");
+        self.mcu_stats.print();
     }
 }

@@ -40,7 +40,11 @@ TaskNode::TaskNode(Task* p, int n_inputs, int* input_ids) {
 }
 
 void TaskNode::latch(int value) {
-	is_latched = value;
+	latch_flag = value;
+}
+
+bool TaskNode::is_latched() {
+	return latch_flag;
 }
 
 int TaskNode::n_inputs() {
@@ -159,7 +163,7 @@ bool TaskNode::run_task() {
 
 	if (is_configured() && inputs.size() == input_ids.size()) {
 			collect_inputs();
-			if (!is_latched) {
+			if (!latch_flag) {
 				task->run(&input_buffer, &output_buffer);
 			}
 			return true;

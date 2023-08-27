@@ -13,6 +13,9 @@ Task* new_task(String key){
     else if (key == CONSTANT_DRIVER_KEY) {
         return new ConstTask();
     }
+    else if (key == SINUSIOD_DRIVER_KEY) {
+        return new SinTask();
+    }
     else {
         return nullptr;
     }

@@ -54,11 +54,13 @@ void push_hid() {
 					switch (buffer.get<byte>(1)) {
 						case 1:
 							init_task_hid();
-							break;
+							send_hid_status();
+							return;
 
 						case 2:
 							config_task_hid();
-							break;
+							send_hid_status();
+							return;
 
 						default:
 							break;
@@ -107,10 +109,25 @@ void send_hid_status() {
 void send_hid_feedback() {
 	static int task_num = 0;
 	static int context_alt = 0;
+	
+	for (int i = 0; i < pipeline.feedback.size(); i++) {
+		if (pipeline.feedback[task_num]->context.size() != 0 && !context_alt) {
+			break;
+		}
+		if (pipeline.feedback[task_num]->output.size() == 0) {
+			context_alt = 0;
+			task_num = (task_num + 1) % pipeline.feedback.size();
+		}
+		else {
+			context_alt = 1;
+			break;
+		}
+	}
 
 	buffer.put<byte>(0, 1);
 	buffer.put<byte>(1, context_alt+1);
 	buffer.put<byte>(2, pipeline.feedback[task_num]->task_id);
+
 	switch (context_alt) {
 		case 0:
 			dump_vector(&pipeline.feedback[task_num]->context);
@@ -123,6 +140,7 @@ void send_hid_feedback() {
 			task_num = (task_num + 1) % pipeline.feedback.size();
 			break;
 	}
+	
 	send_hid_with_timestamp();
 }
 

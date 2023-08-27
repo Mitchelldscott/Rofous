@@ -16,7 +16,7 @@ class PwmDriver: public Task {
 		PwmDriver() {
 			dimensions.reset(TASK_DIMENSIONS);
 			dimensions[INPUT_DIMENSION] = 1;
-			dimensions[CONTEXT_DIMENSION] = 1;
+			dimensions[CONTEXT_DIMENSION] = 0;
 			dimensions[OUTPUT_DIMENSION] = 1;
 			dimensions[PARAMS_DIMENSION] = 1;
 
@@ -24,16 +24,14 @@ class PwmDriver: public Task {
 		}
 
 		void setup(Vector<float>* config) {
-			output = 128;
 			pin = (*config)[0];
 			pinMode(pin, OUTPUT);
-			analogWrite(pin, output);
 			// analogWriteResolution(12);
 		}
 
 		void context(Vector<float>* context) {
 			context->reset(dimensions[CONTEXT_DIMENSION]);
-			context->push(output);
+			// context->push(output);
 		}
 
 		void reset() {
@@ -45,8 +43,8 @@ class PwmDriver: public Task {
 		}
 
 		void run(Vector<float>* inputs, Vector<float>* outputs) {
-			analogWrite(pin, int((*inputs)[0]));
-			outputs->reset(1);
+			output = int((*inputs)[0]);
+			analogWrite(pin, output);
 			(*outputs)[0] = float(output);
 		}
 
