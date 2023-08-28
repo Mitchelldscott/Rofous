@@ -11,10 +11,11 @@
  * 
  ********************************************************************************/
 
-#include <Arduino.h>
-
 #ifndef BYTEBUFFER_H
 #define BYTEBUFFER_H
+
+#include <Arduino.h>
+#include "utilities/blink.h"
 
 typedef union
 {
@@ -38,10 +39,10 @@ template <int buffer_size> class ByteBuffer {
 			/*
 				  Display function for HID packets
 			*/
-			Serial.println("\n\tByteBuffer =====");
+			printf("\n\tByteBuffer =====\n");
 			if (buffer_size > 16) {
 				for (int i = 0; i < buffer_size - 15; i += 16){
-					Serial.printf("\t[%d]\t\t%X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X\n", 
+					printf("\t[%d]\t\t%X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X\n", 
 								i,
 								data[i], data[i+1], data[i+2], data[i+3],
 								data[i+4], data[i+5], data[i+6], data[i+7], 
@@ -50,11 +51,11 @@ template <int buffer_size> class ByteBuffer {
 				}
 			}
 			else {
-				Serial.print("\t\t");
+				printf("\t\t\n");
 				for (int i = 0; i < buffer_size; i++) {
-					Serial.printf("%X, ", data[i]);
+					printf("%X, ", data[i]);
 				}
-				Serial.println();
+				printf("\n");
 			}
 		}
 
@@ -69,7 +70,12 @@ template <int buffer_size> class ByteBuffer {
 		}
 
 		template <typename T> void put(int index, T value) {
-			memcpy(&data[index], &value, sizeof(T));
+			if (index + sizeof(T) <= buffer_size) {
+				memcpy(&data[index], &value, sizeof(T));
+			}
+			else {
+				panic_blink("[ByteBuffer]: invalid put slice " + index);
+			}
 		}
 
 		template <typename T> void put(int index, int n, T* values){
@@ -80,9 +86,13 @@ template <int buffer_size> class ByteBuffer {
 		}
 
 		template <typename T> T get(int index) {
-			T value;
-			memcpy(&value, &data[index], sizeof(T));
-			return value;
+			if (index + sizeof(T) <= buffer_size) {
+				T value;
+				memcpy(&value, &data[index], sizeof(T));
+				return value;
+			}
+			panic_blink("[ByteBuffer]: invalid get slice ");
+			exit(0);
 		}
 
 		template <typename T> void get(int index, int n, T* buffer) {

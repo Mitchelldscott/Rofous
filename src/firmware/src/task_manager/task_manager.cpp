@@ -63,6 +63,7 @@ void add_task(TaskSetupPacket* task_init) {
 	}
 	else { // Node exists so update it's params (and deconfig)
 		nodes[index]->reset_config();
+		nodes[index]->set_task(new_task(task_init->key));
 		nodes[index]->set_inputs(task_init->inputs.as_array(), task_init->n_inputs);
 	}
 
@@ -136,7 +137,7 @@ void task_publish_handler(int i) {
 	noInterrupts();
 	pipeline_internal->feedback[i]->output = *(*nodes[i])[OUTPUT_DIMENSION];
 	pipeline_internal->feedback[i]->context = *(*nodes[i])[CONTEXT_DIMENSION];
-	pipeline_internal->feedback[i]->timestamp = sys_lifetime + sys_timers.secs(0);
+	pipeline_internal->feedback[i]->timestamp = sys_timers.millis(1);
 	interrupts();
 }
 
@@ -150,6 +151,7 @@ void spin() {
 		if (link_nodes(i)) {
 			// printf("Linked: %i\tc %i\ti %i\tl %i\n", i, nodes[i]->is_configured(), nodes[i]->n_inputs(), nodes[i]->n_links());
 			// pulls outputs from input tasks and runs the current task
+			sys_timers.set(1);
 			if (nodes[i]->run_task()){
 				// printf("Ran: %i %i\n", i, nodes[i]->is_latched());
 				// put task output, context in the pipeline for publishing

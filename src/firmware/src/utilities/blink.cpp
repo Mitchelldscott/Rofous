@@ -29,6 +29,14 @@ void setup_blink() {
 	digitalWrite(BLINK_PIN, blinker_status);
 }
 
+void blink_actual(float rate) {
+	if ((1E6/float(F_CPU))*(ARM_DWT_CYCCNT - blinker_timer_mark) > rate){
+		blinker_timer_mark = ARM_DWT_CYCCNT;
+		blinker_status = !blinker_status;
+		digitalWrite(BLINK_PIN, blinker_status);
+	}
+}
+
 /*
 	call blink as often as you like, it will toggle at
 	min(BLINK_RATE_US, blink_call_rate)
@@ -37,9 +45,19 @@ void setup_blink() {
 	best performance.
 */
 void blink(){
-	if ((1E6/float(F_CPU))*(ARM_DWT_CYCCNT - blinker_timer_mark) > BLINK_RATE_US){
-		blinker_timer_mark = ARM_DWT_CYCCNT;
-		blinker_status = !blinker_status;
-		digitalWrite(BLINK_PIN, blinker_status);
+	blink_actual(DEFAULT_BLINK_RATE_US);
+}
+
+
+void panic_blink(const char* error) {
+	interrupts();
+	int cyccnt = ARM_DWT_CYCCNT;
+	while(1) {
+		blink_actual(PANIC_BLINK_RATE_US);
+		if ((1E3/float(F_CPU))*(ARM_DWT_CYCCNT - cyccnt) > 500) {
+			printf("%s\n", error);
+			cyccnt = ARM_DWT_CYCCNT;
+		}
 	}
+	exit(0);
 }

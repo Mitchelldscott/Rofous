@@ -12,6 +12,7 @@
  ********************************************************************************/
 
 #include <Arduino.h>
+#include "utilities/blink.h"
 
 #ifndef SYS_GRAPH_VECTOR
 #define SYS_GRAPH_VECTOR
@@ -254,7 +255,8 @@ template <typename T> class Vector {
 				from_array(tmp, length-1);
 				return value;
 			}
-			printf("invalid pop %i\n", length);
+			// printf("[Vector]: invalid pop %i\n", length);
+			panic_blink("[Vector]: invalid pop");
 			exit(0);
 		}
 
@@ -274,7 +276,8 @@ template <typename T> class Vector {
 				return buffer[index];
 			}
 			
-			printf("invalid index %i:%i\n", index, length);
+			// printf("[Vector]: invalid index %i:%i\n", index, length);
+			panic_blink("[Vector]: invalid index");
 			exit(0);
 		}
 

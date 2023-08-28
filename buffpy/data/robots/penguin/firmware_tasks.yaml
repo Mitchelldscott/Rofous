@@ -10,6 +10,8 @@ lsm6dsox:
   - inputs: []
   - outputs: [imu]
   - parameters: [0]
+  - record: "true"
+  # - display: "true"
 
 ##############################
 #
@@ -32,24 +34,26 @@ attitude_estimator:
 #
 #
 ##############################
-motor_controller:
- - driver: VAL
- - inputs: []
- - outputs: [servo_cmd]
- - parameters: [10.0]
-
-# motor_controller:
-#  - driver: SIN
+# signal_generator:
+#  - driver: VAL
 #  - inputs: []
 #  - outputs: [servo_cmd]
-#  - parameters: [1.0, 40.0, 80.0] # [frequency, amplitude, shift]
+#  - parameters: [10.0]
+
+signal_generator:
+ - driver: SIN
+ - inputs: []
+ - outputs: [servo_cmd]
+ - parameters: [1.0, 40.0, 120.0] # [frequency, amplitude, shift]
 
 servo_motor:
  - driver: PWM
  - inputs: [servo_cmd]
  - outputs: [pwm_signal1]
- - parameters: [25.0]
-
+ - parameters: [24.0]
+ - display: "true"
+ - record: "true"
+ 
 ##############################
 #
 #

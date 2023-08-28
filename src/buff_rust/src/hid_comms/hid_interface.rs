@@ -72,6 +72,23 @@ impl HidInterface {
         )
     }
 
+    pub fn sim(robot_name: &str) -> HidInterface {
+        let layer = HidLayer::new(TEENSY_DEFAULT_VID, TEENSY_DEFAULT_PID, TEENSY_CYCLE_TIME_US);
+        let (writer_tx, _): (Sender<ByteBuffer>, Receiver<ByteBuffer>) = mpsc::channel();
+        let (_, parser_rx): (Sender<ByteBuffer>, Receiver<ByteBuffer>) = mpsc::channel();
+
+        HidInterface {
+            layer: layer.clone(),
+
+            current_request: 0,
+
+            writer_tx: writer_tx,
+            parser_rx: parser_rx,
+
+            robot_fw: RobotFirmware::new(robot_name),
+        }
+    }
+
     pub fn writer_tx(&self, report: ByteBuffer) {
         self.writer_tx.send(report).unwrap();
     }
@@ -80,11 +97,11 @@ impl HidInterface {
         &self.robot_fw
     }
 
-    pub fn output(&self, index: usize) -> &Vec<f64> {
+    pub fn output(&self, index: usize) -> &Vec<Vec<f64>> {
         &self.robot_fw.tasks[index].output
     }
 
-    pub fn context(&self, index: usize) -> &Vec<f64> {
+    pub fn context(&self, index: usize) -> &Vec<Vec<f64>> {
         &self.robot_fw.tasks[index].context
     }
 
@@ -115,10 +132,11 @@ impl HidInterface {
     }
 
     pub fn print(&self) {
+        self.layer.print();
         self.robot_fw.print();
     }
 
-    pub fn pipeline(&mut self) {
+    pub fn pipeline(&mut self, gui: bool) {
         let mut loop_count = 0;
         let initializers = self.get_initializers();
 
@@ -139,18 +157,21 @@ impl HidInterface {
             let loopt = Instant::now();
 
             if self.layer.control_flags.is_connected() {
-                if loop_count % 100 == 0 {
-                    self.send_control(
-                        self.robot_fw.id_of("lsm6dsox"),
-                        vec![0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                    );
-                }
+                // if loop_count % 100 == 0 {
+                //     self.send_control(
+                //         self.robot_fw.id_of("servo_motor"),
+                //         vec![(loop_count % 256) as f64],
+                //     );
+                // }
                 self.check_feedback();
             }
 
             loop_count += 1;
+            if gui && loop_count % 200 == 0 {
+                self.robot_fw.display()
+            }
             if loop_count > 40000 {
-                self.layer.print();
+                self.print();
                 loop_count = 0;
             }
             self.layer.delay(loopt);

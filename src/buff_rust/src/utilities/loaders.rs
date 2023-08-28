@@ -8,18 +8,6 @@ use yaml_rust::{yaml::Yaml, YamlLoader};
 pub static MAX_RECORDS_PER_CSV: u16 = 1000;
 pub static MAX_FILES_PER_RUN: u16 = 120;
 
-// pub fn assert_dir(path: &path::Path) {
-//     match path.exists() {
-//         Ok(exists) => {
-//             if !exists {
-//                 let prefix = path;
-//                 fs::create_dir_all(prefix).unwrap();
-//             }
-//         }
-//         _ => {}
-//     }
-// }
-
 pub fn assert_path(path: &path::Path) {
     if !path.exists() {
         fs::create_dir_all(path).unwrap();
@@ -45,6 +33,7 @@ impl BuffYamlUtil {
 
     pub fn new(bot_name: &str) -> BuffYamlUtil {
         let robot_name = bot_name;
+        env::set_var("ROBOT_NAME", robot_name);
         let project_root = env::var("PROJECT_ROOT").expect("Project root not set");
 
         let yaml_path = format!("{}/buffpy/data/robots/{}", project_root, robot_name);
@@ -80,10 +69,10 @@ impl BuffYamlUtil {
     }
 
     pub fn default() -> BuffYamlUtil {
-        let robot_name =
-            env::var("ROBOT_NAME").expect("Not sure which robot to load, set ROBOT_NAME and retry");
-
-        BuffYamlUtil::new(&robot_name.as_str())
+        match env::var("ROBOT_NAME") {
+            Ok(robot_name) => BuffYamlUtil::new(&robot_name.as_str()),
+            _ => BuffYamlUtil::from_self(),
+        }
     }
 
     pub fn load_string(&self, item: &str) -> String {
@@ -157,6 +146,8 @@ impl BuffYamlUtil {
                 let mut outputs = vec![];
                 let mut config = vec![];
                 let mut driver = "UNKNOWN".to_string();
+                let mut record = false;
+                let mut display = false;
 
                 value.as_vec().unwrap().iter().for_each(|item| {
                     item.as_hash()
@@ -193,10 +184,48 @@ impl BuffYamlUtil {
                             "driver" => {
                                 driver = v.as_str().unwrap().to_string();
                             }
+                            "record" => {
+                                record = match v.as_str() {
+                                    Some(val) => match val {
+                                        "1" => true,
+                                        "y" => true,
+                                        "yes" => true,
+                                        "t" => true,
+                                        "true" => true,
+                                        "True" => true,
+                                        "TRUE" => true,
+                                        _ => false,
+                                    },
+                                    _ => false,
+                                };
+                            }
+                            "display" => {
+                                display = match v.as_str() {
+                                    Some(val) => match val {
+                                        "1" => true,
+                                        "y" => true,
+                                        "yes" => true,
+                                        "t" => true,
+                                        "true" => true,
+                                        "True" => true,
+                                        "TRUE" => true,
+                                        _ => false,
+                                    },
+                                    _ => false,
+                                };
+                            }
                             _ => {}
                         });
                 });
-                EmbeddedTask::named(name.to_string(), driver, inputs, outputs, config)
+                EmbeddedTask::named(
+                    name.to_string(),
+                    driver,
+                    inputs,
+                    outputs,
+                    config,
+                    record,
+                    display,
+                )
             })
             .collect()
     }
@@ -214,31 +243,39 @@ pub struct CsvUtil {
     record_count: u16,
     labels: Vec<String>,
     writer: csv::Writer<fs::File>,
+    reader: csv::Reader<fs::File>,
 }
 
 impl CsvUtil {
-    pub fn new_file(name: &str, run: u16, file_count: u16) -> csv::Writer<fs::File> {
+    pub fn new_writer(name: &str, run: u16, file_count: u16) -> csv::Writer<fs::File> {
+        let robot_name = env::var("ROBOT_NAME").expect("Robot name not set");
         let project_root = env::var("PROJECT_ROOT").expect("Project root not set");
-        let path = format!(
-            "{}/data/{}/{}-{}/{}-{}.csv",
-            project_root, name, name, run, name, file_count
-        );
+        let path = format!("{project_root}/data/{robot_name}/{name}/{run}/{run}-{file_count}.csv");
 
         assert_file(&path::Path::new(&path));
 
         csv::Writer::from_path(path).unwrap()
     }
 
+    pub fn new_reader(name: &str, run: u16, file_count: u16) -> csv::Reader<fs::File> {
+        let robot_name = env::var("ROBOT_NAME").expect("Robot name not set");
+        let project_root = env::var("PROJECT_ROOT").expect("Project root not set");
+        let path = format!("{project_root}/data/{robot_name}/{name}/{run}/{run}-{file_count}.csv");
+
+        assert_file(&path::Path::new(&path));
+
+        csv::Reader::from_path(path).unwrap()
+    }
+
     pub fn new_run(name: &str) -> u16 {
+        let robot_name = env::var("ROBOT_NAME").expect("Robot name not set");
         let project_root = env::var("PROJECT_ROOT").expect("Project root not set");
 
-        let data_path = format!("{}/data/{}-*/", project_root, name);
+        let data_path = format!("{project_root}/data/{robot_name}/{name}/*");
         let run = glob(&data_path).unwrap().count() as u16;
 
-        let ppath = format!("{}/data/{}/{}-{}/", project_root, name, name, run);
-        let pppath = format!("{}/data/{}/", project_root, name);
+        let ppath = format!("{project_root}/data/{robot_name}/{name}/{run}/");
 
-        assert_path(&path::Path::new(&pppath));
         assert_path(&path::Path::new(&ppath));
 
         run
@@ -246,7 +283,6 @@ impl CsvUtil {
 
     pub fn new(name: &str, labels: Vec<String>) -> CsvUtil {
         let run = CsvUtil::new_run(name);
-        let writer = CsvUtil::new_file(name, run, 0);
 
         CsvUtil {
             run: run,
@@ -254,12 +290,20 @@ impl CsvUtil {
             file_count: 0,
             record_count: 0, // always start with a fresh run
             labels: labels,
-            writer: writer,
+            writer: CsvUtil::new_writer(name, run, 0),
+            reader: CsvUtil::new_reader(name, run, 0),
         }
     }
 
     pub fn new_labels(&mut self, labels: Vec<String>) {
         self.labels = labels;
+    }
+
+    pub fn set_run(&mut self, run: u16, fc: u16) {
+        self.run = run;
+        self.file_count = fc;
+        self.reader = CsvUtil::new_reader(&self.name, self.run, self.file_count);
+        self.writer = CsvUtil::new_writer(&self.name, self.run, self.file_count);
     }
 
     pub fn write_record(&mut self, record: Vec<f64>) {
@@ -290,7 +334,47 @@ impl CsvUtil {
                 self.run = CsvUtil::new_run(&self.name);
             }
 
-            self.writer = CsvUtil::new_file(&self.name, self.run, self.file_count);
+            self.writer = CsvUtil::new_writer(&self.name, self.run, self.file_count);
         }
+    }
+
+    pub fn save(
+        &mut self,
+        data: &Vec<f64>,
+        data_timestamp: f64,
+        labels: Vec<String>,
+        record: bool,
+    ) {
+        if data.len() >= 200 {
+            if record {
+                self.new_labels(labels);
+                self.write_record(data.iter().map(|x| *x).chain([data_timestamp]).collect());
+            }
+        }
+    }
+
+    pub fn load(&mut self) -> Vec<Vec<f64>> {
+        self.reader = CsvUtil::new_reader(&self.name, self.run, self.file_count);
+        self.reader
+            .records()
+            .map(|record| record.unwrap().iter().map(|x| x.parse().unwrap()).collect())
+            .collect()
+    }
+
+    pub fn load_run(&mut self, run: u16, fc: u16) -> Vec<Vec<f64>> {
+        let robot_name = env::var("ROBOT_NAME").expect("Robot name not set");
+        let project_root = env::var("PROJECT_ROOT").expect("Project root not set");
+
+        let data_path = format!("{project_root}/data/{robot_name}/{}/{run}/*", self.name);
+
+        self.run = run;
+
+        (0..std::cmp::min(glob(&data_path).unwrap().count() as u16, fc))
+            .map(|fc| {
+                self.file_count = fc;
+                self.load()
+            })
+            .flatten()
+            .collect()
     }
 }

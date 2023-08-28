@@ -26,7 +26,7 @@ fn main() {
     let interface_handle = Builder::new()
         .name("HID Control".to_string())
         .spawn(move || {
-            interface.pipeline();
+            interface.pipeline(true);
         })
         .unwrap();
 

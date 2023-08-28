@@ -109,6 +109,10 @@ void send_hid_status() {
 void send_hid_feedback() {
 	static int task_num = 0;
 	static int context_alt = 0;
+
+	// if(task_num == 3) {
+	// 	printf("%i %i %i\n", task_num, pipeline.feedback[task_num]->output.size(), pipeline.feedback[task_num]->context.size());
+	// }
 	
 	for (int i = 0; i < pipeline.feedback.size(); i++) {
 		if (pipeline.feedback[task_num]->context.size() != 0 && !context_alt) {
@@ -140,6 +144,8 @@ void send_hid_feedback() {
 			task_num = (task_num + 1) % pipeline.feedback.size();
 			break;
 	}
+
+	buffer.put<float>(56, pipeline.feedback[task_num]->timestamp);
 	
 	send_hid_with_timestamp();
 }
@@ -169,6 +175,7 @@ void init_task_hid() {
 	task->task_id = buffer.get<byte>(2);
 	task->n_inputs = buffer.get<byte>(6);
 
+	// printf("Init task %i %i\n", task->task_id, task->n_inputs);
 	for (int i = 0; i < task->n_inputs; i++) {
 		task->inputs.push(buffer.get<byte>(i + 7));
 	}
@@ -186,6 +193,7 @@ void config_task_hid() {
 	task->chunk_id = buffer.get<byte>(3);
 	task->chunk_size = buffer.get<byte>(4);
 
+	// printf("Config task %i %i %i\n", task->task_id, task->chunk_id, task->chunk_size);
 	for (int i = 0; i < task->chunk_size; i++) {
 		task->parameters.push(buffer.get<float>((4 * i) + 5));
 	}
@@ -204,6 +212,7 @@ void overwrite_task_hid() {
 	task->latch = buffer.get<byte>(3);
 	task->data_len = buffer.get<byte>(4);
 
+	// printf("Overwrite task %i %i %i\n", task->task_id, task->latch, task->data_len);
 	for (int i = 0; i < task->data_len; i++) {
 		task->data.push(buffer.get<float>((4 * i) + 5));
 	}
@@ -228,7 +237,6 @@ void dump_vector(Vector<float>* data) {
 }
 
 CommsPipeline* enable_hid_interrupts() {
-	pipeline.recent_update = -1;
 	pipeline.feedback.reset(0);
 	pipeline.setup_queue.reset(0);
 	hid_interval_timer.begin(push_hid, HID_REFRESH_RATE);

@@ -11,9 +11,14 @@ rand = "0.8.5"
 hidapi = "2.2.0"
 yaml-rust = "0.4.5"
 glob = "0.3.1"
+gnuplot = "0.0.39"
 
 
 
 [[bin]]
 name = "comms_node"
 path = "src/hid_comms/comms_node.rs"
+
+[[bin]]
+name = "viz_node"
+path = "src/hid_comms/viz_node.rs"

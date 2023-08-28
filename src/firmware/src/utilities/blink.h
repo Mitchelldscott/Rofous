@@ -16,8 +16,9 @@
 #ifndef BUFF_BLINKER_H
 #define BUFF_BLINKER_H
 
-#define BLINK_RATE_US 250000
 #define BLINK_PIN LED_BUILTIN
+#define DEFAULT_BLINK_RATE_US   250000
+#define PANIC_BLINK_RATE_US     50000
 
 /* 
 
@@ -31,5 +32,6 @@ extern bool blinker_status;
 
 void setup_blink();
 void blink();
+void panic_blink(const char*);
 
 #endif
