@@ -101,15 +101,11 @@ impl HidInterface {
         &self.robot_fw.tasks[index].output
     }
 
-    pub fn context(&self, index: usize) -> &Vec<Vec<f64>> {
-        &self.robot_fw.tasks[index].context
-    }
-
     pub fn check_feedback(&mut self) {
         match self.parser_rx.try_recv() {
             Ok(report) => {
                 self.robot_fw
-                    .parse_request_feedback(report, &self.layer.mcu_stats);
+                    .parse_hid_feedback(report, &self.layer.mcu_stats);
             }
             _ => {}
         }
@@ -117,12 +113,6 @@ impl HidInterface {
 
     pub fn get_initializers(&self) -> Vec<ByteBuffer> {
         self.robot_fw.task_init_packets()
-    }
-
-    pub fn send_request(&mut self) {
-        if self.current_request >= self.robot_fw.tasks.len() as u8 {}
-        self.writer_tx(self.robot_fw.get_request(self.current_request));
-        self.current_request = (self.current_request + 1) % (2 * self.robot_fw.tasks.len() as u8);
     }
 
     pub fn send_control(&mut self, i: usize, data: Vec<f64>) {

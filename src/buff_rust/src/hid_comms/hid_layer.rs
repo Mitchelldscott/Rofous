@@ -13,7 +13,7 @@
 
 extern crate hidapi;
 
-use crate::hid_comms::data_structures::*;
+use crate::hid_comms::data_structures::{HidControlFlags, HidStats};
 use hidapi::{HidApi, HidDevice};
 use std::time::Instant;
 

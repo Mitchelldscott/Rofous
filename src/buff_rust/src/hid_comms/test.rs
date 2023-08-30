@@ -33,7 +33,7 @@ use std::{
 
 #[allow(dead_code)]
 const VERBOSITY: usize = 1;
-const TEST_DURATION: u64 = 30;
+pub static TEST_DURATION: u64 = 30;
 
 #[cfg(test)]
 pub mod robot_fw {
@@ -49,9 +49,7 @@ pub mod robot_fw {
             packet.print();
         });
 
-        (0..rs.tasks.len()).for_each(|i| {
-            rs.get_request(i as u8);
-        })
+        rs.print();
     }
 }
 

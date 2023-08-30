@@ -13,7 +13,10 @@
 
 use crate::utilities::{data_structures::*, loaders::*};
 use gnuplot::{Caption, Color, Figure};
-use std::sync::{Arc, RwLock};
+use std::{
+    sync::{Arc, RwLock},
+    time::Instant,
+};
 
 /// helpful constants to use
 pub static P: u8 = 0x50;
@@ -181,11 +184,11 @@ impl HidControlFlags {
 pub struct EmbeddedTask {
     pub name: String,
     pub driver: String,
-    pub record: bool,
-    pub display: bool,
+    pub record: u16,
+    pub display: u16,
+    pub latch: u16,
 
     pub output: Vec<Vec<f64>>,
-    pub context: Vec<Vec<f64>>,
     pub parameters: Vec<f64>,
 
     pub input_names: Vec<String>,
@@ -193,12 +196,12 @@ pub struct EmbeddedTask {
 
     pub run_time: f64,
     pub output_timestamp: Vec<f64>,
-    pub context_timestamp: Vec<f64>,
 
-    pub output_csvu: CsvUtil,
-    pub context_csvu: CsvUtil,
+    pub csvu: Option<CsvUtil>,
+    pub record_timer: Instant,
 
     pub fig: Option<Figure>,
+    pub display_timer: Instant,
 }
 
 impl EmbeddedTask {
@@ -219,14 +222,11 @@ impl EmbeddedTask {
         input_names: Vec<String>,
         output_names: Vec<String>,
         config: Vec<f64>,
-        record: bool,
-        display: bool,
+        record: u16,
+        display: u16,
     ) -> EmbeddedTask {
-        let output_csvu = CsvUtil::new(format!("{}/output", name.clone()).as_str(), vec![]);
-        let context_csvu = CsvUtil::new(format!("{}/context", name).as_str(), vec![]);
-
         let fig;
-        match display {
+        match display > 0 {
             true => {
                 fig = Some(Figure::new());
             }
@@ -235,14 +235,27 @@ impl EmbeddedTask {
             }
         }
 
+        let csvu;
+        match record > 0 {
+            true => {
+                csvu = Some(CsvUtil::new(
+                    format!("{}/output", name.clone()).as_str(),
+                    vec![],
+                ));
+            }
+            _ => {
+                csvu = None;
+            }
+        }
+
         EmbeddedTask {
             name: name.clone(),
             driver: driver,
             record: record,
             display: display,
+            latch: 0,
 
             output: vec![],
-            context: vec![],
             parameters: config,
 
             input_names: input_names,
@@ -250,12 +263,12 @@ impl EmbeddedTask {
 
             run_time: 0.0,
             output_timestamp: vec![0.0],
-            context_timestamp: vec![0.0],
 
-            output_csvu: output_csvu,
-            context_csvu: context_csvu,
+            csvu: csvu,
+            record_timer: Instant::now(),
 
             fig: fig,
+            display_timer: Instant::now(),
         }
     }
 
@@ -266,8 +279,8 @@ impl EmbeddedTask {
             vec![],
             vec![],
             vec![],
-            false,
-            false,
+            0,
+            0,
         )
     }
 
@@ -293,50 +306,32 @@ impl EmbeddedTask {
             .collect()
     }
 
-    pub fn update_output(&mut self, length: usize, data: Vec<f64>, time: f64, duration: f64) {
+    pub fn update_output(&mut self, latch: u8, data: Vec<f64>, time: f64, run_time: f64) {
         // println!("New output {:?}: {} {:?}", self.name, length, data);
-        self.run_time = duration;
+        self.latch = latch as u16;
+        self.run_time = run_time;
 
-        if length > 0 {
-            self.output.push(data[0..length].to_vec());
+        if data.len() > 0 {
+            self.output.push(data.to_vec());
             self.output_timestamp.push(time);
-            let labels = EmbeddedTask::make_labels(
-                self.output_names[0].clone(),
-                self.output.last().unwrap().len(),
-            );
-            self.output_csvu.save(
-                self.output.last().unwrap(),
-                *self.output_timestamp.last().unwrap(),
-                labels,
-                self.record,
-            );
 
-            if self.output.len() > 200 {
+            if self.output.len() > 500 {
                 self.output.remove(0);
                 self.output_timestamp.remove(0);
             }
-        }
-    }
 
-    pub fn update_context(&mut self, length: usize, data: Vec<f64>, time: f64, duration: f64) {
-        // println!("New context {:?}: {} {:?}", self.name, length, data);
-        self.run_time = duration;
+            match self.csvu {
+                Some(_) => {
+                    self.save();
+                }
+                _ => {}
+            }
 
-        if length > 0 {
-            self.context.push(data[0..length].to_vec());
-            self.context_timestamp.push(time);
-            let labels =
-                EmbeddedTask::make_labels(self.name.clone(), self.context.last().unwrap().len());
-            self.context_csvu.save(
-                self.context.last().unwrap(),
-                *self.context_timestamp.last().unwrap(),
-                labels,
-                self.record,
-            );
-
-            if self.context.len() > 200 {
-                self.context.remove(0);
-                self.context_timestamp.remove(0);
+            match self.fig {
+                Some(_) => {
+                    self.display();
+                }
+                _ => {}
             }
         }
     }
@@ -353,63 +348,80 @@ impl EmbeddedTask {
                 self.output.last().unwrap()
             );
         }
-        if self.context.len() > 0 {
-            println!(
-                "\tcontext: [{}s]\n\t\t{:?}",
-                self.context_timestamp.last().unwrap(),
-                self.context.last().unwrap()
-            );
-        }
         println!("\tparameters:\n\t\t{:?}", self.parameters);
     }
 
     pub fn load(&mut self, run: u16, fc: u16) {
         self.output.clear();
         self.output_timestamp.clear();
-        self.output_csvu.load_run(run, fc).iter().for_each(|c| {
-            self.output.push(c[0..c.len() - 1].to_vec());
-            self.output_timestamp.push(*c.last().unwrap());
-        });
+        self.csvu = Some(CsvUtil::new(
+            format!("{}/output", self.name.clone()).as_str(),
+            vec![],
+        ));
+        self.csvu
+            .as_mut()
+            .unwrap()
+            .load_run(run, fc)
+            .iter()
+            .for_each(|c| {
+                self.output.push(c[0..c.len() - 1].to_vec());
+                self.output_timestamp.push(*c.last().unwrap());
+            });
+    }
 
-        self.context.clear();
-        self.context_timestamp.clear();
-        self.context_csvu.load_run(run, fc).iter().for_each(|c| {
-            self.context.push(c[0..c.len() - 1].to_vec());
-            self.context_timestamp.push(*c.last().unwrap());
-        });
+    pub fn save(&mut self) {
+        if (self.record_timer.elapsed().as_millis() as f64) * 1E-3 < 1.0 / (self.record as f64) {
+            return;
+        }
+        let csvu = self.csvu.as_mut().unwrap();
+        if csvu.record_count == 0 {
+            csvu.new_labels(EmbeddedTask::make_labels(
+                self.output_names[0].clone(),
+                self.output.last().unwrap().len(),
+            ));
+        }
+
+        csvu.save(
+            self.output.last().unwrap(),
+            *self.output_timestamp.last().unwrap(),
+        );
+        self.record_timer = Instant::now();
     }
 
     pub fn display(&mut self) {
-        if self.display {
-            if self.output.len() > 0 {
-                let len = self.output[0].len();
-                let mut iters: Vec<_> = self
-                    .output
-                    .clone()
-                    .into_iter()
-                    .map(|n| n.into_iter())
-                    .collect();
-                let transpose: Vec<Vec<f64>> = (0..len)
-                    .map(|_| {
-                        iters
-                            .iter_mut()
-                            .map(|n| n.next().unwrap())
-                            .collect::<Vec<f64>>()
-                    })
-                    .collect();
+        if (self.display_timer.elapsed().as_millis() as f64) * 1E-3 < 1.0 / (self.record as f64) {
+            return;
+        }
 
-                let fig = self.fig.as_mut().unwrap();
-                fig.clear_axes();
-                fig.axes2d().lines(
-                    &self.output_timestamp,
-                    &transpose[0],
-                    &[
-                        Caption(format!("{}/output0", self.name).as_str()),
-                        Color("black"),
-                    ],
-                );
-                fig.show_and_keep_running().unwrap();
-            }
+        if self.output.len() > 0 {
+            let len = self.output[0].len();
+            let mut iters: Vec<_> = self
+                .output
+                .clone()
+                .into_iter()
+                .map(|n| n.into_iter())
+                .collect();
+            let transpose: Vec<Vec<f64>> = (0..len)
+                .map(|_| {
+                    iters
+                        .iter_mut()
+                        .map(|n| n.next().unwrap())
+                        .collect::<Vec<f64>>()
+                })
+                .collect();
+
+            let fig = self.fig.as_mut().unwrap();
+            fig.clear_axes();
+            fig.axes2d().lines(
+                &self.output_timestamp,
+                &transpose[0],
+                &[
+                    Caption(format!("{}/output0", self.name).as_str()),
+                    Color("black"),
+                ],
+            );
+            fig.show_and_keep_running().unwrap();
+            self.display_timer = Instant::now();
         }
     }
 }
@@ -532,31 +544,6 @@ impl RobotFirmware {
         results
     }
 
-    pub fn get_request(&self, i: u8) -> ByteBuffer {
-        let mut buffer = ByteBuffer::hid();
-        buffer.puts(0, vec![TASK_REPORT_ID, CONTEXT_MODE + (i % 2), i / 2]);
-        buffer
-    }
-
-    pub fn get_context_overwrite_latch(&self, i: u8) -> ByteBuffer {
-        if self.tasks[i as usize].context.len() > 0 {
-            let mut buffer = ByteBuffer::hid();
-            buffer.puts(
-                0,
-                vec![
-                    TASK_REPORT_ID,
-                    CONTEXT_MODE,
-                    i,
-                    1,
-                    self.tasks[i as usize].context.len() as u8,
-                ],
-            );
-            buffer
-        } else {
-            ByteBuffer::hid()
-        }
-    }
-
     pub fn get_output_overwrite_latch(&self, i: u8) -> ByteBuffer {
         if self.tasks[i as usize].output.len() > 0 {
             let mut buffer = ByteBuffer::hid();
@@ -580,7 +567,7 @@ impl RobotFirmware {
         self.tasks.iter().map(|task| &task.name).collect()
     }
 
-    pub fn parse_request_feedback(&mut self, report: ByteBuffer, mcu_stats: &HidStats) {
+    pub fn parse_hid_feedback(&mut self, report: ByteBuffer, mcu_stats: &HidStats) {
         let rid = report.get(0);
         let mode = report.get(1);
         let mcu_lifetime = report.get_float(60);
@@ -605,23 +592,12 @@ impl RobotFirmware {
                 mcu_stats.set_packets_read(report.get_float(6));
             }
         } else if rid == TASK_REPORT_ID {
-            if mode == CONTEXT_MODE {
-                self.tasks[report.get(2) as usize].update_context(
-                    report.get(3) as usize,
-                    report.get_floats(4, MAX_FLOAT_DATA),
-                    mcu_lifetime,
-                    report.get_float(56),
-                );
-            }
-
-            if mode == OUTPUT_MODE {
-                self.tasks[report.get(2) as usize].update_output(
-                    report.get(3) as usize,
-                    report.get_floats(4, MAX_FLOAT_DATA),
-                    mcu_lifetime,
-                    report.get_float(56),
-                );
-            }
+            self.tasks[report.get(1) as usize].update_output(
+                report.get(2),
+                report.get_floats(4, report.get(3) as usize),
+                mcu_lifetime,
+                report.get_float(56),
+            );
 
             mcu_stats.update_packets_sent(1.0); // only works if we don't miss packets
             mcu_stats.update_packets_read(1.0);

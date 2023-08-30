@@ -146,8 +146,8 @@ impl BuffYamlUtil {
                 let mut outputs = vec![];
                 let mut config = vec![];
                 let mut driver = "UNKNOWN".to_string();
-                let mut record = false;
-                let mut display = false;
+                let mut record = 0;
+                let mut display = 0;
 
                 value.as_vec().unwrap().iter().for_each(|item| {
                     item.as_hash()
@@ -186,32 +186,20 @@ impl BuffYamlUtil {
                             }
                             "record" => {
                                 record = match v.as_str() {
-                                    Some(val) => match val {
-                                        "1" => true,
-                                        "y" => true,
-                                        "yes" => true,
-                                        "t" => true,
-                                        "true" => true,
-                                        "True" => true,
-                                        "TRUE" => true,
-                                        _ => false,
+                                    Some(val) => match val.parse::<u16>() {
+                                        Ok(num) => num,
+                                        _ => 0,
                                     },
-                                    _ => false,
+                                    _ => 0,
                                 };
                             }
                             "display" => {
                                 display = match v.as_str() {
-                                    Some(val) => match val {
-                                        "1" => true,
-                                        "y" => true,
-                                        "yes" => true,
-                                        "t" => true,
-                                        "true" => true,
-                                        "True" => true,
-                                        "TRUE" => true,
-                                        _ => false,
+                                    Some(val) => match val.parse::<u16>() {
+                                        Ok(num) => num,
+                                        _ => 0,
                                     },
-                                    _ => false,
+                                    _ => 0,
                                 };
                             }
                             _ => {}
@@ -237,61 +225,42 @@ impl BuffYamlUtil {
 
 // #[derive(Clone)]
 pub struct CsvUtil {
-    run: u16,
-    name: String,
-    file_count: u16,
-    record_count: u16,
-    labels: Vec<String>,
+    pub run: u16,
+    pub name: String,
+    pub file_count: u16,
+    pub record_count: u16,
+    pub labels: Vec<String>,
     writer: csv::Writer<fs::File>,
     reader: csv::Reader<fs::File>,
 }
 
 impl CsvUtil {
-    pub fn new_writer(name: &str, run: u16, file_count: u16) -> csv::Writer<fs::File> {
+    pub fn make_run_directory(name: &str, run: u16) -> String {
         let robot_name = env::var("ROBOT_NAME").expect("Robot name not set");
         let project_root = env::var("PROJECT_ROOT").expect("Project root not set");
-        let path = format!("{project_root}/data/{robot_name}/{name}/{run}/{run}-{file_count}.csv");
-
-        assert_file(&path::Path::new(&path));
-
-        csv::Writer::from_path(path).unwrap()
+        let path = format!("{project_root}/data/{robot_name}/{name}/{run}");
+        assert_path(&path::Path::new(&path));
+        path
     }
 
-    pub fn new_reader(name: &str, run: u16, file_count: u16) -> csv::Reader<fs::File> {
-        let robot_name = env::var("ROBOT_NAME").expect("Robot name not set");
-        let project_root = env::var("PROJECT_ROOT").expect("Project root not set");
-        let path = format!("{project_root}/data/{robot_name}/{name}/{run}/{run}-{file_count}.csv");
+    pub fn make_path(name: &str, run: u16, file_count: u16) -> String {
+        let ppath = CsvUtil::make_run_directory(name, run);
+        let path = format!("{}/{}.csv", ppath, file_count);
 
         assert_file(&path::Path::new(&path));
-
-        csv::Reader::from_path(path).unwrap()
-    }
-
-    pub fn new_run(name: &str) -> u16 {
-        let robot_name = env::var("ROBOT_NAME").expect("Robot name not set");
-        let project_root = env::var("PROJECT_ROOT").expect("Project root not set");
-
-        let data_path = format!("{project_root}/data/{robot_name}/{name}/*");
-        let run = glob(&data_path).unwrap().count() as u16;
-
-        let ppath = format!("{project_root}/data/{robot_name}/{name}/{run}/");
-
-        assert_path(&path::Path::new(&ppath));
-
-        run
+        path
     }
 
     pub fn new(name: &str, labels: Vec<String>) -> CsvUtil {
-        let run = CsvUtil::new_run(name);
-
+        let path = CsvUtil::make_path(name, 0, 0);
         CsvUtil {
-            run: run,
+            run: 0,
             name: name.to_string(),
             file_count: 0,
             record_count: 0, // always start with a fresh run
             labels: labels,
-            writer: CsvUtil::new_writer(name, run, 0),
-            reader: CsvUtil::new_reader(name, run, 0),
+            writer: csv::Writer::from_path(path.clone()).unwrap(),
+            reader: csv::Reader::from_path(path).unwrap(),
         }
     }
 
@@ -302,8 +271,26 @@ impl CsvUtil {
     pub fn set_run(&mut self, run: u16, fc: u16) {
         self.run = run;
         self.file_count = fc;
-        self.reader = CsvUtil::new_reader(&self.name, self.run, self.file_count);
-        self.writer = CsvUtil::new_writer(&self.name, self.run, self.file_count);
+        self.new_reader();
+        self.new_writer();
+    }
+
+    pub fn new_writer(&mut self) {
+        let path = CsvUtil::make_path(&self.name, self.run, self.file_count);
+        self.writer = csv::Writer::from_path(path).unwrap()
+    }
+
+    pub fn new_reader(&mut self) {
+        let path = CsvUtil::make_path(&self.name, self.run, self.file_count);
+        self.reader = csv::Reader::from_path(path).unwrap()
+    }
+
+    pub fn new_run(&mut self) {
+        let robot_name = env::var("ROBOT_NAME").expect("Robot name not set");
+        let project_root = env::var("PROJECT_ROOT").expect("Project root not set");
+
+        let data_path = format!("{project_root}/data/{robot_name}/{}/*", self.name);
+        self.run = glob(&data_path).unwrap().count() as u16;
     }
 
     pub fn write_record(&mut self, record: Vec<f64>) {
@@ -331,30 +318,20 @@ impl CsvUtil {
 
             if self.file_count > MAX_FILES_PER_RUN {
                 self.file_count = 0;
-                self.run = CsvUtil::new_run(&self.name);
+                self.new_run();
             }
 
-            self.writer = CsvUtil::new_writer(&self.name, self.run, self.file_count);
+            self.new_writer();
         }
     }
 
-    pub fn save(
-        &mut self,
-        data: &Vec<f64>,
-        data_timestamp: f64,
-        labels: Vec<String>,
-        record: bool,
-    ) {
-        if data.len() >= 200 {
-            if record {
-                self.new_labels(labels);
-                self.write_record(data.iter().map(|x| *x).chain([data_timestamp]).collect());
-            }
+    pub fn save(&mut self, data: &Vec<f64>, data_timestamp: f64) {
+        if data.len() > 0 {
+            self.write_record(data.iter().map(|x| *x).chain([data_timestamp]).collect());
         }
     }
 
-    pub fn load(&mut self) -> Vec<Vec<f64>> {
-        self.reader = CsvUtil::new_reader(&self.name, self.run, self.file_count);
+    pub fn load_file(&mut self) -> Vec<Vec<f64>> {
         self.reader
             .records()
             .map(|record| record.unwrap().iter().map(|x| x.parse().unwrap()).collect())
@@ -372,7 +349,8 @@ impl CsvUtil {
         (0..std::cmp::min(glob(&data_path).unwrap().count() as u16, fc))
             .map(|fc| {
                 self.file_count = fc;
-                self.load()
+                self.new_reader();
+                self.load_file()
             })
             .flatten()
             .collect()
