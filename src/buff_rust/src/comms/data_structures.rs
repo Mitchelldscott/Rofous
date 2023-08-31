@@ -548,7 +548,8 @@ impl RobotFirmware {
             let mut buffer = ByteBuffer::hid();
             buffer.puts(
                 0,
-                vec![TASK_CONTROL_ID,
+                vec![
+                    TASK_CONTROL_ID,
                     i,
                     1,
                     self.tasks[i as usize].output[0].len() as u8,

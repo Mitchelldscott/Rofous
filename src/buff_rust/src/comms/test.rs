@@ -17,7 +17,9 @@ extern crate hidapi;
 use hidapi::{HidApi, HidDevice};
 
 use crate::{
-    comms::{data_structures::*, hid_interface::*, hid_layer::*, hid_reader::*, hid_writer::*, socks::*},
+    comms::{
+        data_structures::*, hid_interface::*, hid_layer::*, hid_reader::*, hid_writer::*, socks::*,
+    },
     utilities::{data_structures::*, loaders::*},
 };
 
@@ -360,12 +362,10 @@ pub mod socks_beta_again {
     /// Test the byte buffer
     ///
 
-
     #[test]
     pub fn sock_server2() {
         sock_server_gen2();
     }
-
 
     #[test]
     pub fn sock_test1() {
@@ -382,7 +382,6 @@ pub mod socks_beta_again {
     }
 }
 
-
 #[cfg(test)]
 pub mod socks_beta_actual {
     // Note this useful idiom: importing names from outer (for mod tests) scope.
@@ -391,37 +390,39 @@ pub mod socks_beta_actual {
     /// Test the byte buffer
     ///
 
-
     #[test]
     pub fn sock_server4() {
         SockServer::core();
     }
 
-
     #[test]
     pub fn sock_test1() {
-        let rate = 500.0;
+        let rate = 2.0;
         let sock = SockClient::request_subscribe(1, rate, vec![2]);
 
         let t = Instant::now();
         while t.elapsed().as_secs() < 5 && !sock.is_shutdown() {
             let lt = Instant::now();
+            if sock.available() {
+                println!("Socket is available!");
+            }
             while lt.elapsed().as_micros() as f64 * 1E-3 < (1.0 / (rate * 2.0)) * 1000.0 {}
         }
-        println!("Server writes and reads: {:?} {}", sock.receive_buffer.read().unwrap().get_floats(2, 2), t.elapsed().as_micros() as f64 * 1E-6);
-        println!("Sock1 reader finished");
+
+        println!("Sock1 reader finished {}s", t.elapsed().as_micros() as f64 * 1E-6);
     }
 
     #[test]
     pub fn sock_test2() {
-        let rate = 500.0;
+        let rate = 2.0;
 
         let t = Instant::now();
         while t.elapsed().as_secs() < 5 {
             let lt = Instant::now();
-            SockClient::request_publish(2, rate, vec![3]);
+            SockClient::request_publish(2, rate, vec![]);
             while lt.elapsed().as_micros() as f64 * 1E-3 < (1.0 / (rate * 2.0)) * 1000.0 {}
         }
-        println!("Sock2 reader finished");
+        println!("Sock2 reader finished {}s", t.elapsed().as_micros() as f64 * 1E-6);
+
     }
 }
