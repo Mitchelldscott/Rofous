@@ -17,7 +17,6 @@
 float hid_errors = 0;
 
 float pc_lifetime = 0;
-float hid_lifetime = 0;
 float pc_read_count = 0;
 float pc_write_count = 0;
 float mcu_read_count = 0;
@@ -33,15 +32,15 @@ void push_hid() {
 
 	if(!usb_rawhid_available()) {
 		// printf("RawHID not available %f\n", hid_timers.secs(1));
-		if (hid_timers.secs(1) > 5) { // reset stats when no connection
+		if (hid_timers.secs(0) > 5) { // reset stats when no connection
 			reset_hid_stats();
-			hid_timers.set(1);
+			hid_timers.set(0);
 		}
 		// printf("USB not available\n");
 		return;
 	}
 
-	hid_timers.set(1);
+	hid_timers.set(0);
 
 	switch (usb_rawhid_recv(buffer.buffer(), 0)) {
 		case 64:
@@ -108,53 +107,35 @@ void send_hid_status() {
 
 void send_hid_feedback() {
 	static int task_num = 0;
-	static int context_alt = 0;
 
 	// if(task_num == 3) {
 	// 	printf("%i %i %i\n", task_num, pipeline.feedback[task_num]->output.size(), pipeline.feedback[task_num]->context.size());
 	// }
 	
 	for (int i = 0; i < pipeline.feedback.size(); i++) {
-		if (pipeline.feedback[task_num]->context.size() != 0 && !context_alt) {
-			break;
-		}
-		if (pipeline.feedback[task_num]->output.size() == 0) {
-			context_alt = 0;
+		if (pipeline.feedback[task_num]->output.size() <= 0) {
 			task_num = (task_num + 1) % pipeline.feedback.size();
 		}
 		else {
-			context_alt = 1;
 			break;
 		}
 	}
 
 	buffer.put<byte>(0, 1);
-	buffer.put<byte>(1, context_alt+1);
-	buffer.put<byte>(2, pipeline.feedback[task_num]->task_id);
+	buffer.put<byte>(1, pipeline.feedback[task_num]->task_id);
+	buffer.put<byte>(2, pipeline.feedback[task_num]->latch);
 
-	switch (context_alt) {
-		case 0:
-			dump_vector(&pipeline.feedback[task_num]->context);
-			context_alt = 1;
-			break;
-
-		default:
-			dump_vector(&pipeline.feedback[task_num]->output);
-			context_alt = 0;
-			task_num = (task_num + 1) % pipeline.feedback.size();
-			break;
-	}
-
+	
+	dump_vector(&pipeline.feedback[task_num]->output);
 	buffer.put<float>(56, pipeline.feedback[task_num]->timestamp);
+	task_num = (task_num + 1) % pipeline.feedback.size();
 	
 	send_hid_with_timestamp();
 }
 
 void send_hid_with_timestamp() {
 	pc_lifetime = buffer.get<float>(60);
-	hid_lifetime += hid_timers.secs(0);
-	hid_timers.set(0);
-	buffer.put<float>(60, hid_lifetime);
+	buffer.put<float>(60, pipeline.lifetime);
 	if (usb_rawhid_send(buffer.buffer(), 0) > 0) {
 		mcu_write_count += 1;
 	}
@@ -207,14 +188,13 @@ void overwrite_task_hid() {
 	TaskSetupPacket* task = new TaskSetupPacket;
 
 	task->packet_type = 2;
-	task->context_alt = buffer.get<byte>(1);
-	task->task_id = buffer.get<byte>(2);
-	task->latch = buffer.get<byte>(3);
-	task->data_len = buffer.get<byte>(4);
+	task->task_id = buffer.get<byte>(1);
+	task->latch = buffer.get<byte>(2);
+	task->data_len = buffer.get<byte>(3);
 
 	// printf("Overwrite task %i %i %i\n", task->task_id, task->latch, task->data_len);
 	for (int i = 0; i < task->data_len; i++) {
-		task->data.push(buffer.get<float>((4 * i) + 5));
+		task->data.push(buffer.get<float>((4 * i) + 4));
 	}
 
 	// push config packet to setup queue
@@ -226,9 +206,10 @@ void reset_hid_stats() {
 	mcu_read_count = 0;
 	pc_write_count = 0;
 	pc_read_count = 0;
-	hid_lifetime = 0;
 	pc_lifetime = 0;
 	hid_errors = 0;
+
+	pipeline.lifetime = 0;
 }
 
 void dump_vector(Vector<float>* data) {

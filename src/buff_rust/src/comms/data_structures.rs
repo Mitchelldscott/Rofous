@@ -28,8 +28,8 @@ pub static C: u8 = 0x53;
 pub static DELIM: u8 = 0x3A;
 
 /// HID laws
-pub static MAX_FLOAT_DATA: usize = 13;
-pub static MAX_PARAMETERS: usize = 130;
+pub static MAX_HID_FLOAT_DATA: usize = 13;
+pub static MAX_TASK_PARAMETERS: usize = 130;
 
 /// first HID identifier
 /// determines which report handler to use
@@ -38,7 +38,7 @@ pub static MAX_PARAMETERS: usize = 130;
 ///     packet.put(0, REPORT_ID);
 /// '''
 pub static INIT_REPORT_ID: u8 = 255; // Initialize
-pub static TASK_REPORT_ID: u8 = 1; // Request
+pub static TASK_CONTROL_ID: u8 = 1; // Request
 
 /// second HID identifier for initializing
 /// specifies the report hanlder mode
@@ -54,10 +54,9 @@ pub static SETUP_CONFIG_MODE: u8 = 2;
 /// specifies the report hanlder mode
 /// # Usage
 /// '''
-///     packet.put(0, TASK_REPORT_ID);
+///     packet.put(0, TASK_CONTROL_ID);
 ///     packet.put(1, REPORT_MODE);
 /// '''
-pub static CONTEXT_MODE: u8 = 1;
 pub static OUTPUT_MODE: u8 = 2;
 
 #[derive(Clone)]
@@ -285,10 +284,10 @@ impl EmbeddedTask {
     }
 
     pub fn set_config(&mut self, config: Vec<f64>) {
-        if config.len() > MAX_PARAMETERS {
+        if config.len() > MAX_TASK_PARAMETERS {
             panic!(
                 "{:?} configuration exceeds maximum parameters ({})",
-                self.name, MAX_PARAMETERS
+                self.name, MAX_TASK_PARAMETERS
             );
         }
         self.parameters = config;
@@ -500,7 +499,7 @@ impl RobotFirmware {
         reports.push(node_init);
 
         parameters
-            .chunks(MAX_FLOAT_DATA)
+            .chunks(MAX_HID_FLOAT_DATA)
             .enumerate()
             .for_each(|(i, chunk)| {
                 let mut buffer = ByteBuffer::hid();
@@ -549,9 +548,7 @@ impl RobotFirmware {
             let mut buffer = ByteBuffer::hid();
             buffer.puts(
                 0,
-                vec![
-                    TASK_REPORT_ID,
-                    OUTPUT_MODE,
+                vec![TASK_CONTROL_ID,
                     i,
                     1,
                     self.tasks[i as usize].output[0].len() as u8,
@@ -591,7 +588,7 @@ impl RobotFirmware {
                 mcu_stats.set_packets_sent(mcu_write_count);
                 mcu_stats.set_packets_read(report.get_float(6));
             }
-        } else if rid == TASK_REPORT_ID {
+        } else if rid == TASK_CONTROL_ID {
             self.tasks[report.get(1) as usize].update_output(
                 report.get(2),
                 report.get_floats(4, report.get(3) as usize),

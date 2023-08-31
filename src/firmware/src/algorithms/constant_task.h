@@ -14,9 +14,8 @@ class ConstTask: public Task {
 		ConstTask() {
 			dimensions.reset(TASK_DIMENSIONS);
 			dimensions[INPUT_DIMENSION] = 0;
-			dimensions[CONTEXT_DIMENSION] = 0;
+			dimensions[PARAM_DIMENSION] = 1;
 			dimensions[OUTPUT_DIMENSION] = 1;
-			dimensions[PARAMS_DIMENSION] = 1;
 
 			reset();
 		}
@@ -25,10 +24,6 @@ class ConstTask: public Task {
 			value = (*config)[0];
 			// print();
 			// analogWriteResolution(12);
-		}
-
-		void context(Vector<float>* context) {
-			context->reset(dimensions[CONTEXT_DIMENSION]);
 		}
 
 		void reset() {

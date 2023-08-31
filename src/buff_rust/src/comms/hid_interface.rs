@@ -14,7 +14,7 @@
 extern crate hidapi;
 
 use crate::{
-    hid_comms::{data_structures::*, hid_layer::*, hid_reader::*, hid_writer::*},
+    comms::{data_structures::*, hid_layer::*, hid_reader::*, hid_writer::*},
     utilities::data_structures::*,
 };
 use std::{

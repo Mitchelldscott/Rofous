@@ -1,6 +1,6 @@
 extern crate yaml_rust;
 
-use crate::hid_comms::data_structures::*;
+use crate::comms::data_structures::*;
 use glob::glob;
 use std::{env, fs, path};
 use yaml_rust::{yaml::Yaml, YamlLoader};

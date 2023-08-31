@@ -25,7 +25,6 @@ struct TaskSetupPacket {
 
 	int latch;
 	int data_len;
-	int context_alt;
 	Vector<float> data;
 
 	void print() {
@@ -36,14 +35,13 @@ struct TaskSetupPacket {
 struct TaskFeedback {
 	// int error;	// someone should figure this out
 	int task_id;
+	int latch;
 	float timestamp;
 	Vector<float> output;
-	Vector<float> context;
 };
 
 struct CommsPipeline {
-	Vector<int> ids;
-	int recent_update;
+	float lifetime;
 	Vector<TaskFeedback*> feedback;
 	Vector<TaskSetupPacket*> setup_queue;
 };

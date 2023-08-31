@@ -74,7 +74,6 @@ void TaskNode::reset_config() {
 	parameter_buffer.reset(0);
 	input_buffer.reset((*task)[INPUT_DIMENSION]);
 	output_buffer.reset((*task)[OUTPUT_DIMENSION]);
-	context_buffer.reset((*task)[CONTEXT_DIMENSION]);
 }
 
 bool TaskNode::is_configured() {
@@ -84,7 +83,7 @@ bool TaskNode::is_configured() {
 		@return
 			status: (bool) if tasks is configured
 	*/
-	return (*task)[PARAMS_DIMENSION] == parameter_buffer.size();
+	return (*task)[PARAM_DIMENSION] == parameter_buffer.size();
 }
 
 int TaskNode::n_links() {
@@ -121,10 +120,7 @@ void TaskNode::set_task(Task* new_task) {
 			task: (Task) User defined task.
 	*/
 	task = new_task;
-	task->reset();
-	input_buffer.reset((*task)[INPUT_DIMENSION]);
-	output_buffer.reset((*task)[OUTPUT_DIMENSION]);
-	context_buffer.reset((*task)[CONTEXT_DIMENSION]);
+	reset_config();
 }
 
 bool TaskNode::setup_task() {

@@ -5,6 +5,7 @@ export SUDO='sudo'
 export DOCKER=False
 export PLATFORM=$(uname)
 export PROJECT_ROOT=${PWD}
+export DYSE_CORE_URI="127.0.0.1:1313"
 
 #################### Platform specific setup ####################
 

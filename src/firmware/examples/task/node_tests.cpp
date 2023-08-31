@@ -52,7 +52,7 @@ int main() {
 	bool status = nodelist[1]->run_task();		// try to run the task without calling setup or linking nodes
 	errors += assert_eq<int>(int(status), 0, "No setup/links run: status check");
 	
-	Vector<float>* config = (*nodelist[1])[PARAMS_DIMENSION];		// Get the config buffer
+	Vector<float>* config = (*nodelist[1])[PARAM_DIMENSION];		// Get the config buffer
 	config->from_array(tmp, 1);							// set the config, make sure if the config gets filled setup is called (config.size() is how configuration is checked)
 	nodelist[1]->setup_task();							// call setup to initialize the task	
 	status = nodelist[1]->run_task();					// Run the task with setup
@@ -72,7 +72,7 @@ int main() {
 	status = nodelist[1]->run_task();					// try to run the task after reset without calling setup
 	errors += assert_eq<int>(int(status), 0, "No setup run: status check");
 
-	config = (*nodelist[1])[PARAMS_DIMENSION];			// Get the config buffer
+	config = (*nodelist[1])[PARAM_DIMENSION];			// Get the config buffer
 	config->from_array(tmp, 1);							// set the config, make sure if the config gets filled setup is called (config.size() is how configuration is checked)
 	nodelist[1]->setup_task();							// call setup to initialize the task
 

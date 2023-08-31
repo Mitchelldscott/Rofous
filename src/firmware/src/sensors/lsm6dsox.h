@@ -119,7 +119,6 @@ class LSM6DSOX: public Task {
 		void clear();
 		void print();
 		void setup(Vector<float>*);
-		void context(Vector<float>*);
 		void run(Vector<float>*, Vector<float>*);
 };
 

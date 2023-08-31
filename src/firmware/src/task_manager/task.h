@@ -18,10 +18,9 @@
 #include "utilities/vector.h"
 
 #define INPUT_DIMENSION 	0
-#define CONTEXT_DIMENSION 	1
+#define PARAM_DIMENSION 	1
 #define OUTPUT_DIMENSION 	2
-#define PARAMS_DIMENSION 	3
-#define TASK_DIMENSIONS 	4
+#define TASK_DIMENSIONS 	3
 
 #define TASK_KEY_LENGTH		3
 
@@ -31,7 +30,6 @@ class Task {
 		Vector<int> dimensions;
 
 		int input_dim();
-		int context_dim();
 		int output_dim();
 		int params_dim();
 
@@ -39,7 +37,6 @@ class Task {
 		virtual void clear();
 		virtual void print();
 		virtual void setup(Vector<float>*);
-		virtual void context(Vector<float>*);
 		virtual void run(Vector<float>*, Vector<float>*);
 
 		int operator [](int index) { return dimensions[index]; }

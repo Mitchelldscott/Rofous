@@ -26,9 +26,8 @@ class ComplimentaryFilter: public Task {
 		ComplimentaryFilter() {
 			dimensions.reset(TASK_DIMENSIONS);
 			dimensions[INPUT_DIMENSION] = CMF_INPUT_DIMS;
-			dimensions[CONTEXT_DIMENSION] = CMF_STATE_SIZE;
+			dimensions[PARAM_DIMENSION] = 1;
 			dimensions[OUTPUT_DIMENSION] = ATTITUDE_DIM;
-			dimensions[PARAMS_DIMENSION] = 1;
 
 			timers.set(0);
 			reset();
@@ -41,12 +40,6 @@ class ComplimentaryFilter: public Task {
 				q_accel[i] = 0;
 				q_gyro[i] = 0;
 			}
-		}
-
-		void context(Vector<float>* context) {
-			context->reset(dimensions[CONTEXT_DIMENSION]);
-			context->insert(q_gyro, 0, ATTITUDE_DIM);
-			context->insert(q_accel, 3, ATTITUDE_DIM);
 		}
 
 		void filter(float* accel, float* gyro, float* mag, float dt, float* estimate) {

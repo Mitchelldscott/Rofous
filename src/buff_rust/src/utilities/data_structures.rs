@@ -50,6 +50,17 @@ impl ByteBuffer {
         ByteBuffer::new(64)
     }
 
+    pub fn tcp() -> ByteBuffer {
+        /*
+            Create a new 1024 byte buffer.
+        */
+        ByteBuffer::new(1024)
+    }
+
+    pub fn buffer(&self) -> &Vec<u8> {
+        &self.data
+    }
+
     pub fn validate_index(&self, idx: usize) {
         if idx >= self.data.len() {
             panic!("Invalid index for operation {} < {}", idx, self.data.len());

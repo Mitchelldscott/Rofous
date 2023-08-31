@@ -25,7 +25,6 @@ class TaskNode {
 		Vector<TaskNode*> inputs;		// pointers to the input nodes (not implemented)
 		Vector<float> input_buffer;
 		Vector<float> output_buffer;	// a buffer of output data, maybe ditching soon
-		Vector<float> context_buffer;	// buffer of context data, also ditching soon
 		Vector<float> parameter_buffer;	// configuration buffer (here to stay)
 
 	public:
@@ -57,18 +56,12 @@ class TaskNode {
 			switch (index) {
 				case INPUT_DIMENSION:
 					return &input_buffer;
-					break;
 
-				case CONTEXT_DIMENSION:
-					return &context_buffer;
-					break;
-
-				case PARAMS_DIMENSION:
+				case PARAM_DIMENSION:
 					return &parameter_buffer;
 
 				default: // output returns by default
 					return &output_buffer;
-					break; 
 			}
 		}
 };

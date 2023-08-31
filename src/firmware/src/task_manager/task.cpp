@@ -38,14 +38,14 @@ int Task::input_dim() {
 	return dimensions[0];
 }
 
-int Task::context_dim() {
+int Task::params_dim() {
 	/*
 		Base implementation of Task functions.
-		returns dimensions of the context.
+		returns dimensions of the output.
 		@return
 			dimension: (int) size of input
 	*/
-	return dimensions[1];
+	return dimensions[3];
 }
 
 int Task::output_dim() {
@@ -56,16 +56,6 @@ int Task::output_dim() {
 			dimension: (int) size of input
 	*/
 	return dimensions[2];
-}
-
-int Task::params_dim() {
-	/*
-		Base implementation of Task functions.
-		returns dimensions of the output.
-		@return
-			dimension: (int) size of input
-	*/
-	return dimensions[3];
 }
 
 void Task::setup(Vector<float>* config) {
@@ -79,18 +69,6 @@ void Task::setup(Vector<float>* config) {
 	*/
 	printf("Task Base Object: Setup\n");
 	config->print();
-}
-
-void Task::context(Vector<float>* context) {
-	/*
-		Base implementation of Task functions.
-		Defined to show user when inheritance has issues
-		or a required Task function is not implemented.
-		@param
-			context: (Vector<float>*) empty vector to fill with the context
-	*/
-	printf("Requested Task Base Object: context\n");
-	context->reset(0);
 }
 
 void Task::run(Vector<float>* input, Vector<float>* output) {

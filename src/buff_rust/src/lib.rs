@@ -1,2 +1,2 @@
-pub mod hid_comms;
+pub mod comms;
 pub mod utilities;

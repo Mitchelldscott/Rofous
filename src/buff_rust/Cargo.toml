@@ -17,8 +17,8 @@ gnuplot = "0.0.39"
 
 [[bin]]
 name = "comms_node"
-path = "src/hid_comms/comms_node.rs"
+path = "src/comms/comms_node.rs"
 
 [[bin]]
 name = "viz_node"
-path = "src/hid_comms/viz_node.rs"
+path = "src/comms/viz_node.rs"

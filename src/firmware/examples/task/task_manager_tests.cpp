@@ -60,7 +60,7 @@ int main() {
 	for (int i = 0; i < 3; i++) {
 		timers.set(1);
 		spin();
-		errors += assert_leq<float>(timers.delay_millis(1, MASTER_CYCLE_TIME_MS), MASTER_CYCLE_TIME_ERR, "Task run timing test");
+		errors += assert_leq<float>(timers.delay_millis(1, MASTER_CYCLE_TIME_MS), MASTER_CYCLE_TIME_ERR, "Spin duration");
 	}
 
 	dump_all_tasks();
@@ -77,15 +77,15 @@ int main() {
 	for (int i = 0; i < 5; i++) {
 		timers.set(1);
 		spin();
-		errors += assert_leq<float>(timers.delay_millis(1, MASTER_CYCLE_TIME_MS), MASTER_CYCLE_TIME_ERR, "Task run timing test");
+		errors += assert_leq<float>(timers.delay_millis(1, MASTER_CYCLE_TIME_MS), MASTER_CYCLE_TIME_ERR, "Spin duration");
 	}
 	
 	dump_all_tasks();
 
 	TaskSetupPacket* output_lock = new TaskSetupPacket;
 	output_lock->task_id = 10;
+	output_lock->latch = 1;
 	output_lock->data_len = 9;
-	output_lock->context_alt = 1;
 	for (int i = 0; i < 9; i++) {
 		output_lock->data.push(9);
 	}
@@ -95,7 +95,7 @@ int main() {
 	for (int i = 0; i < 5; i++) {
 		timers.set(1);
 		spin();
-		errors += assert_leq<float>(timers.delay_millis(1, MASTER_CYCLE_TIME_MS), MASTER_CYCLE_TIME_ERR, "Task run timing test");
+		errors += assert_leq<float>(timers.delay_millis(1, MASTER_CYCLE_TIME_MS), MASTER_CYCLE_TIME_ERR, "Spin duration");
 	}
 	
 	dump_all_tasks();

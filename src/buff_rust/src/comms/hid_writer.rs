@@ -13,7 +13,7 @@
 
 extern crate hidapi;
 
-use crate::{hid_comms::hid_layer::*, utilities::data_structures::*};
+use crate::{comms::hid_layer::*, utilities::data_structures::*};
 
 use hidapi::HidDevice;
 use std::{sync::mpsc::Receiver, time::Instant};

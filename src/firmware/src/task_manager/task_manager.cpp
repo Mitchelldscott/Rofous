@@ -16,6 +16,7 @@
 FTYK sys_timers;
 float sys_lifetime = 0;
 
+Vector<int> node_ids(0);
 Vector<TaskNode*> nodes(0);
 CommsPipeline* pipeline_internal;
 
@@ -29,8 +30,8 @@ CommsPipeline* init_task_manager() {
 	return pipeline_internal;
 }
 
-int node_index(int task_id) {
-	return pipeline_internal->ids.find(task_id);
+int node_index(int id) {
+	return node_ids.find(id);
 }
 
 bool link_nodes(int index) {
@@ -50,19 +51,20 @@ void add_task(TaskSetupPacket* task_init) {
 	int index = node_index(task_init->task_id);
 	if (index == -1) {	// Node does not exist yet
 		// Add new node, node id
+		nodes.push(new TaskNode(new_task(task_init->key), task_init->n_inputs, task_init->inputs.as_array()));
+		node_ids.push(task_init->task_id);
+		index = nodes.size() - 1;
+
 		TaskFeedback* task_fb = new TaskFeedback;
 		task_fb->task_id = task_init->task_id;
+		task_fb->latch = 0;
 		task_fb->timestamp = 0;
 		task_fb->output.reset(0);
-		task_fb->context.reset(0);
-		pipeline_internal->ids.push(task_init->task_id);
 		pipeline_internal->feedback.push(task_fb);
-		nodes.push(new TaskNode(new_task(task_init->key), task_init->n_inputs, task_init->inputs.as_array()));
-		index = nodes.size() - 1;
+		
 		// printf("Pushed %i\n", task_init->task_id);
 	}
 	else { // Node exists so update it's params (and deconfig)
-		nodes[index]->reset_config();
 		nodes[index]->set_task(new_task(task_init->key));
 		nodes[index]->set_inputs(task_init->inputs.as_array(), task_init->n_inputs);
 	}
@@ -81,7 +83,7 @@ void update_task(TaskSetupPacket* task_params) {
 
 	// This will set the config vector to however long it needs to be
 	// If a config chunk is missed the task may still think it's configured
-	(*nodes[node_idx])[PARAMS_DIMENSION]->insert(task_params->parameters.as_array(),
+	(*nodes[node_idx])[PARAM_DIMENSION]->insert(task_params->parameters.as_array(),
 										task_params->chunk_id * task_params->chunk_size, 
 										task_params->chunk_size);
 
@@ -95,10 +97,8 @@ void overwrite_task(TaskSetupPacket* task_update) {
 		return;
 	}
 
-	// context_alt + 1 = CONTEXT_DIMENSION (if context_alt = 0)
-	// context_alt + 1 = OUTPUT_DIMENSION (if context_alt = 1)
 	// need to send another overwrite to unlatch
-	*(*nodes[node_idx])[task_update->context_alt] = task_update->data;
+	*(*nodes[node_idx])[OUTPUT_DIMENSION] = task_update->data;
 	nodes[node_idx]->latch(task_update->latch);
 }
 
@@ -135,9 +135,9 @@ void task_setup_handler() {
 
 void task_publish_handler(int i) {
 	noInterrupts();
+	pipeline_internal->feedback[i]->latch = nodes[i]->is_latched();
 	pipeline_internal->feedback[i]->output = *(*nodes[i])[OUTPUT_DIMENSION];
-	pipeline_internal->feedback[i]->context = *(*nodes[i])[CONTEXT_DIMENSION];
-	pipeline_internal->feedback[i]->timestamp = sys_timers.millis(1);
+	pipeline_internal->feedback[i]->timestamp = pipeline_internal->lifetime + sys_timers.secs(0);
 	interrupts();
 }
 
@@ -161,16 +161,18 @@ void spin() {
 				task_publish_handler(i);
 			}
 		}
-	}
 
-	sys_lifetime += sys_timers.secs(0);
-	sys_timers.set(0);
+		noInterrupts();
+		pipeline_internal->lifetime += sys_timers.secs(0); // update lifetime everytime a task is run
+		sys_timers.set(0);
+		interrupts();
+	}
 }
 
 void dump_all_tasks() {
 	printf("Task Manager lifetime: %f\n", sys_lifetime);
 	printf("Node ids\n\t");
-	pipeline_internal->ids.print();
+	node_ids.print();
 	printf("Nodes\n\t");
 	nodes.print();
 }

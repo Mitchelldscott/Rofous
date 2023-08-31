@@ -11,7 +11,7 @@
  *
  ********************************************************************************/
 
-use buff_rust::hid_comms::hid_interface::*;
+use buff_rust::comms::hid_interface::*;
 use std::thread::Builder;
 
 fn main() {

@@ -56,9 +56,8 @@ LSM6DSOX::LSM6DSOX() {
 
 	dimensions.reset(TASK_DIMENSIONS);
 	dimensions[INPUT_DIMENSION] = 0;
-	dimensions[CONTEXT_DIMENSION] = 1;
+	dimensions[PARAM_DIMENSION] = 0;
 	dimensions[OUTPUT_DIMENSION] = LSM6DSOX_DOF;
-	dimensions[PARAMS_DIMENSION] = 0;
 
 	// key[0] = 'L';
 	// key[1] = 'S';
@@ -103,11 +102,6 @@ void LSM6DSOX::clear() {
 
 void LSM6DSOX::setup(Vector<float>* config) {
 	reset();
-}
-
-void LSM6DSOX::context(Vector<float>* context) {
-	context->reset(dimensions[CONTEXT_DIMENSION]);
-	(*context)[0] = sensor_index;
 }
 
 void LSM6DSOX::run(Vector<float>* unused, Vector<float>* output) {
