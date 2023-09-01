@@ -354,35 +354,6 @@ pub mod live_record {
 }
 
 #[cfg(test)]
-pub mod socks_beta_again {
-    // Note this useful idiom: importing names from outer (for mod tests) scope.
-    use super::*;
-    const SEND_PACKET_SIZE: usize = 1024;
-    ///
-    /// Test the byte buffer
-    ///
-
-    #[test]
-    pub fn sock_server2() {
-        sock_server_gen2();
-    }
-
-    #[test]
-    pub fn sock_test1() {
-        let mut data = vec![255; SEND_PACKET_SIZE];
-        data[1] = 1;
-        sock_base(1, 25, data);
-    }
-
-    #[test]
-    pub fn sock_test6() {
-        let mut data = vec![13; SEND_PACKET_SIZE];
-        data[1] = 6;
-        sock_base(6, 5000, data);
-    }
-}
-
-#[cfg(test)]
 pub mod socks_beta_actual {
     // Note this useful idiom: importing names from outer (for mod tests) scope.
     use super::*;
@@ -397,19 +368,27 @@ pub mod socks_beta_actual {
 
     #[test]
     pub fn sock_test1() {
-        let rate = 2.0;
-        let sock = SockClient::request_subscribe(1, rate, vec![2]);
+        let rate = 1.0;
+        let sock = SockClient::request_subscribe(0, rate, vec![1]);
 
         let t = Instant::now();
-        while t.elapsed().as_secs() < 5 && !sock.is_shutdown() {
+        while t.elapsed().as_secs() < 5 {
             let lt = Instant::now();
-            if sock.available() {
-                println!("Socket is available!");
+
+            let buffer = sock.receive();
+            match (buffer[0], buffer[1]) {
+                (255, 1) => println!("Subscriber Received buffer"),
+                (_, _) => {},
             }
-            while lt.elapsed().as_micros() as f64 * 1E-3 < (1.0 / (rate * 2.0)) * 1000.0 {}
+            while lt.elapsed().as_micros() as f64 * 1E-3 < (1.0 / rate) * 1000.0 {}
         }
 
-        println!("Sock1 reader finished {}s", t.elapsed().as_micros() as f64 * 1E-6);
+        sock.shutdown(true);
+
+        println!(
+            "Subscriber finished {}s",
+            t.elapsed().as_micros() as f64 * 1E-6
+        );
     }
 
     #[test]
@@ -417,12 +396,14 @@ pub mod socks_beta_actual {
         let rate = 2.0;
 
         let t = Instant::now();
-        while t.elapsed().as_secs() < 5 {
+        while t.elapsed().as_secs() < 2 {
             let lt = Instant::now();
-            SockClient::request_publish(2, rate, vec![]);
-            while lt.elapsed().as_micros() as f64 * 1E-3 < (1.0 / (rate * 2.0)) * 1000.0 {}
+            SockClient::request_publish(1, rate, vec![1,2,3,4]);
+            while lt.elapsed().as_micros() as f64 * 1E-3 < (1.0 / (rate)) * 1000.0 {}
         }
-        println!("Sock2 reader finished {}s", t.elapsed().as_micros() as f64 * 1E-6);
-
+        println!(
+            "Publisher finished {}s",
+            t.elapsed().as_micros() as f64 * 1E-6
+        );
     }
 }
