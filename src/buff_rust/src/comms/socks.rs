@@ -1,106 +1,275 @@
+/********************************************************************************
+ *
+ *      ____                     ____          __           __       _
+ *     / __ \__  __________     /  _/___  ____/ /_  _______/ /______(_)__  _____
+ *    / / / / / / / ___/ _ \    / // __ \/ __  / / / / ___/ __/ ___/ / _ \/ ___/
+ *   / /_/ / /_/ (__  )  __/  _/ // / / / /_/ / /_/ (__  ) /_/ /  / /  __(__  )
+ *  /_____/\__, /____/\___/  /___/_/ /_/\__,_/\__,_/____/\__/_/  /_/\___/____/
+ *        /____/
+ *
+ *
+ *
+ ********************************************************************************/
+
 use std::{
-    env,
-    io::{Read, Write},
-    net::{TcpListener, TcpStream},
-    sync::{Arc, RwLock,
-        mpsc,
-        mpsc::{Receiver, Sender},
+    net::{IpAddr, Ipv4Addr, SocketAddr, UdpSocket},
+    sync::{
+        // mpsc,
+        // mpsc::{Receiver, Sender},
+        Arc,
+        RwLock,
     },
-    thread::{Builder, JoinHandle},
+    // thread::{Builder, JoinHandle},
     time::{Duration, Instant},
 };
 
-const TCP_PACKET_SIZE: usize = 1024;
+pub const UDP_PACKET_SIZE: usize = 1024;
+type UdpPacket = [u8; UDP_PACKET_SIZE];
 
-#[derive(Clone)]
-pub struct TcpControlFlags {
-    pub shutdown: Arc<RwLock<bool>>,
+macro_rules! sock_uri {
+    () => {{ SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 0) }};
+    ($port:expr) => {{ SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), $port) }};
+    ($ip1:expr, $ip2:expr, $ip3:expr, $ip4:expr, $port:expr) => {{ SocketAddr::new(IpAddr::V4(Ipv4Addr::new($ip1, $ip2, $ip3, $ip4)), $port) }};
 }
 
-pub struct FullDuplexChannel { // Sopic or Sockic, idk
-    pub tx: Sender<[u8; TCP_PACKET_SIZE]>,    // data from the server
-    pub rx: Receiver<[u8; TCP_PACKET_SIZE]>,  // data from the user
+pub fn dump_string(idx: usize, data: &str, buffer: &mut UdpPacket) -> usize {
+    let data = data.as_bytes();
+    let data_len = data.len();
+    buffer[idx] = data_len as u8;
+    buffer[idx+1..data_len+idx+1].copy_from_slice(&data);
+    data_len+idx+1
 }
 
-impl FullDuplexChannel {
-    pub fn partner(tx: Sender<[u8; TCP_PACKET_SIZE]>, rx: Receiver<[u8; TCP_PACKET_SIZE]>) -> FullDuplexChannel {
-        FullDuplexChannel {
-            rx: rx,
-            tx: tx,
-        }
+pub fn parse_string(idx: usize, buffer: &UdpPacket) -> String {
+    let str_len = buffer[idx] as usize;
+    match String::from_utf8(buffer[idx+1..str_len+idx+1].to_vec()) {
+        Ok(s) => s,
+        Err(_) => String::new(),
     }
+}
 
-    pub fn new() -> (FullDuplexChannel, Sender<[u8; TCP_PACKET_SIZE]>, Receiver<[u8; TCP_PACKET_SIZE]>) {
-        let (partner_tx, rx): (Sender<[u8; TCP_PACKET_SIZE]>, Receiver<[u8; TCP_PACKET_SIZE]>) = mpsc::channel();
-        let (tx, partner_rx): (Sender<[u8; TCP_PACKET_SIZE]>, Receiver<[u8; TCP_PACKET_SIZE]>) = mpsc::channel();
-        (FullDuplexChannel::partner(tx, rx),
-        partner_tx,
-        partner_rx
-        )
-    }
+pub fn sender_name(buffer: &UdpPacket) -> (usize, String) {
+    ((buffer[0]+1) as usize, parse_string(0, buffer))
+}
 
-    pub fn clone(&mut self) -> FullDuplexChannel {
-        let (partner_tx, rx): (Sender<[u8; TCP_PACKET_SIZE]>, Receiver<[u8; TCP_PACKET_SIZE]>) = mpsc::channel();
-        let (tx, partner_rx): (Sender<[u8; TCP_PACKET_SIZE]>, Receiver<[u8; TCP_PACKET_SIZE]>) = mpsc::channel();
-        self.tx = tx;
-        self.rx = rx;
+pub fn read_all_names(buffer: &UdpPacket) -> (String, u8, Vec<String>) {
+    let (mut next_idx, sender_name) = sender_name(buffer);
+    let mut names = vec![];
 
-        FullDuplexChannel::partner(partner_tx, partner_rx)
-    }
+    let mode = buffer[next_idx];
+    let n_names = buffer[next_idx+1] as usize;
+    next_idx += 2;
+    
+    (0..n_names).for_each(|_| {
+        let name = parse_string(next_idx, buffer);
+        next_idx += (buffer[next_idx]+1) as usize;
+        names.push(name);
+    });
+
+    (sender_name, mode, names)
+}
+
+pub fn dump_all_names(mut idx: usize, buffer: &mut UdpPacket, names: &Vec<String>) {
+    buffer[idx] = names.len() as u8;
+    idx += 1;
+    names.iter().for_each(|name| {
+        idx = dump_string(idx, name, buffer);
+    })
+}
+
+pub fn dump_addr(idx: usize, buffer: &mut UdpPacket, addr: &SocketAddr) -> usize {
+    let mut octets = match addr.ip() {
+        IpAddr::V4(ip) => ip.octets().to_vec(),
+        _ => {vec![0, 0, 0, 0]}
+    };
+    octets.append(&mut addr.port().to_be_bytes().to_vec());
+    buffer[idx..idx+6].copy_from_slice(&octets);
+    idx + 6
+}
+
+pub fn parse_addr(idx: usize, buffer: &UdpPacket) -> SocketAddr {
+    sock_uri!(buffer[idx], buffer[idx+1], buffer[idx+2], buffer[idx+3], u16::from_be_bytes([buffer[idx+4], buffer[idx+5]]))
+}
+
+pub fn read_all_addrs(buffer: &UdpPacket) -> (String, u8, Vec<SocketAddr>) {
+    let (mut next_idx, sender_name) = sender_name(buffer);
+    let mut addrs = vec![];
+
+    let mode = buffer[next_idx];
+    let n_addrs = buffer[next_idx+1] as usize;
+    next_idx += 2;
+    
+    (0..n_addrs).for_each(|_| {
+        let addr = parse_addr(next_idx, buffer);
+        next_idx += 6;
+        addrs.push(addr);
+    });
+
+    (sender_name, mode, addrs)
+}
+
+pub fn dump_all_addrs(mut idx: usize, buffer: &mut UdpPacket, ips: &Vec<SocketAddr>) {
+    buffer[idx] = ips.len() as u8;
+    idx += 1;
+    ips.iter().for_each(|ip| {
+        idx = dump_addr(idx, buffer, ip);
+    });
 }
 
 pub struct Sockage {
-    pub server: bool,
-    pub client_id: u8,
-    pub millis_rate: u32,
+    pub name: String,
+    pub lifetime: Instant,
+    pub millis_rate: u128,
+    pub send_count: u128,
+    pub recv_count: u128,
 
-    pub fdc: FullDuplexChannel, 
+    pub socket: UdpSocket,
 
     pub shutdown: Arc<RwLock<bool>>,
+
+    pub addrs: Vec<SocketAddr>,
+    pub names: Vec<String>,
 }
 
 impl Sockage {
-    pub fn new(client_id: u8, millis_rate: u32) -> (Sockage, Sender<[u8; TCP_PACKET_SIZE]>, Receiver<[u8; TCP_PACKET_SIZE]>) {
-        let (fdc, user_tx, user_rx) = FullDuplexChannel::new();
-        (Sockage {
-            server: false,
-            client_id: client_id,
-            millis_rate: millis_rate,
+    pub fn new(name: &str, addr: SocketAddr, rate: u128) -> Sockage {
+        Sockage {
+            name: name.to_string(),
+            lifetime: Instant::now(),
+            millis_rate: rate,
+            send_count: 0,
+            recv_count: 0,
 
-            fdc: fdc,
+            socket: Sockage::new_socket(addr, rate as u32),
 
             shutdown: Arc::new(RwLock::new(false)),
-        },
-        user_tx,
-        user_rx,
-        )
-    }
 
-    pub fn clone(&mut self) -> Sockage {
-        Sockage {
-            server: self.server,
-            client_id: self.client_id,
-            millis_rate: self.millis_rate,
-
-            fdc: self.fdc.clone(),
-
-            shutdown: self.shutdown.clone(),
+            addrs: vec![],
+            names: vec![],
         }
     }
 
-    pub fn from_bytes(buffer: &[u8]) -> Sockage {
-        let rate = f32::from_le_bytes([buffer[1020], buffer[1021], buffer[1022], buffer[1023]]);
-        let millis_rate = ((1.0 / rate) * 1000.0) as u128;
-        let (sock, _, _) = Sockage::new(buffer[1], millis_rate as u32);
-        sock
+    pub fn new_socket(addr: SocketAddr, timeout: u32) -> UdpSocket {
+        let socket = UdpSocket::bind(addr).expect("Couldn't bind to socket");
+        socket
+            .set_write_timeout(Some(Duration::new(0, timeout)))
+            .unwrap();
+        socket
+            .set_read_timeout(Some(Duration::new(0, timeout)))
+            .unwrap();
+        socket
     }
 
-    pub fn receive(&self) -> [u8; TCP_PACKET_SIZE] {
-        self.fdc.rx.try_recv().unwrap_or([0; TCP_PACKET_SIZE])
+    pub fn core(name: &str) -> Sockage {
+        Sockage::new(name, sock_uri!(1313), 1)
     }
 
-    pub fn send(&self, buffer: [u8; TCP_PACKET_SIZE]) {
-        self.fdc.tx.send(buffer).unwrap();
+    pub fn client(name: &str, rate: u128) -> Sockage {
+        Sockage::new(name, sock_uri!(0,0,0,0,0), rate)
+    }
+
+    pub fn clear_registry(&mut self) {
+        self.addrs.clear();
+        self.names.clear();
+    }
+
+    pub fn find_name(&self, target: &str) -> Option<usize> {
+        self.names.iter().position(|name| name == target)
+    }
+
+    pub fn find_address(&self, target: SocketAddr) -> Option<usize> {
+        self.addrs.iter().position(|addr| *addr == target)
+    }
+
+    pub fn adress_of_names(&self, names: Vec<String>) -> Vec<SocketAddr> {
+        names.iter().map(|name| {
+            match self.find_name(name) {
+                Some(i) => self.addrs[i],
+                None => sock_uri!(0,0,0,0,0),
+            }
+        }).collect()
+    }
+
+    pub fn discover_sock(&mut self, name: String, addr: &SocketAddr) {
+        while self.addrs.len() < self.names.len() {
+            self.addrs.push(sock_uri!(0,0,0,0,0));
+        }
+
+        match self.find_name(&name) {
+            Some(i) => self.addrs[i] = *addr,
+
+            _ => {
+                self.addrs.push(*addr);
+                self.names.push(name);
+            }, 
+        }
+    }
+
+    pub fn stamp_packet(&self) -> UdpPacket {
+        let mut buffer = [0; UDP_PACKET_SIZE];
+        dump_string(0, &self.name, &mut buffer);
+        buffer
+    }
+
+    pub fn names_packet(&self, mode: u8) -> UdpPacket {
+        let mut buffer = self.stamp_packet();
+        buffer[(buffer[0]+1) as usize] = mode;
+        dump_all_names((buffer[0]+2) as usize, &mut buffer, &self.names);
+        buffer
+    }
+
+    pub fn addrs_packet(&self, mode: u8, addrs: Vec<SocketAddr>) -> UdpPacket {
+        let mut buffer = self.stamp_packet();
+        buffer[(buffer[0]+1) as usize] = mode;  // 0-1 tells receiver if requesting or insisting
+        dump_all_addrs((buffer[0]+2) as usize, &mut buffer, &addrs);
+
+        buffer
+    }
+
+    pub fn data_request_packet(&self, data: Vec<f64>) -> UdpPacket {
+        let mut buffer = self.stamp_packet();
+        let data_start = (buffer[0]+1) as usize;
+        buffer[data_start] = 2;             // force write mode for data packets
+        buffer
+    }
+
+    pub fn data_packet(&self, data: Vec<f64>) -> UdpPacket {
+        let mut buffer = self.stamp_packet();
+        let data_start = (buffer[0]+1) as usize;
+        let bytes: Vec<u8> = data.iter().map(|x| (*x as f32).to_be_bytes()).flatten().collect();
+
+        buffer[data_start] = 2;             // force write mode for data packets
+        buffer[data_start+1] = bytes.len() as u8; // data length for parsing
+        buffer[data_start+2..data_start+bytes.len()+2].copy_from_slice(&bytes);
+        buffer
+    }
+
+    pub fn send_to(&mut self, mut buffer: UdpPacket, addr: SocketAddr) -> bool {
+        match !self.is_shutdown() {
+            true => match self.socket.send_to(&mut buffer, addr) {
+                Ok(_) => {
+                    self.send_count += 1;
+                    true
+                }
+                Err(_) => false,
+            },
+
+            false => false,
+        }
+    }
+
+    pub fn recv(&mut self, buffer: &mut UdpPacket) -> SocketAddr {
+        match !self.is_shutdown() {
+            true => match self.socket.recv_from(buffer) {
+                Ok((_size, src_addr)) => {
+                    self.recv_count += 1;
+                    src_addr
+                }
+
+                Err(_) => sock_uri!(0,0,0,0,0),
+            },
+            false => sock_uri!(0,0,0,0,0),
+        }
     }
 
     pub fn is_shutdown(&self) -> bool {
@@ -111,479 +280,76 @@ impl Sockage {
         *self.shutdown.write().unwrap() = status;
     }
 
-    pub fn comms_packet(&self, write: bool) -> [u8; TCP_PACKET_SIZE] {
-        let mut packet = [0; TCP_PACKET_SIZE];
-        packet[0] = 255;
-        packet[1] = self.client_id;
-        match write {
-            true => packet[2] = 1,
-            _ => packet[2] = 0,
-        }
-
-        packet
-    }
-
-    pub fn shutdown_packet(&self) -> [u8; TCP_PACKET_SIZE] {
-        let mut packet = [0; TCP_PACKET_SIZE];
-        packet[0] = 13;
-        packet[1] = self.client_id;
-        packet
-    }
-
-    pub fn read_stream(&self, stream: &mut TcpStream, mut buffer: [u8; TCP_PACKET_SIZE]) -> usize {
-        match stream.read(&mut buffer) {
-            Ok(size) => size,
-            Err(e) => {
-                println!("[Sockage {}{}]: Read: {:?}", self.client_id, self.server as u8, e);
-                0
-            }
-        }
-    }
-
-    pub fn read_and_push(&self, stream: &mut TcpStream) {
-        let buffer = [0; TCP_PACKET_SIZE];
-        match self.read_stream(stream, buffer) {
-            TCP_PACKET_SIZE => match buffer[0] {
-                13 => {
-                    self.send(buffer);
-                    self.shutdown(true);
-                    println!("[Sockage {}{}]: Shutdown", self.client_id, self.server as u8);
-                }
-
-                255 => self.send(buffer),
-                _ => {},
-            },
-            _ => {},// self.shutdown(true),
-        }
-    }
-
-    pub fn write_stream(&self, stream: &mut TcpStream, buffer: [u8; TCP_PACKET_SIZE]) {
-        match stream.write_all(&buffer) {
-            Ok(_) => stream.flush().unwrap(),
-            Err(e) => println!("[Sockage {}{}]: Write: {:?}", self.client_id, self.server as u8, e),
-        }
-    }
-
-    pub fn write_and_push(&self, stream: &mut TcpStream) {
-        let buffer = self.receive();
-        match buffer[0] {
-            0 => {},
-            _ => {
-                println!("[Sockage {}{}]: channel available", self.client_id, self.server as u8);
-                self.write_stream(stream, buffer);
-            }
-        }
-    }
-
-    pub fn thread(&self, mut stream: TcpStream) {
-        let lifetime = Instant::now();
-
-        while !self.is_shutdown() {
-            let t = Instant::now();
-            self.read_and_push(&mut stream);
-            self.write_and_push(&mut stream);
-            while self.millis_rate as u128 > t.elapsed().as_millis() {}
-        }
-
-        self.write_stream(&mut stream, self.shutdown_packet());
-        println!("[Sockage {}{}]: Shutdown {}", self.client_id, self.server as u8, lifetime.elapsed().as_micros() as f64 * 1E-6);
-    }
-
-    pub fn worker(mut sock: Sockage, stream: TcpStream, server: bool) -> JoinHandle<()> {
-        sock.shutdown(false);
-        sock.server = server;
-
-        Builder::new()
-            .name(format!("Sock-Work-{}", sock.client_id))
-            .spawn(move || sock.thread(stream)).unwrap()
-    }
-}
-
-impl Drop for Sockage {
-    fn drop(&mut self) {
-        self.shutdown(true);
-    }
-}
-
-pub struct SockCore { // Shit, fool doesn't even have Sockage
-    pub shutdown: bool,
-    pub socks: Vec<Sockage>,
-    // pub threads: Vec<JoinHandle<()>>,
-    pub buffers: Vec<[u8; TCP_PACKET_SIZE]>,
-}
-
-impl SockCore {
-    pub fn new() -> SockCore {
-        SockCore {
-            shutdown: false,
-            socks: vec![],
-            // threads: vec![],
-            buffers: vec![],
-        }
-    }
-
-    pub fn check_new_connections(&mut self, listener: &TcpListener) -> usize {
-        match listener.accept() {
-            Ok((mut stream, _)) => {
-                let mut buffer = [0; TCP_PACKET_SIZE];
-
-                match stream.read(&mut buffer) {
-                    Ok(size) => {
-                        match (size, buffer[0]) {
-                            (TCP_PACKET_SIZE, 255) => {
-                                // println!("[Sock-Core]: Sync request id {}, mode {}", buffer[1], buffer[2]);
-                                let mut sock = Sockage::from_bytes(&buffer);
-                                match self.socks.iter().position(|s| s.client_id == sock.client_id) {
-                                    Some(idx) => {
-                                        // println!("[Sock-Core]: New thread id {}, mode {}", buffer[1], buffer[2]);
-
-                                        let sock = self.socks[idx].clone();
-                                        sock.send(buffer);
-                                        Sockage::worker(sock, stream, true);
-                                    } 
-                                    None => {
-                                        println!("[Sock-Core]: New Sock id {}, mode {}", buffer[1], buffer[2]);
-
-                                        let clone = sock.clone();
-                                        clone.send(buffer);
-                                        Sockage::worker(clone, stream, true);
-                                        self.socks.push(sock);
-                                        self.buffers.push([0; TCP_PACKET_SIZE]);
-                                    }
-                                }
-                                return 1;
-                            }
-
-                            (TCP_PACKET_SIZE, 13) => {
-                                println!("[Sock-Core]: Shutdown from {}", buffer[1]);
-                            }
-
-                            (_, _) => {},
-                        }
-                    }
-                    _ => {
-                        println!("[Sock-Core]: stream read failed");
-                    },
-                }
-            }
-            _ => {}, // println!("[Sock-Core]: No new connections"),
-        }
-
-        0
-    }
-
-    pub fn push_channels(&mut self) {
-        // Send current sock data to assigned channels
-        (0..self.socks.len()).for_each(|i| {
-            let buffer = self.socks[i].receive();
-            match (buffer[0], buffer[2]) {
-                (255, 1) => {
-                    self.buffers[i] = buffer;
-                }
-                (255, 0) => {
-                    (0..buffer[3]).map(|i| buffer[4+i as usize] as usize).for_each(|j| {
-                        match self.socks.iter().position(|sock| sock.client_id == j as u8) {
-                            Some(j) => {
-                                self.socks[i].send(self.buffers[j]);
-                                println!("[Sock-Core]: forwarding {} -> {}", j, i);
-                            }
-                            None => {
-                                println!("[Sock-Core]: Sock does not exist {}", j);
-                            },
-                        }
-                    })
-                }
-                (13, _) => println!("[Sock-Core]: Shutdown from {}", buffer[1]),
-                (_, _) => {},
-            }
-        });
-    }
-
-    pub fn shutdown_socks(&self) {
-        println!("[Sock-Core]: Cleaning {} Socks", self.socks.len());
-
-        self.socks.iter().for_each(|sock| {
-            sock.shutdown(true);
-        });
-    }
-
-    // pub fn join_threads(&mut self) { // idk man
-    //     println!("[Server-Core]: Joining {} Threads", self.socks.len());
-
-    //     let mut ctr = 0;
-    //     while self.threads.len() > 0 {
-    //         self.threads.remove(0).join().expect("[Sock-Core]: Thread failed");
-    //         println!("Joined thread {}", ctr);
-    //         ctr += 1;
-    //     }
-    // }
-
-    pub fn start(&mut self, timeout: u64) {
-        let listener = TcpListener::bind(env::var("DYSE_CORE_URI").unwrap()).unwrap();
-        listener
-            .set_nonblocking(true)
-            .expect("Cannot set non-blocking");
-
+    pub fn log<T: std::fmt::Debug>(&self, message: T) {
         println!(
-            "[Sock-Core]: Bound to {:?}",
-            env::var("DYSE_CORE_URI").unwrap()
-        );
-
-        let mut t = Instant::now();
-        let lifetime = Instant::now();
-        while !self.shutdown && t.elapsed().as_secs() < timeout {
-            self.check_new_connections(&listener);
-            self.socks.iter().for_each(|sock| self.shutdown &= sock.is_shutdown());
-
-            self.push_channels();
-        }
-
-        self.shutdown_socks();
-        // self.join_threads();
-        println!("[Sock-Core]: Shutdown {}s", lifetime.elapsed().as_micros() as f64 * 1E-6);
-    }
-}
-
-pub struct SockServer {}
-
-impl SockServer {
-    pub fn core() {
-        let mut core = SockCore::new();
-        core.start(5);
-    }
-}
-
-pub struct SockClient {}
-
-impl SockClient {
-    pub fn sock_handle(sock: Sockage) {
-        println!(
-            "Client {} running every {}ms",
-            sock.client_id, sock.millis_rate
+            "[{:?}]:{:?}-{}<{},{}>\t\t{:?}\t({}s)",
+            self.name,
+            self.socket.local_addr().unwrap(),
+            self.is_shutdown(),
+            self.send_count,
+            self.recv_count,
+            message,
+            self.lifetime.elapsed().as_micros() as f64 * 1E-6,
         );
     }
 
-    pub fn request_subscribe(client_id: u8, rate: f64, client_ids: Vec<u8>) -> Sockage {
-        let millis_rate = (1.0 / rate) * 1000.0;
-        let (mut sock, _, _) = Sockage::new(client_id, millis_rate as u32);
-        let stream = TcpStream::connect(env::var("DYSE_CORE_URI").unwrap()).unwrap();
-        stream
-            .set_read_timeout(Some(Duration::new(0, sock.millis_rate)))
-            .expect("set_read_timeout call failed");
-
-        let clone = sock.clone();
-        Sockage::worker(clone, stream, false);
-
-        let mut buffer = sock.comms_packet(false);
-        buffer[3] = client_ids.len() as u8;
-        (0..client_ids.len()).for_each(|i| buffer[4+i] = client_ids[i]);
-
-        sock.send(buffer);
-
-        sock
-    }
-
-    pub fn request_delayed_subscribe(
-        client_id: u8,
-        rate: f64,
-        client_ids: Vec<u8>,
-        delay: u128,
-    ) -> Sockage {
-        let t = Instant::now();
-        loop {
-            match t.elapsed().as_millis() >= delay {
-                true => {
-                    break;
-                }
-                _ => {}
-            }
-        }
-
-        SockClient::request_subscribe(client_id, rate, client_ids)
-    }
-
-    pub fn request_publish(client_id: u8, rate: f64, data: Vec<u8>) {
-        let millis_rate = (1.0 / rate) * 1000.0;
-        let (sock, _, _) = Sockage::new(client_id, millis_rate as u32);
-
-        let mut stream = TcpStream::connect(env::var("DYSE_CORE_URI").unwrap()).unwrap();
-        stream
-            .set_read_timeout(Some(Duration::new(0, sock.millis_rate)))
-            .expect("set_read_timeout call failed");
-
-        let mut buffer = sock.comms_packet(true);
-        buffer[3] = data.len() as u8;
-        (0..data.len()).for_each(|i| buffer[4+i] = data[i]);
-
-        sock.write_stream(&mut stream, sock.comms_packet(true));
-        
-        sock.shutdown(true);
+    pub fn log_heavy(&self) {
+        println!(
+            "==[Sockage]==\n[{:?}]:{}-{}<{},{}>\t({}s)\nSocks:\n\t{:?}\t\n\t{:?}",
+            self.name,
+            self.socket.local_addr().unwrap(),
+            self.is_shutdown(),
+            self.send_count,
+            self.recv_count,
+            self.lifetime.elapsed().as_micros() as f64 * 1E-6,
+            self.names,
+            self.addrs,
+        );
     }
 }
 
-// pub fn sock_base(test: u8, start: u128, data: Vec<u8>) {
-//     let t = Instant::now();
-//     loop {
-//         match t.elapsed().as_millis() >= start {
-//             true => {
-//                 break;
-//             }
-//             _ => {}
-//         }
-//     }
-
-//     println!("Client {} alive", test);
-
-//     let millis_rate = 100;
-//     let mut stream = TcpStream::connect(env::var("DYSE_CORE_URI").unwrap()).unwrap();
-//     stream
-//         .set_read_timeout(Some(Duration::new(0, millis_rate)))
-//         .expect("set_read_timeout call failed");
-
-//     stream.write_all(&data).unwrap();
-//     stream.flush().unwrap();
-
-//     let mut buffer = [0; TCP_PACKET_SIZE];
-//     buffer[1] = test;
-//     loop {
-//         match stream.read(&mut buffer) {
-//             Ok(size) => match size {
-//                 TCP_PACKET_SIZE => {
-//                     if buffer[0] == 13 {
-//                         println!(
-//                             "[Client] {}: Received Kill code {}",
-//                             test,
-//                             t.elapsed().as_millis() - start
-//                         );
-//                         break;
-//                     }
-//                     // maybe a callback here
-//                 }
-//                 _ => {}
-//             },
-//             Err(e) => println!("[Client] {}: {:?}", test, e),
-//         }
-
-//         stream.write_all(&data).unwrap();
-//         stream.flush().unwrap();
-//     }
+// pub struct FullDuplexChannel {
+//     // Sopic or Sockic, idk
+//     pub tx: Sender<UdpPacket>, // data from the server
+//     pub rx: Receiver<UdpPacket>, // data from the user
 // }
 
-// pub fn sock_server_gen2() {
-//     let listener = TcpListener::bind(env::var("DYSE_CORE_URI").unwrap()).unwrap();
-//     listener
-//         .set_nonblocking(true)
-//         .expect("Cannot set non-blocking");
-
-//     println!("Server Bound to {:?}", env::var("DYSE_CORE_URI").unwrap());
-
-//     let mut threads = vec![];
-
-//     let tcf = TcpControlFlags {
-//         shutdown: Arc::new(RwLock::new(false)),
-//     };
-
-//     let mut t = Instant::now();
-
-//     while !*tcf.shutdown.read().unwrap() {
-//         if threads.len() > 0 {
-//             t = Instant::now();
-//         }
-
-//         match listener.accept() {
-//             Ok((stream, addr)) => {
-//                 let tcfc = tcf.clone();
-
-//                 threads.push(
-//                     Builder::new()
-//                         .name("[Stream-Listen]".to_string())
-//                         .spawn(move || {
-//                             listener_thread(tcfc, stream, addr);
-//                         })
-//                         .unwrap(),
-//                 );
-//             }
-//             Err(_) => {}
-//         }
-
-//         threads
-//             .iter()
-//             .position(|thread| thread.is_finished())
-//             .into_iter()
-//             .for_each(|i| {
-//                 threads.remove(i);
-//             });
-
-//         if t.elapsed().as_secs() > 2 {
-//             break;
-//         }
+// impl FullDuplexChannel {
+//     pub fn partner(
+//         tx: Sender<UdpPacket>,
+//         rx: Receiver<UdpPacket>,
+//     ) -> FullDuplexChannel {
+//         FullDuplexChannel { rx: rx, tx: tx }
 //     }
 
-//     *tcf.shutdown.write().unwrap() = true;
-
-//     println!("Joining {} threads", threads.len());
-
-//     threads.into_iter().for_each(|thread| {
-//         thread.join().expect("[Stream-Listen]: failed");
-//     });
-
-//     println!("what the fuck");
-// }
-
-// pub fn listener_thread(tcf: TcpControlFlags, mut stream: TcpStream, addr: SocketAddr) {
-//     println!("[Server] {}: Listening", addr);
-//     let mut buffer = [0; TCP_PACKET_SIZE];
-//     let mut t = Instant::now();
-//     let mut packet_writes = 0.0;
-//     let mut packet_reads = 0.0;
-//     let mut millis_rate = 0;
-
-//     stream
-//         .set_read_timeout(Some(Duration::new(0, 1)))
-//         .expect("set_read_timeout call failed");
-
-//     while !*tcf.shutdown.read().unwrap() && t.elapsed().as_secs() <= 5 {
-//         match stream.read(&mut buffer) {
-//             Ok(size) => match size {
-//                 TCP_PACKET_SIZE => {
-//                     packet_reads += 1.0;
-
-//                     t = Instant::now();
-//                     if buffer[0] == 255 {
-//                         packet_writes += 1.0;
-
-//                         let rate = f32::from_le_bytes([
-//                             buffer[1020],
-//                             buffer[1021],
-//                             buffer[1022],
-//                             buffer[1023],
-//                         ]);
-//                         millis_rate = ((1.0 / rate) * 1000.0) as u128;
-
-//                         // let n_targets = buffer[2];
-//                         // let targets: Vec<u8> = (0..n_targets).map(|i| buffer[(i+3) as usize]).collect();
-
-//                         let mut reply_buffer = ByteBuffer::tcp();
-//                         reply_buffer.put(0, 255);
-//                         reply_buffer.put(1, 255);
-//                         reply_buffer.put_floats(2, vec![packet_writes, packet_reads]);
-
-//                         stream.write_all(&reply_buffer.buffer()).unwrap();
-//                         stream.flush().unwrap();
-//                     } else if buffer[0] == 13 {
-//                         println!("[Server] {}: Received Kill code from {}", addr, buffer[1]);
-//                         *tcf.shutdown.write().unwrap() = true;
-//                         break;
-//                     }
-//                 }
-//                 _ => {}
-//             },
-//             Err(e) => println!("[Server]: {:?}", e),
-//         }
-
-//         while t.elapsed().as_millis() < millis_rate {}
+//     pub fn new() -> (
+//         FullDuplexChannel,
+//         Sender<[u8; UDP_PACKET_SIZE]>,
+//         Receiver<[u8; UDP_PACKET_SIZE]>,
+//     ) {
+//         let (partner_tx, rx): (
+//             Sender<[u8; UDP_PACKET_SIZE]>,
+//             Receiver<[u8; UDP_PACKET_SIZE]>,
+//         ) = mpsc::channel();
+//         let (tx, partner_rx): (
+//             Sender<[u8; UDP_PACKET_SIZE]>,
+//             Receiver<[u8; UDP_PACKET_SIZE]>,
+//         ) = mpsc::channel();
+//         (FullDuplexChannel::partner(tx, rx), partner_tx, partner_rx)
 //     }
-//     stream.write_all(&[13; TCP_PACKET_SIZE]).unwrap();
-//     stream.flush().unwrap();
-//     println!("[Server] {}: Sent kill code to {}", addr, buffer[1]);
+
+//     pub fn clone(&mut self) -> FullDuplexChannel {
+//         let (partner_tx, rx): (
+//             Sender<[u8; UDP_PACKET_SIZE]>,
+//             Receiver<[u8; UDP_PACKET_SIZE]>,
+//         ) = mpsc::channel();
+//         let (tx, partner_rx): (
+//             Sender<[u8; UDP_PACKET_SIZE]>,
+//             Receiver<[u8; UDP_PACKET_SIZE]>,
+//         ) = mpsc::channel();
+//         self.tx = tx;
+//         self.rx = rx;
+
+//         FullDuplexChannel::partner(partner_tx, partner_rx)
+//     }
 // }
