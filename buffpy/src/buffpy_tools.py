@@ -137,7 +137,6 @@ def parse_args(args):
 	"""
 	clean_args = []
 	for arg in args:
-
 		# find any env vars
 		split1 = arg.split('{')
 

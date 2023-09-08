@@ -1,0 +1,50 @@
+##############################
+#
+#
+#         Pin Outputs
+#
+#
+##############################
+
+signal1:
+ - driver: VAL
+ - inputs: []
+ - outputs: [pwm_signal1]
+ - parameters: [0.0]
+
+led1:
+ - driver: PWM
+ - inputs: [pwm_signal1]
+ - outputs: [pwm_output1]
+ - parameters: [24.0]
+ - publish: 300
+
+
+
+signal2:
+ - driver: VAL
+ - inputs: []
+ - outputs: [pwm_signal2]
+ - parameters: [0.0]
+
+led2:
+ - driver: PWM
+ - inputs: [pwm_signal2]
+ - outputs: [pwm_output2]
+ - parameters: [25.0]
+ - publish: 100
+
+
+
+signal3:
+ - driver: VAL
+ - inputs: []
+ - outputs: [pwm_signal3]
+ - parameters: [0.0]
+
+led3:
+ - driver: PWM
+ - inputs: [pwm_signal3]
+ - outputs: [pwm_output3]
+ - parameters: [18.0]
+ - publish: 50

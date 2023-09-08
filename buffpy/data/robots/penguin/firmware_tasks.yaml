@@ -10,8 +10,8 @@ lsm6dsox:
   - inputs: []
   - outputs: [imu]
   - parameters: [0]
-  - record: "true"
-  # - display: "true"
+  - record: 500
+  # - publish: "true"
 
 ##############################
 #
@@ -51,8 +51,8 @@ servo_motor:
  - inputs: [servo_cmd]
  - outputs: [pwm_signal1]
  - parameters: [24.0]
- - display: "true"
- - record: "true"
+ - publish: 10
+ - record: 500
  
 ##############################
 #

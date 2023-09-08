@@ -15,8 +15,9 @@ extern crate hidapi;
 
 use crate::{comms::hid_layer::*, utilities::data_structures::*};
 
+use crossbeam_channel::Receiver;
 use hidapi::HidDevice;
-use std::{sync::mpsc::Receiver, time::Instant};
+use std::time::Instant;
 
 pub struct HidWriter {
     writer_rx: Receiver<ByteBuffer>,

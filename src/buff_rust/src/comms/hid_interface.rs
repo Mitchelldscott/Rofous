@@ -17,13 +17,7 @@ use crate::{
     comms::{data_structures::*, hid_layer::*, hid_reader::*, hid_writer::*},
     utilities::data_structures::*,
 };
-use std::{
-    sync::{
-        mpsc,
-        mpsc::{Receiver, Sender},
-    },
-    time::Instant,
-};
+use std::{sync::mpsc, time::Instant};
 
 pub static MCU_NO_COMMS_TIMEOUT_S: u64 = 10;
 pub static MCU_NO_COMMS_RESET_MS: u128 = 10;
@@ -43,18 +37,22 @@ pub struct HidInterface {
     pub current_request: u8,
 
     // For sending reports to the writer
-    pub writer_tx: Sender<ByteBuffer>,
-    pub parser_rx: Receiver<ByteBuffer>,
+    pub writer_tx: crossbeam_channel::Sender<ByteBuffer>,
+    pub parser_rx: mpsc::Receiver<ByteBuffer>,
 
     // For storing reply data
     pub robot_fw: RobotFirmware,
 }
 
 impl HidInterface {
-    pub fn new(robot_name: &str) -> (HidInterface, HidReader, HidWriter) {
+    pub fn new() -> (HidInterface, HidReader, HidWriter) {
         let layer = HidLayer::new(TEENSY_DEFAULT_VID, TEENSY_DEFAULT_PID, TEENSY_CYCLE_TIME_US);
-        let (writer_tx, writer_rx): (Sender<ByteBuffer>, Receiver<ByteBuffer>) = mpsc::channel();
-        let (parser_tx, parser_rx): (Sender<ByteBuffer>, Receiver<ByteBuffer>) = mpsc::channel();
+        let (writer_tx, writer_rx): (
+            crossbeam_channel::Sender<ByteBuffer>,
+            crossbeam_channel::Receiver<ByteBuffer>,
+        ) = crossbeam_channel::bounded(100);
+        let (parser_tx, parser_rx): (mpsc::Sender<ByteBuffer>, mpsc::Receiver<ByteBuffer>) =
+            mpsc::channel();
 
         (
             HidInterface {
@@ -62,30 +60,34 @@ impl HidInterface {
 
                 current_request: 0,
 
-                writer_tx: writer_tx,
+                writer_tx: writer_tx.clone(),
                 parser_rx: parser_rx,
 
-                robot_fw: RobotFirmware::new(robot_name),
+                robot_fw: RobotFirmware::default(writer_tx),
             },
             HidReader::new(layer.clone(), parser_tx),
             HidWriter::new(layer, writer_rx),
         )
     }
 
-    pub fn sim(robot_name: &str) -> HidInterface {
+    pub fn sim() -> HidInterface {
         let layer = HidLayer::new(TEENSY_DEFAULT_VID, TEENSY_DEFAULT_PID, TEENSY_CYCLE_TIME_US);
-        let (writer_tx, _): (Sender<ByteBuffer>, Receiver<ByteBuffer>) = mpsc::channel();
-        let (_, parser_rx): (Sender<ByteBuffer>, Receiver<ByteBuffer>) = mpsc::channel();
+        let (writer_tx, _): (
+            crossbeam_channel::Sender<ByteBuffer>,
+            crossbeam_channel::Receiver<ByteBuffer>,
+        ) = crossbeam_channel::bounded(100);
+        let (_, parser_rx): (mpsc::Sender<ByteBuffer>, mpsc::Receiver<ByteBuffer>) =
+            mpsc::channel();
 
         HidInterface {
             layer: layer.clone(),
 
             current_request: 0,
 
-            writer_tx: writer_tx,
+            writer_tx: writer_tx.clone(),
             parser_rx: parser_rx,
 
-            robot_fw: RobotFirmware::new(robot_name),
+            robot_fw: RobotFirmware::default(writer_tx),
         }
     }
 
@@ -116,9 +118,7 @@ impl HidInterface {
     }
 
     pub fn send_control(&mut self, i: usize, data: Vec<f64>) {
-        let mut packet = self.robot_fw.get_output_overwrite_latch(i as u8);
-        packet.put_floats(5, data);
-        self.writer_tx(packet);
+        self.writer_tx(get_output_overwrite_latch(i as u8, data));
     }
 
     pub fn print(&self) {
@@ -126,7 +126,7 @@ impl HidInterface {
         self.robot_fw.print();
     }
 
-    pub fn pipeline(&mut self, gui: bool) {
+    pub fn pipeline(&mut self, _unused_flag: bool) {
         let mut loop_count = 0;
         let initializers = self.get_initializers();
 
@@ -143,7 +143,7 @@ impl HidInterface {
             self.layer.delay(t);
         });
 
-        while !self.layer.control_flags.is_shutdown() {
+        while !self.layer.control_flags.is_shutdown() && rosrust::is_ok() {
             let loopt = Instant::now();
 
             if self.layer.control_flags.is_connected() {
@@ -157,9 +157,6 @@ impl HidInterface {
             }
 
             loop_count += 1;
-            if gui && loop_count % 200 == 0 {
-                self.robot_fw.display()
-            }
             if loop_count > 40000 {
                 self.print();
                 loop_count = 0;

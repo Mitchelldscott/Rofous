@@ -44,4 +44,47 @@ class ConstTask: public Task {
 		}
 };
 
+// class ConstTask: public Task {
+// 	private:
+// 		char key[3] = {'N', 'C', 'V'};
+// 		int n;
+// 		float* buffer; 
+
+
+// 	public:
+// 		ConstTask() {
+// 			dimensions.reset(TASK_DIMENSIONS);
+// 			dimensions[INPUT_DIMENSION] = 0;
+// 			dimensions[PARAM_DIMENSION] = 0;
+// 			dimensions[OUTPUT_DIMENSION] = 0;
+
+// 			reset();
+// 		}
+
+// 		void setup(Vector<float>* config) {
+// 			n = config->size();
+// 			buffer = config->as_array();
+// 			dimensions[PARAM_DIMENSION] = n;
+// 			dimensions[OUTPUT_DIMENSION] = n;
+// 		}
+
+// 		void reset() {
+// 			value = 0;
+// 		}
+
+// 		void clear() {
+// 			value = 0;
+// 		}
+
+// 		void run(Vector<float>* inputs, Vector<float>* outputs) {
+			
+// 			(*outputs)[0] = float(value);
+// 		}
+
+// 		void print() {
+// 			Serial.println("Constant Value task");
+// 			Serial.printf("\tOutput: %i\n", value);
+// 		}
+// };
+
 #endif

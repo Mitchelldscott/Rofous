@@ -97,7 +97,7 @@ class Robot_Description:
 						cmd = [file_path]
 		
 					self.buff_respawn.append(required)
-					self.buff_nodes.append(cmd)
+					self.buff_nodes.append(cmd + args)
 
 	def load_description(self, name):
 		"""
@@ -144,13 +144,13 @@ class Robot_Description:
 
 		self.data['robot_name'] = name
 		os.environ['ROBOT_NAME'] = name					# for BYU
-		proc_data = os.path.join(BuffPy_LOC_LUT['robots'], name, 'process.yaml')
+		proc_data = os.path.join(BuffPy_LOC_LUT['robots'], name, 'nodes.yaml')
 
-		with open(proc_data, 'r') as f:
-			data = yaml.safe_load(f)
-			self.data[proc_data.split('/')[-1]] = data
+		# with open(proc_data, 'r') as f:
+		# 	data = yaml.safe_load(f)
+		# 	self.data[proc_data.split('/')[-1]] = data
 
-		print(f'System Description:\n{yaml.dump(self.data, allow_unicode=True)}\n')
+		print(f'System Description: [{name}]\n{yaml.dump(self.data, allow_unicode=True)}\n')
 
 	def get_commands(self):
 		"""

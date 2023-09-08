@@ -18,9 +18,7 @@ extern crate hidapi;
 use hidapi::{HidApi, HidDevice};
 
 use crate::{
-    comms::{
-        data_structures::*, hid_interface::*, hid_layer::*, hid_reader::*, hid_writer::*,
-    },
+    comms::{data_structures::*, hid_interface::*, hid_layer::*, hid_reader::*, hid_writer::*},
     utilities::{data_structures::*, loaders::*},
 };
 
@@ -81,7 +79,7 @@ pub mod dead_read_write {
         // let mut hidreader = HidReader::new(layer.clone());
         // let mut hidwriter = HidWriter::new(layer, writer_rx);
 
-        let (mut interface, mut reader, mut writer) = HidInterface::new("penguin");
+        let (mut interface, mut reader, mut writer) = HidInterface::new();
 
         interface.layer.print();
 
@@ -159,7 +157,7 @@ pub mod dead_comms {
         // let mut hidreader = HidReader::new(layer.clone());
         // let mut hidwriter = HidWriter::new(layer, writer_rx);
 
-        let (interface, mut reader, mut writer) = HidInterface::new("penguin");
+        let (interface, mut reader, mut writer) = HidInterface::new();
 
         interface.layer.print();
 
@@ -246,7 +244,7 @@ pub mod live_comms {
             Start an hid layer
         */
 
-        let (interface, mut reader, mut writer) = HidInterface::new("penguin");
+        let (interface, mut reader, mut writer) = HidInterface::new();
 
         interface.layer.print();
 
@@ -327,7 +325,7 @@ pub mod live_record {
             Start an hid layer
         */
 
-        let (interface, mut reader, mut writer) = HidInterface::new("penguin");
+        let (interface, mut reader, mut writer) = HidInterface::new();
 
         interface.layer.print();
 
@@ -357,4 +355,3 @@ pub mod live_record {
         writer_handle.join().expect("[HID-Writer]: failed");
     }
 }
-

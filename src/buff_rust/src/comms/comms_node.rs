@@ -18,9 +18,9 @@ fn main() {
     /*
         Start an hid layer
     */
-    let (mut interface, mut reader, mut writer) = HidInterface::new("penguin");
+    let (mut interface, mut reader, mut writer) = HidInterface::new();
 
-    interface.layer.print();
+    interface.print();
 
     let reader_handle = Builder::new()
         .name("HID Reader".to_string())

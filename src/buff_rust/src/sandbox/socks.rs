@@ -28,9 +28,15 @@ pub const UDP_PACKET_SIZE: usize = 1024;
 type UdpPacket = [u8; UDP_PACKET_SIZE];
 
 macro_rules! sock_uri {
-    () => {{ SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 0) }};
-    ($port:expr) => {{ SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), $port) }};
-    ($ip1:expr, $ip2:expr, $ip3:expr, $ip4:expr, $port:expr) => {{ SocketAddr::new(IpAddr::V4(Ipv4Addr::new($ip1, $ip2, $ip3, $ip4)), $port) }};
+    () => {{
+        SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 0)
+    }};
+    ($port:expr) => {{
+        SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), $port)
+    }};
+    ($ip1:expr, $ip2:expr, $ip3:expr, $ip4:expr, $port:expr) => {{
+        SocketAddr::new(IpAddr::V4(Ipv4Addr::new($ip1, $ip2, $ip3, $ip4)), $port)
+    }};
 }
 
 pub struct SockBuffer {
@@ -38,7 +44,6 @@ pub struct SockBuffer {
 }
 
 impl SockBuffer {
-
     pub fn new() -> SockBuffer {
         SockBuffer {
             buffer: [0u8; UDP_PACKET_SIZE],
@@ -63,7 +68,7 @@ impl SockBuffer {
     pub fn set_mode(&mut self, value: u8) {
         self.buffer[0] = value; // buffer[0..1] = (name_len, mode)
     }
-    
+
     pub fn name_len(&self) -> u8 {
         self.buffer[1] // buffer[0..buffer[0]+1] = (name_len, mode, name)
     }
@@ -73,7 +78,7 @@ impl SockBuffer {
     }
 
     pub fn data_start(&self) -> usize {
-        (self.name_len()+2) as usize // buffer[0]+2 = name_len+2
+        (self.name_len() + 2) as usize // buffer[0]+2 = name_len+2
     }
 
     pub fn data_len(&self) -> usize {
@@ -111,13 +116,13 @@ impl SockBuffer {
         let data = data.as_bytes();
         let data_len = data.len();
         self.buffer[idx] = data_len as u8;
-        self.buffer[idx+1..data_len+idx+1].copy_from_slice(&data);
-        data_len+idx+1
+        self.buffer[idx + 1..data_len + idx + 1].copy_from_slice(&data);
+        data_len + idx + 1
     }
 
     pub fn parse_string(&self, idx: usize) -> String {
         let str_len = self.buffer[idx] as usize;
-        match String::from_utf8(self.buffer[idx+1..str_len+idx+1].to_vec()) {
+        match String::from_utf8(self.buffer[idx + 1..str_len + idx + 1].to_vec()) {
             Ok(s) => s,
             Err(_) => String::new(),
         }
@@ -134,20 +139,20 @@ impl SockBuffer {
     pub fn parse_strings(&self, mut idx: usize) -> Vec<String> {
         let n_data = self.buffer[idx] as usize;
         idx += 1;
-        
-        (0..n_data).filter_map(|_| {
-            match idx < UDP_PACKET_SIZE {
+
+        (0..n_data)
+            .filter_map(|_| match idx < UDP_PACKET_SIZE {
                 true => {
                     let name = self.parse_string(idx);
-                    idx += (self.buffer[idx]+1) as usize;
+                    idx += (self.buffer[idx] + 1) as usize;
                     match name.len() > 0 {
                         true => Some(name),
-                        false => None,                        
+                        false => None,
                     }
                 }
-                false => None
-            }
-        }).collect()
+                false => None,
+            })
+            .collect()
     }
 
     ///
@@ -159,19 +164,22 @@ impl SockBuffer {
 
     pub fn dump_float(&mut self, idx: usize, data: f64) -> usize {
         let data = data.to_be_bytes();
-        self.buffer[idx..idx+std::mem::size_of::<f64>()].copy_from_slice(&data);
-        idx+std::mem::size_of::<f64>()
+        self.buffer[idx..idx + std::mem::size_of::<f64>()].copy_from_slice(&data);
+        idx + std::mem::size_of::<f64>()
     }
 
-    pub fn parse_float(&self, idx: usize) -> f64 { // gross but whatever ig
-        f64::from_be_bytes([self.buffer[idx], 
-                            self.buffer[idx+1],
-                            self.buffer[idx+2],
-                            self.buffer[idx+3],
-                            self.buffer[idx+4],
-                            self.buffer[idx+5],
-                            self.buffer[idx+6],
-                            self.buffer[idx+7]])
+    pub fn parse_float(&self, idx: usize) -> f64 {
+        // gross but whatever ig
+        f64::from_be_bytes([
+            self.buffer[idx],
+            self.buffer[idx + 1],
+            self.buffer[idx + 2],
+            self.buffer[idx + 3],
+            self.buffer[idx + 4],
+            self.buffer[idx + 5],
+            self.buffer[idx + 6],
+            self.buffer[idx + 7],
+        ])
     }
 
     pub fn dump_floats(&mut self, mut idx: usize, data: &Vec<f64>) {
@@ -185,17 +193,17 @@ impl SockBuffer {
     pub fn parse_floats(&self, mut idx: usize) -> Vec<f64> {
         let n_data = self.buffer[idx] as usize;
         idx += 1;
-        
-        (0..n_data).filter_map(|_| {
-            match idx < UDP_PACKET_SIZE {
+
+        (0..n_data)
+            .filter_map(|_| match idx < UDP_PACKET_SIZE {
                 true => {
                     let float = self.parse_float(idx);
                     idx += std::mem::size_of::<f64>();
                     Some(float)
                 }
-                false => None
-            }
-        }).collect()
+                false => None,
+            })
+            .collect()
     }
 
     ///
@@ -208,15 +216,23 @@ impl SockBuffer {
     pub fn dump_addr(&mut self, idx: usize, addr: &SocketAddr) -> usize {
         let mut octets = match addr.ip() {
             IpAddr::V4(ip) => ip.octets().to_vec(),
-            _ => {vec![0, 0, 0, 0]}
+            _ => {
+                vec![0, 0, 0, 0]
+            }
         };
         octets.append(&mut addr.port().to_be_bytes().to_vec());
-        self.buffer[idx..idx+6].copy_from_slice(&octets);
+        self.buffer[idx..idx + 6].copy_from_slice(&octets);
         idx + 6
     }
 
     pub fn parse_addr(&self, idx: usize) -> SocketAddr {
-        sock_uri!(self.buffer[idx], self.buffer[idx+1], self.buffer[idx+2], self.buffer[idx+3], u16::from_be_bytes([self.buffer[idx+4], self.buffer[idx+5]]))
+        sock_uri!(
+            self.buffer[idx],
+            self.buffer[idx + 1],
+            self.buffer[idx + 2],
+            self.buffer[idx + 3],
+            u16::from_be_bytes([self.buffer[idx + 4], self.buffer[idx + 5]])
+        )
     }
 
     pub fn dump_addrs(&mut self, mut idx: usize, ips: &Vec<SocketAddr>) {
@@ -230,19 +246,18 @@ impl SockBuffer {
     pub fn parse_addrs(&self, mut idx: usize) -> Vec<SocketAddr> {
         let n_addrs = self.buffer[idx] as usize;
         idx += 1;
-        
-        (0..n_addrs).filter_map(|_| {
-            match idx < UDP_PACKET_SIZE {
+
+        (0..n_addrs)
+            .filter_map(|_| match idx < UDP_PACKET_SIZE {
                 true => {
                     let addr = self.parse_addr(idx);
-                    idx += (self.buffer[idx]+1) as usize;
+                    idx += (self.buffer[idx] + 1) as usize;
                     Some(addr)
                 }
-                false => None
-            }
-        }).collect()
+                false => None,
+            })
+            .collect()
     }
-
 
     ///
     ///
@@ -278,7 +293,7 @@ impl SockBuffer {
         let mut packet = SockBuffer::new();
         packet.set_mode(3);
         packet.dump_sender(name);
-        packet.buffer    
+        packet.buffer
     }
 
     pub fn data_packet(name: &str, data: &Vec<f64>) -> UdpPacket {
@@ -286,10 +301,9 @@ impl SockBuffer {
         packet.set_mode(4);
         packet.dump_sender(name);
         packet.dump_floats(packet.data_start(), data);
-        packet.buffer 
+        packet.buffer
     }
 }
-
 
 pub struct Sock {
     pub name: String,
@@ -309,7 +323,7 @@ impl Sock {
     pub fn add_target(&mut self, target: String) {
         match self.targets.iter().position(|t| *t == target) {
             None => self.targets.push(target),
-            Some(_) => {},
+            Some(_) => {}
         };
     }
 }
@@ -361,7 +375,7 @@ impl Sockage {
     }
 
     pub fn client(name: &str) -> Sockage {
-        Sockage::new(name, sock_uri!(0,0,0,0,0), 1)
+        Sockage::new(name, sock_uri!(0, 0, 0, 0, 0), 1)
     }
 
     pub fn clear_registry(&mut self) {
@@ -386,35 +400,36 @@ impl Sockage {
     pub fn address_of_name(&self, name: &str) -> SocketAddr {
         match self.find_name(name) {
             Some(i) => self.socks[i].address,
-            None => sock_uri!(0,0,0,0,0),
+            None => sock_uri!(0, 0, 0, 0, 0),
         }
     }
 
     pub fn address_of_names(&self, names: &Vec<String>) -> Vec<SocketAddr> {
-        names.iter().map(|name| self.address_of_name(name)).collect()
+        names
+            .iter()
+            .map(|name| self.address_of_name(name))
+            .collect()
     }
 
     pub fn add_sock(&mut self, name: &str, addr: SocketAddr, targets: Vec<String>) {
         match self.find_name(name) {
-            Some(_) => {},
+            Some(_) => {}
             _ => self.socks.push(Sock::new(name, addr, targets)),
         };
     }
 
     pub fn add_target_to_names(&mut self, names: &Vec<String>, target: String) {
-        names.iter().for_each(|name| {
-            match self.find_name(&name) {
-                Some(i) => self.socks[i].add_target(target.clone()),
-                None => {},
-            }
+        names.iter().for_each(|name| match self.find_name(&name) {
+            Some(i) => self.socks[i].add_target(target.clone()),
+            None => {}
         });
     }
 
     pub fn register_names(&mut self, names: &Vec<String>) {
         names.iter().for_each(|name| {
             match self.find_name(name) {
-                Some(_) => {},
-                None => self.add_sock(name, sock_uri!(0,0,0,0,0), vec![]),
+                Some(_) => {}
+                None => self.add_sock(name, sock_uri!(0, 0, 0, 0, 0), vec![]),
             };
         });
     }
@@ -428,14 +443,20 @@ impl Sockage {
     pub fn discover_sock(&mut self, name: &str, addr: &SocketAddr) {
         match self.find_name(&name) {
             Some(i) => self.socks[i].address = *addr,
-            _ => self.add_sock(name, *addr, vec![]), 
+            _ => self.add_sock(name, *addr, vec![]),
         }
     }
 
     pub fn send_target_updates(&mut self, names: &Vec<String>) {
         names.iter().for_each(|name| {
-            self.send_to(SockBuffer::names_packet(&self.name, &self.targets(name)), self.address_of_name(name));
-            self.send_to(SockBuffer::addrs_packet(&self.name, &self.address_of_names(&self.targets(name))), self.address_of_name(name));
+            self.send_to(
+                SockBuffer::names_packet(&self.name, &self.targets(name)),
+                self.address_of_name(name),
+            );
+            self.send_to(
+                SockBuffer::addrs_packet(&self.name, &self.address_of_names(&self.targets(name))),
+                self.address_of_name(name),
+            );
         });
     }
 
@@ -443,10 +464,10 @@ impl Sockage {
         let data_packet = SockBuffer::data_packet(&self.name, data);
         (0..self.socks.len()).for_each(|i| {
             match self.socks[i].address.port() > 0 {
-                true => { 
-                    self.send_to(data_packet, self.socks[i].address); 
-                },
-                false => {},
+                true => {
+                    self.send_to(data_packet, self.socks[i].address);
+                }
+                false => {}
             };
         })
     }
@@ -473,9 +494,9 @@ impl Sockage {
                     src_addr
                 }
 
-                Err(_) => sock_uri!(0,0,0,0,0),
+                Err(_) => sock_uri!(0, 0, 0, 0, 0),
             },
-            false => sock_uri!(0,0,0,0,0),
+            false => sock_uri!(0, 0, 0, 0, 0),
         }
     }
 

@@ -3,7 +3,7 @@ extern crate yaml_rust;
 use crate::comms::data_structures::*;
 use glob::glob;
 use std::{env, fs, path};
-use yaml_rust::{yaml::Yaml, YamlLoader};
+use yaml_rust::{yaml::Yaml, Yaml::Integer, YamlLoader};
 
 pub static MAX_RECORDS_PER_CSV: u16 = 1000;
 pub static MAX_FILES_PER_RUN: u16 = 120;
@@ -33,7 +33,6 @@ impl BuffYamlUtil {
 
     pub fn new(bot_name: &str) -> BuffYamlUtil {
         let robot_name = bot_name;
-        env::set_var("ROBOT_NAME", robot_name);
         let project_root = env::var("PROJECT_ROOT").expect("Project root not set");
 
         let yaml_path = format!("{}/buffpy/data/robots/{}", project_root, robot_name);
@@ -147,7 +146,7 @@ impl BuffYamlUtil {
                 let mut config = vec![];
                 let mut driver = "UNKNOWN".to_string();
                 let mut record = 0;
-                let mut display = 0;
+                let mut publish = 0;
 
                 value.as_vec().unwrap().iter().for_each(|item| {
                     item.as_hash()
@@ -193,12 +192,9 @@ impl BuffYamlUtil {
                                     _ => 0,
                                 };
                             }
-                            "display" => {
-                                display = match v.as_str() {
-                                    Some(val) => match val.parse::<u16>() {
-                                        Ok(num) => num,
-                                        _ => 0,
-                                    },
+                            "publish" => {
+                                publish = match v {
+                                    Integer(val) => *val,
                                     _ => 0,
                                 };
                             }
@@ -212,7 +208,7 @@ impl BuffYamlUtil {
                     outputs,
                     config,
                     record,
-                    display,
+                    publish as u16,
                 )
             })
             .collect()

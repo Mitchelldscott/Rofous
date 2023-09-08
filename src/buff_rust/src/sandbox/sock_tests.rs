@@ -15,17 +15,23 @@
 #![allow(unused_macros)]
 use crate::sandbox::socks::*;
 use std::{
-	env,
-	time::{Instant, Duration},
-	net::{UdpSocket, SocketAddr, Ipv4Addr, IpAddr},
+    env,
+    net::{IpAddr, Ipv4Addr, SocketAddr, UdpSocket},
+    time::{Duration, Instant},
 };
 
 use more_asserts::assert_le;
 
 macro_rules! sock_uri {
-    () => {{ SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 0) }};
-    ($port:expr) => {{ SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), $port) }};
-    ($port:expr, $ip1:expr, $ip2:expr, $ip3:expr, $ip4:expr) => {{ SocketAddr::new(IpAddr::V4(Ipv4Addr::new($ip1, $ip2, $ip3, $ip4)), $port) }};
+    () => {{
+        SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 0)
+    }};
+    ($port:expr) => {{
+        SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), $port)
+    }};
+    ($port:expr, $ip1:expr, $ip2:expr, $ip3:expr, $ip4:expr) => {{
+        SocketAddr::new(IpAddr::V4(Ipv4Addr::new($ip1, $ip2, $ip3, $ip4)), $port)
+    }};
 }
 
 pub fn packet_sum(buffer: [u8; UDP_PACKET_SIZE]) -> u32 {
@@ -287,8 +293,8 @@ pub mod low_socks {
         ));
     }
 
-    pub fn simple_node(name: &str, rate: f64) {
-        let millis = (1000.0 / rate) as u128;
+    pub fn simple_node(name: &str, _: f64) {
+        // let millis = (1000.0 / rate) as u128;
         let mut lifetime = Instant::now();
         while lifetime.elapsed().as_millis() < 1 as u128 {}
 
@@ -343,7 +349,6 @@ pub mod mid_socks {
 
     #[test]
     pub fn core() {
-
         let mut sock = Sockage::core("mid_sock");
 
         assert_eq!(
@@ -358,8 +363,8 @@ pub mod mid_socks {
             let src = sock.recv(&mut buffer.buffer);
 
             match (buffer.mode(), src.port() > 0) {
-                (0, true) => { 
-                    sock.send_to(SockBuffer::stamp_packet(&sock.name), src); 
+                (0, true) => {
+                    sock.send_to(SockBuffer::stamp_packet(&sock.name), src);
                     sock.log(format!("Received 0 from {:?}", src));
                 }
                 (1, true) => {
@@ -370,19 +375,22 @@ pub mod mid_socks {
                     sock.log(format!("Received 1 from {}", sender));
 
                     sock.add_target_to_names(&names, sender);
-                    sock.send_target_updates(&names);    // send data to nodes registered as sender
+                    sock.send_target_updates(&names); // send data to nodes registered as sender
                 }
-                (2, true) => { sock.log(format!("Received 2 from {:?}", src)); }
-                (3, true) => { sock.log(format!("Received 3 from {:?}", src)); }
+                (2, true) => {
+                    sock.log(format!("Received 2 from {:?}", src));
+                }
+                (3, true) => {
+                    sock.log(format!("Received 3 from {:?}", src));
+                }
                 (4, true) => {
                     let sender = buffer.sender_name();
                     sock.log(format!("Received 4 from {}", sender));
                     sock.send_to(SockBuffer::stamp_packet(&sock.name), src);
                     sock.discover_sock(&sender, &src);
-                    sock.send_target_updates(&vec![sender]);    // send data to nodes registered as sender
-
+                    sock.send_target_updates(&vec![sender]); // send data to nodes registered as sender
                 }
-                _ => {},
+                _ => {}
             };
 
             while t.elapsed().as_millis() < 10 {}
@@ -404,33 +412,36 @@ pub mod mid_socks {
         sock.millis_rate = millis;
         sock.log("Active");
 
-        sock.send_to(SockBuffer::names_packet(&sock.name, &subscribers), sock_uri!(1313));
+        sock.send_to(
+            SockBuffer::names_packet(&sock.name, &subscribers),
+            sock_uri!(1313),
+        );
 
         lifetime = Instant::now();
         let mut t = Instant::now();
-        while lifetime.elapsed().as_secs() < 1  {
-    
+        while lifetime.elapsed().as_secs() < 1 {
             let mut buffer = SockBuffer::new();
             let src = sock.recv(&mut buffer.buffer);
 
             if name_replies < 1 || addr_replies < 1 {
-                sock.send_to(SockBuffer::data_packet(&sock.name, &vec![]), sock_uri!(1313));
-                match (src.port(), buffer.mode())  {
-                    (1313, 0) => {},
-                    (1313, 1) => { 
+                sock.send_to(
+                    SockBuffer::data_packet(&sock.name, &vec![]),
+                    sock_uri!(1313),
+                );
+                match (src.port(), buffer.mode()) {
+                    (1313, 0) => {}
+                    (1313, 1) => {
                         name_replies += 1;
                         let (_, names) = buffer.parse_name_packet();
                         sock.register_names(&names);
                         sock.log(format!("Received names from {:?}", names));
-
-                    },
-                    (1313, 2) => { 
+                    }
+                    (1313, 2) => {
                         addr_replies += 1;
                         let (_, addrs) = buffer.parse_addr_packet();
                         sock.register_addrs(&addrs);
                         sock.log(format!("Received addr from {:?}", addrs));
-
-                    },
+                    }
                     (_, 4) => {
                         if src.port() > 0 {
                             let (sender, data) = buffer.parse_data_packet();
@@ -439,12 +450,11 @@ pub mod mid_socks {
                             data_replies += 1;
                         }
                     }
-                    _ => {},
+                    _ => {}
                 }
             } else {
-	            sock.data_broadcast(&vec![1.0, 2.0, 3.0, 4.0]);
+                sock.data_broadcast(&vec![1.0, 2.0, 3.0, 4.0]);
             }
-
 
             while t.elapsed().as_millis() < sock.millis_rate {}
             t = Instant::now();
@@ -482,12 +492,14 @@ pub mod mid_socks {
 
         sock.log("Active");
 
-        sock.send_to(SockBuffer::names_packet(&sock.name, &subscribe_to), sock_uri!(1313));
+        sock.send_to(
+            SockBuffer::names_packet(&sock.name, &subscribe_to),
+            sock_uri!(1313),
+        );
 
         lifetime = Instant::now();
         let mut t = Instant::now();
         while lifetime.elapsed().as_secs() < 1 {
-            
             let mut buffer = SockBuffer::new();
             let src = sock.recv(&mut buffer.buffer);
 
@@ -512,6 +524,10 @@ pub mod mid_socks {
 
         sock.log_heavy();
         assert_le!(1, core_replies, "Didn't receive StampReply from core");
-        assert_le!((0.6 * rate) as u64, data_replies, "Didn't receive DataReply from sock");
+        assert_le!(
+            (0.6 * rate) as u64,
+            data_replies,
+            "Didn't receive DataReply from sock"
+        );
     }
 }

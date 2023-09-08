@@ -12,7 +12,8 @@
  ********************************************************************************/
 
 use crate::utilities::{data_structures::*, loaders::*};
-use gnuplot::{Caption, Color, Figure};
+// use gnuplot::{Caption, Color, Figure};
+use rosrust_msg::std_msgs;
 use std::{
     sync::{Arc, RwLock},
     time::Instant,
@@ -184,7 +185,7 @@ pub struct EmbeddedTask {
     pub name: String,
     pub driver: String,
     pub record: u16,
-    pub display: u16,
+    pub publish: u16,
     pub latch: u16,
 
     pub output: Vec<Vec<f64>>,
@@ -194,13 +195,13 @@ pub struct EmbeddedTask {
     pub output_names: Vec<String>,
 
     pub run_time: f64,
-    pub output_timestamp: Vec<f64>,
+    pub timestamp: Vec<f64>,
 
     pub csvu: Option<CsvUtil>,
     pub record_timer: Instant,
 
-    pub fig: Option<Figure>,
-    pub display_timer: Instant,
+    pub publisher: Option<rosrust::Publisher<std_msgs::Float64MultiArray>>,
+    pub publish_timer: Instant,
 }
 
 impl EmbeddedTask {
@@ -222,36 +223,26 @@ impl EmbeddedTask {
         output_names: Vec<String>,
         config: Vec<f64>,
         record: u16,
-        display: u16,
+        publish: u16,
     ) -> EmbeddedTask {
-        let fig;
-        match display > 0 {
-            true => {
-                fig = Some(Figure::new());
-            }
-            _ => {
-                fig = None;
-            }
-        }
+        let publisher = match publish > 0 {
+            true => Some(rosrust::publish(&name, 1).unwrap()),
+            _ => None,
+        };
 
-        let csvu;
-        match record > 0 {
-            true => {
-                csvu = Some(CsvUtil::new(
-                    format!("{}/output", name.clone()).as_str(),
-                    vec![],
-                ));
-            }
-            _ => {
-                csvu = None;
-            }
-        }
+        let csvu = match record > 0 {
+            true => Some(CsvUtil::new(
+                format!("{}/output", name.clone()).as_str(),
+                vec![],
+            )),
+            _ => None,
+        };
 
         EmbeddedTask {
             name: name.clone(),
             driver: driver,
             record: record,
-            display: display,
+            publish: publish,
             latch: 0,
 
             output: vec![],
@@ -261,13 +252,13 @@ impl EmbeddedTask {
             output_names: output_names,
 
             run_time: 0.0,
-            output_timestamp: vec![0.0],
+            timestamp: vec![0.0],
 
             csvu: csvu,
             record_timer: Instant::now(),
 
-            fig: fig,
-            display_timer: Instant::now(),
+            publisher: publisher,
+            publish_timer: Instant::now(),
         }
     }
 
@@ -312,11 +303,11 @@ impl EmbeddedTask {
 
         if data.len() > 0 {
             self.output.push(data.to_vec());
-            self.output_timestamp.push(time);
+            self.timestamp.push(time);
 
             if self.output.len() > 500 {
                 self.output.remove(0);
-                self.output_timestamp.remove(0);
+                self.timestamp.remove(0);
             }
 
             match self.csvu {
@@ -326,9 +317,9 @@ impl EmbeddedTask {
                 _ => {}
             }
 
-            match self.fig {
+            match self.publisher {
                 Some(_) => {
-                    self.display();
+                    self.publish();
                 }
                 _ => {}
             }
@@ -343,7 +334,7 @@ impl EmbeddedTask {
         if self.output.len() > 0 {
             println!(
                 "\toutput: [{}s]\n\t\t{:?}",
-                self.output_timestamp.last().unwrap(),
+                self.timestamp.last().unwrap(),
                 self.output.last().unwrap()
             );
         }
@@ -352,7 +343,7 @@ impl EmbeddedTask {
 
     pub fn load(&mut self, run: u16, fc: u16) {
         self.output.clear();
-        self.output_timestamp.clear();
+        self.timestamp.clear();
         self.csvu = Some(CsvUtil::new(
             format!("{}/output", self.name.clone()).as_str(),
             vec![],
@@ -364,14 +355,15 @@ impl EmbeddedTask {
             .iter()
             .for_each(|c| {
                 self.output.push(c[0..c.len() - 1].to_vec());
-                self.output_timestamp.push(*c.last().unwrap());
+                self.timestamp.push(*c.last().unwrap());
             });
     }
 
     pub fn save(&mut self) {
-        if (self.record_timer.elapsed().as_millis() as f64) * 1E-3 < 1.0 / (self.record as f64) {
+        if (self.record_timer.elapsed().as_millis() as f64) < 1E3 / (self.record as f64) {
             return;
         }
+        self.record_timer = Instant::now();
         let csvu = self.csvu.as_mut().unwrap();
         if csvu.record_count == 0 {
             csvu.new_labels(EmbeddedTask::make_labels(
@@ -380,79 +372,118 @@ impl EmbeddedTask {
             ));
         }
 
-        csvu.save(
-            self.output.last().unwrap(),
-            *self.output_timestamp.last().unwrap(),
-        );
+        csvu.save(self.output.last().unwrap(), *self.timestamp.last().unwrap());
         self.record_timer = Instant::now();
     }
 
-    pub fn display(&mut self) {
-        if (self.display_timer.elapsed().as_millis() as f64) * 1E-3 < 1.0 / (self.record as f64) {
+    pub fn publish(&mut self) {
+        if (self.publish_timer.elapsed().as_millis() as f64) < 1E3 / (self.publish as f64) {
             return;
         }
-
-        if self.output.len() > 0 {
-            let len = self.output[0].len();
-            let mut iters: Vec<_> = self
-                .output
-                .clone()
-                .into_iter()
-                .map(|n| n.into_iter())
-                .collect();
-            let transpose: Vec<Vec<f64>> = (0..len)
-                .map(|_| {
-                    iters
-                        .iter_mut()
-                        .map(|n| n.next().unwrap())
-                        .collect::<Vec<f64>>()
-                })
-                .collect();
-
-            let fig = self.fig.as_mut().unwrap();
-            fig.clear_axes();
-            fig.axes2d().lines(
-                &self.output_timestamp,
-                &transpose[0],
-                &[
-                    Caption(format!("{}/output0", self.name).as_str()),
-                    Color("black"),
-                ],
-            );
-            fig.show_and_keep_running().unwrap();
-            self.display_timer = Instant::now();
-        }
+        self.publish_timer = Instant::now();
+        let mut msg = std_msgs::Float64MultiArray::default();
+        msg.data = self.output.last().unwrap().to_vec();
+        msg.data.push(*self.timestamp.last().unwrap());
+        self.publisher.as_ref().unwrap().send(msg).unwrap();
     }
+
+    // pub fn display(&mut self) {
+    //     if (self.display_timer.elapsed().as_millis() as f64) * 1E-3 < 1.0 / (self.record as f64) {
+    //         return;
+    //     }
+
+    //     if self.output.len() > 0 {
+    //         let len = self.output[0].len();
+    //         let mut iters: Vec<_> = self
+    //             .output
+    //             .clone()
+    //             .into_iter()
+    //             .map(|n| n.into_iter())
+    //             .collect();
+    //         let transpose: Vec<Vec<f64>> = (0..len)
+    //             .map(|_| {
+    //                 iters
+    //                     .iter_mut()
+    //                     .map(|n| n.next().unwrap())
+    //                     .collect::<Vec<f64>>()
+    //             })
+    //             .collect();
+
+    //         let fig = self.fig.as_mut().unwrap();
+    //         fig.clear_axes();
+    //         fig.axes2d().lines(
+    //             &self.timestamp,
+    //             &transpose[0],
+    //             &[
+    //                 Caption(format!("{}/output0", self.name).as_str()),
+    //                 Color("black"),
+    //             ],
+    //         );
+    //         fig.show_and_keep_running().unwrap();
+    //         self.display_timer = Instant::now();
+    //     }
+    // }
+}
+
+pub fn get_output_overwrite_latch(i: u8, data: Vec<f64>) -> ByteBuffer {
+    let mut buffer = ByteBuffer::hid();
+    buffer.puts(0, vec![TASK_CONTROL_ID, i, 1, data.len() as u8]);
+    buffer.put_floats(4, data);
+    buffer
 }
 
 pub struct RobotFirmware {
     pub tasks: Vec<EmbeddedTask>,
+    pub task_subs: Vec<rosrust::Subscriber>,
 }
 
 impl RobotFirmware {
-    pub fn from_byu(byu: BuffYamlUtil) -> RobotFirmware {
+    pub fn from_byu(
+        byu: BuffYamlUtil,
+        writer_tx: crossbeam_channel::Sender<ByteBuffer>,
+    ) -> RobotFirmware {
+        rosrust::init("dyse_comms");
+
+        let tasks = byu.load_tasks();
+
+        let task_subs = (0..tasks.len())
+            .map(|i| {
+                let writer_clone = writer_tx.clone();
+                rosrust::subscribe(
+                    &format!("{}_ctrl", tasks[i].name),
+                    1,
+                    move |msg: std_msgs::Float64MultiArray| {
+                        writer_clone
+                            .send(get_output_overwrite_latch(i as u8, msg.data))
+                            .unwrap();
+                    },
+                )
+                .unwrap()
+            })
+            .collect();
+
         RobotFirmware {
-            tasks: byu.load_tasks(),
+            tasks: tasks,
+            task_subs: task_subs,
         }
     }
 
-    pub fn default() -> RobotFirmware {
+    pub fn default(writer_tx: crossbeam_channel::Sender<ByteBuffer>) -> RobotFirmware {
         let byu = BuffYamlUtil::default();
-        RobotFirmware::from_byu(byu)
+        RobotFirmware::from_byu(byu, writer_tx)
     }
 
-    pub fn new(robot_name: &str) -> RobotFirmware {
-        if robot_name == "Default" {
-            RobotFirmware::default()
-        } else {
-            let byu = BuffYamlUtil::new(robot_name);
-            RobotFirmware::from_byu(byu)
-        }
+    pub fn new(
+        robot_name: &str,
+        writer_tx: crossbeam_channel::Sender<ByteBuffer>,
+    ) -> RobotFirmware {
+        let byu = BuffYamlUtil::new(robot_name);
+        RobotFirmware::from_byu(byu, writer_tx)
     }
 
-    pub fn from_self() -> RobotFirmware {
+    pub fn from_self(writer_tx: crossbeam_channel::Sender<ByteBuffer>) -> RobotFirmware {
         let byu = BuffYamlUtil::from_self();
-        RobotFirmware::from_byu(byu)
+        RobotFirmware::from_byu(byu, writer_tx)
     }
 
     pub fn find_ids(&self, names: &Vec<String>) -> Vec<u8> {
@@ -543,24 +574,6 @@ impl RobotFirmware {
         results
     }
 
-    pub fn get_output_overwrite_latch(&self, i: u8) -> ByteBuffer {
-        if self.tasks[i as usize].output.len() > 0 {
-            let mut buffer = ByteBuffer::hid();
-            buffer.puts(
-                0,
-                vec![
-                    TASK_CONTROL_ID,
-                    i,
-                    1,
-                    self.tasks[i as usize].output[0].len() as u8,
-                ],
-            );
-            buffer
-        } else {
-            ByteBuffer::hid()
-        }
-    }
-
     pub fn get_task_names(&self) -> Vec<&String> {
         self.tasks.iter().map(|task| &task.name).collect()
     }
@@ -589,7 +602,7 @@ impl RobotFirmware {
                 mcu_stats.set_packets_sent(mcu_write_count);
                 mcu_stats.set_packets_read(report.get_float(6));
             }
-        } else if rid == TASK_CONTROL_ID {
+        } else if rid == TASK_CONTROL_ID && self.tasks.len() > report.get(1) as usize {
             self.tasks[report.get(1) as usize].update_output(
                 report.get(2),
                 report.get_floats(4, report.get(3) as usize),
@@ -616,14 +629,14 @@ impl RobotFirmware {
         });
     }
 
-    pub fn display(&mut self) {
-        (0..self.tasks.len()).for_each(|i| {
-            self.tasks[i].display();
-        });
-    }
+    // pub fn display(&mut self) {
+    //     (0..self.tasks.len()).for_each(|i| {
+    //         self.tasks[i].display();
+    //     });
+    // }
 
-    pub fn display_run(&mut self, run: u16, fc: u16) {
-        self.load_run(run, fc);
-        self.display();
-    }
+    // pub fn display_run(&mut self, run: u16, fc: u16) {
+    //     self.load_run(run, fc);
+    //     self.display();
+    // }
 }
