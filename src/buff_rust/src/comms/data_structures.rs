@@ -184,6 +184,7 @@ impl HidControlFlags {
 pub struct EmbeddedTask {
     pub name: String,
     pub driver: String,
+    pub rate: u16,
     pub record: u16,
     pub publish: u16,
     pub latch: u16,
@@ -192,7 +193,6 @@ pub struct EmbeddedTask {
     pub parameters: Vec<f64>,
 
     pub input_names: Vec<String>,
-    pub output_names: Vec<String>,
 
     pub run_time: f64,
     pub timestamp: Vec<f64>,
@@ -220,8 +220,8 @@ impl EmbeddedTask {
         name: String,
         driver: String,
         input_names: Vec<String>,
-        output_names: Vec<String>,
         config: Vec<f64>,
+        rate: u16,
         record: u16,
         publish: u16,
     ) -> EmbeddedTask {
@@ -241,6 +241,8 @@ impl EmbeddedTask {
         EmbeddedTask {
             name: name.clone(),
             driver: driver,
+
+            rate: rate,
             record: record,
             publish: publish,
             latch: 0,
@@ -249,7 +251,6 @@ impl EmbeddedTask {
             parameters: config,
 
             input_names: input_names,
-            output_names: output_names,
 
             run_time: 0.0,
             timestamp: vec![0.0],
@@ -268,7 +269,7 @@ impl EmbeddedTask {
             "UET".to_string(),
             vec![],
             vec![],
-            vec![],
+            250,
             0,
             0,
         )
@@ -331,6 +332,10 @@ impl EmbeddedTask {
             "{:?}: {:?} [runtime: {}ms]",
             self.name, self.driver, self.run_time
         );
+        println!(
+            "\t\tRate: {}Hz\n\t\tPublish: {}Hz\n\t\tRecord: {}Hz",
+            self.rate, self.publish, self.record,
+        );
         if self.output.len() > 0 {
             println!(
                 "\toutput: [{}s]\n\t\t{:?}",
@@ -367,7 +372,7 @@ impl EmbeddedTask {
         let csvu = self.csvu.as_mut().unwrap();
         if csvu.record_count == 0 {
             csvu.new_labels(EmbeddedTask::make_labels(
-                self.output_names[0].clone(),
+                self.name.clone(),
                 self.output.last().unwrap().len(),
             ));
         }
@@ -425,16 +430,84 @@ impl EmbeddedTask {
     // }
 }
 
-pub fn get_output_overwrite_latch(i: u8, data: Vec<f64>) -> ByteBuffer {
+pub fn get_task_reset_packet(id: u8, rate: u16, driver: Vec<u8>, input_ids: Vec<u8>) -> ByteBuffer {
     let mut buffer = ByteBuffer::hid();
-    buffer.puts(0, vec![TASK_CONTROL_ID, i, 1, data.len() as u8]);
+    buffer.puts(0, vec![INIT_REPORT_ID, INIT_NODE_MODE, id]);
+    buffer.puts(3, (1000 / rate).to_le_bytes().to_vec());
+    buffer.puts(5, driver);
+    buffer.put(10, input_ids.len() as u8);
+    buffer.puts(11, input_ids);
+    buffer
+}
+
+pub fn get_task_parameter_packets(id: u8, parameters: &Vec<f64>) -> Vec<ByteBuffer> {
+    parameters
+        .chunks(MAX_HID_FLOAT_DATA)
+        .enumerate()
+        .map(|(i, chunk)| {
+            let mut buffer = ByteBuffer::hid();
+            buffer.puts(
+                0,
+                vec![
+                    INIT_REPORT_ID,
+                    SETUP_CONFIG_MODE,
+                    id,
+                    i as u8,
+                    chunk.len() as u8,
+                ],
+            );
+
+            buffer.puts(
+                5,
+                chunk
+                    .into_iter()
+                    .map(|x| (*x as f32).to_le_bytes())
+                    .flatten()
+                    .collect(),
+            );
+
+            buffer
+        })
+        .collect()
+}
+
+pub fn get_task_initializers(
+    id: u8,
+    rate: u16,
+    driver: Vec<u8>,
+    parameters: &Vec<f64>,
+    input_ids: Vec<u8>,
+) -> Vec<ByteBuffer> {
+    [get_task_reset_packet(id, rate, driver, input_ids)]
+        .into_iter()
+        .chain(get_task_parameter_packets(id, parameters).into_iter())
+        .collect()
+}
+
+pub fn get_latch_packet(i: u8, latch: u8, data: Vec<f64>) -> ByteBuffer {
+    let mut buffer = ByteBuffer::hid();
+    buffer.puts(0, vec![TASK_CONTROL_ID, i, latch, data.len() as u8]);
     buffer.put_floats(4, data);
     buffer
 }
 
+pub fn disable_latch(i: u8) -> ByteBuffer {
+    get_latch_packet(i, 0, vec![])
+}
+
+pub fn output_latch(i: u8, data: Vec<f64>) -> ByteBuffer {
+    get_latch_packet(i, 1, data)
+}
+
+pub fn input_latch(i: u8, data: Vec<f64>) -> ByteBuffer {
+    get_latch_packet(i, 2, data)
+}
+
 pub struct RobotFirmware {
+    pub configured: Vec<bool>,
     pub tasks: Vec<EmbeddedTask>,
-    pub task_subs: Vec<rosrust::Subscriber>,
+    pub task_input_subs: Vec<rosrust::Subscriber>,
+    pub task_output_subs: Vec<rosrust::Subscriber>,
 }
 
 impl RobotFirmware {
@@ -446,16 +519,28 @@ impl RobotFirmware {
 
         let tasks = byu.load_tasks();
 
-        let task_subs = (0..tasks.len())
+        let task_input_subs = (0..tasks.len())
             .map(|i| {
                 let writer_clone = writer_tx.clone();
                 rosrust::subscribe(
-                    &format!("{}_ctrl", tasks[i].name),
+                    &format!("{}_ictrl", tasks[i].name),
                     1,
                     move |msg: std_msgs::Float64MultiArray| {
-                        writer_clone
-                            .send(get_output_overwrite_latch(i as u8, msg.data))
-                            .unwrap();
+                        writer_clone.send(input_latch(i as u8, msg.data)).unwrap();
+                    },
+                )
+                .unwrap()
+            })
+            .collect();
+
+        let task_output_subs = (0..tasks.len())
+            .map(|i| {
+                let writer_clone = writer_tx.clone();
+                rosrust::subscribe(
+                    &format!("{}_octrl", tasks[i].name),
+                    1,
+                    move |msg: std_msgs::Float64MultiArray| {
+                        writer_clone.send(output_latch(i as u8, msg.data)).unwrap();
                     },
                 )
                 .unwrap()
@@ -463,8 +548,10 @@ impl RobotFirmware {
             .collect();
 
         RobotFirmware {
+            configured: vec![false; tasks.len()],
             tasks: tasks,
-            task_subs: task_subs,
+            task_input_subs: task_input_subs,
+            task_output_subs: task_output_subs,
         }
     }
 
@@ -486,96 +573,58 @@ impl RobotFirmware {
         RobotFirmware::from_byu(byu, writer_tx)
     }
 
-    pub fn find_ids(&self, names: &Vec<String>) -> Vec<u8> {
-        let mut result = vec![];
-        self.tasks.iter().enumerate().for_each(|(i, task)| {
-            names.iter().for_each(|name| {
-                task.output_names.iter().for_each(|n| {
-                    if n == name {
-                        result.push(i as u8);
-                    }
-                })
-            })
-        });
-
-        result
+    pub fn get_task_names(&self) -> Vec<&String> {
+        self.tasks.iter().map(|task| &task.name).collect()
     }
 
-    pub fn id_of(&self, name: &str) -> usize {
-        self.tasks
+    pub fn task_id(&self, name: &str) -> Option<usize> {
+        self.tasks.iter().position(|task| name == task.name)
+    }
+
+    pub fn input_task_ids(&self, names: &Vec<String>) -> Vec<u8> {
+        names
             .iter()
-            .enumerate()
-            .find(|(_, task)| name == task.name)
-            .expect("Cannot find index of task")
-            .0
+            .filter_map(|name| match self.task_id(name) {
+                Some(i) => Some(i as u8),
+                _ => None,
+            })
+            .collect()
     }
 
-    pub fn get_task_initializers(
-        &self,
-        id: u8,
-        driver: Vec<u8>,
-        parameters: &Vec<f64>,
-        input_names: &Vec<String>,
-    ) -> Vec<ByteBuffer> {
-        let mut reports = vec![];
-        let input_ids = self.find_ids(input_names);
-
-        // please clean this up, super not rusty
-
-        let mut node_init = ByteBuffer::hid();
-        node_init.puts(0, vec![INIT_REPORT_ID, INIT_NODE_MODE, id]);
-        node_init.puts(3, driver);
-        node_init.put(6, input_ids.len() as u8);
-        node_init.puts(7, input_ids);
-        reports.push(node_init);
-
-        parameters
-            .chunks(MAX_HID_FLOAT_DATA)
-            .enumerate()
-            .for_each(|(i, chunk)| {
-                let mut buffer = ByteBuffer::hid();
-                buffer.puts(
-                    0,
-                    vec![
-                        INIT_REPORT_ID,
-                        SETUP_CONFIG_MODE,
-                        id,
-                        i as u8,
-                        chunk.len() as u8,
-                    ],
-                );
-
-                buffer.puts(
-                    5,
-                    chunk
-                        .into_iter()
-                        .map(|x| (*x as f32).to_le_bytes())
-                        .flatten()
-                        .collect(),
-                );
-
-                reports.push(buffer);
-            });
-
-        reports
+    pub fn task_init_packet(&self, idx: usize) -> Vec<ByteBuffer> {
+        match self.configured[idx] {
+            true => {
+                vec![]
+            }
+            false => get_task_initializers(
+                idx as u8,
+                self.tasks[idx].rate,
+                self.tasks[idx].driver(),
+                &self.tasks[idx].parameters,
+                self.input_task_ids(&self.tasks[idx].input_names),
+            ),
+        }
     }
 
     pub fn task_init_packets(&self) -> Vec<ByteBuffer> {
-        let mut results = vec![];
-        self.tasks.iter().enumerate().for_each(|(i, task)| {
-            results.append(&mut self.get_task_initializers(
-                i as u8,
-                task.driver(),
-                &task.parameters,
-                &task.input_names,
-            ));
-        });
-
-        results
+        (0..self.tasks.len())
+            .map(|i| self.task_init_packet(i))
+            .flatten()
+            .collect()
     }
 
-    pub fn get_task_names(&self) -> Vec<&String> {
-        self.tasks.iter().map(|task| &task.name).collect()
+    pub fn task_param_packet(&self, idx: usize) -> Vec<ByteBuffer> {
+        match self.configured[idx] {
+            true => vec![],
+            false => get_task_parameter_packets(idx as u8, &self.tasks[idx].parameters),
+        }
+    }
+
+    pub fn task_param_packets(&self) -> Vec<ByteBuffer> {
+        (0..self.tasks.len())
+            .map(|i| self.task_param_packet(i))
+            .flatten()
+            .collect()
     }
 
     pub fn parse_hid_feedback(&mut self, report: ByteBuffer, mcu_stats: &HidStats) {
@@ -592,23 +641,31 @@ impl RobotFirmware {
 
         if rid == INIT_REPORT_ID {
             if mode == INIT_REPORT_ID {
-                let mcu_write_count = report.get_float(2);
                 // let prev_mcu_write_count = mcu_stats.packets_sent();
                 // let packet_diff = mcu_write_count - prev_mcu_write_count;
                 // if packet_diff > 1.0 {
                 //     println!("MCU Packet write difference: {}", packet_diff);
                 // }
 
-                mcu_stats.set_packets_sent(mcu_write_count);
+                mcu_stats.set_packets_sent(report.get_float(2));
                 mcu_stats.set_packets_read(report.get_float(6));
             }
-        } else if rid == TASK_CONTROL_ID && self.tasks.len() > report.get(1) as usize {
-            self.tasks[report.get(1) as usize].update_output(
-                report.get(2),
-                report.get_floats(4, report.get(3) as usize),
-                mcu_lifetime,
-                report.get_float(56),
-            );
+        } else if rid == TASK_CONTROL_ID && self.tasks.len() > mode as usize {
+            if report.get(3) == 0 {
+                // Zero length output packet means not configured (only sends when task_node.is_configured() == false)
+                self.configured[mode as usize] = false;
+            } else if report.get(3) < MAX_HID_FLOAT_DATA as u8 {
+                self.configured[mode as usize] = true;
+
+                self.tasks[mode as usize].update_output(
+                    report.get(2),
+                    report.get_floats(4, report.get(3) as usize),
+                    mcu_lifetime,
+                    report.get_float(56),
+                );
+            } else {
+                report.print();
+            }
 
             mcu_stats.update_packets_sent(1.0); // only works if we don't miss packets
             mcu_stats.update_packets_read(1.0);
@@ -616,7 +673,7 @@ impl RobotFirmware {
     }
 
     pub fn print(&self) {
-        println!("[Robot-Firmware]: ");
+        println!("[Robot-Firmware]: {:?}", self.configured);
         self.tasks.iter().enumerate().for_each(|(i, task)| {
             println!("===== Task [{}] =====", i);
             task.print();

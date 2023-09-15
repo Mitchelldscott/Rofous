@@ -1,5 +1,9 @@
 #include "task_manager/task.h"
 
+Task::Task() {
+	dimensions.resize(TASK_DIMENSIONS);
+	dimensions.set_items(TASK_DIMENSIONS);
+}
 
 void Task::reset() {
 	/*
@@ -28,35 +32,35 @@ void Task::print() {
 	printf("Task Base Object: Print\n");
 }
 
-int Task::input_dim() {
-	/*
-		Base implementation of Task functions.
-		returns dimensions of the input.
-		@return
-			dimension: (int) size of input
-	*/
-	return dimensions[0];
-}
+// int Task::input_dim() {
+// 	/*
+// 		Base implementation of Task functions.
+// 		returns dimensions of the input.
+// 		@return
+// 			dimension: (int) size of input
+// 	*/
+// 	return dimensions[0];
+// }
 
-int Task::params_dim() {
-	/*
-		Base implementation of Task functions.
-		returns dimensions of the output.
-		@return
-			dimension: (int) size of input
-	*/
-	return dimensions[3];
-}
+// int Task::params_dim() {
+// 	/*
+// 		Base implementation of Task functions.
+// 		returns dimensions of the output.
+// 		@return
+// 			dimension: (int) size of input
+// 	*/
+// 	return dimensions[3];
+// }
 
-int Task::output_dim() {
-	/*
-		Base implementation of Task functions.
-		returns dimensions of the output.
-		@return
-			dimension: (int) size of input
-	*/
-	return dimensions[2];
-}
+// int Task::output_dim() {
+// 	/*
+// 		Base implementation of Task functions.
+// 		returns dimensions of the output.
+// 		@return
+// 			dimension: (int) size of input
+// 	*/
+// 	return dimensions[2];
+// }
 
 void Task::setup(Vector<float>* config) {
 	/*
@@ -71,7 +75,7 @@ void Task::setup(Vector<float>* config) {
 	config->print();
 }
 
-void Task::run(Vector<float>* input, Vector<float>* output) {
+void Task::run(Vector<float>* input, Vector<float>* output, float dt) {
 	/*
 		Base implementation of Task functions.
 		Defined to show user when inheritance has issues

@@ -142,9 +142,9 @@ impl BuffYamlUtil {
             .map(|(key, value)| {
                 let name = key.as_str().unwrap();
                 let mut inputs = vec![];
-                let mut outputs = vec![];
                 let mut config = vec![];
                 let mut driver = "UNKNOWN".to_string();
+                let mut rate = 250;
                 let mut record = 0;
                 let mut publish = 0;
 
@@ -155,15 +155,6 @@ impl BuffYamlUtil {
                         .for_each(|(k, v)| match k.as_str().unwrap() {
                             "inputs" => {
                                 inputs = v
-                                    .as_vec()
-                                    .unwrap()
-                                    .to_vec()
-                                    .iter()
-                                    .map(|name| name.as_str().unwrap().to_string())
-                                    .collect();
-                            }
-                            "outputs" => {
-                                outputs = v
                                     .as_vec()
                                     .unwrap()
                                     .to_vec()
@@ -183,18 +174,21 @@ impl BuffYamlUtil {
                             "driver" => {
                                 driver = v.as_str().unwrap().to_string();
                             }
+                            "rate" => {
+                                rate = match v {
+                                    Integer(val) => *val as u16,
+                                    _ => 0,
+                                };
+                            }
                             "record" => {
-                                record = match v.as_str() {
-                                    Some(val) => match val.parse::<u16>() {
-                                        Ok(num) => num,
-                                        _ => 0,
-                                    },
+                                record = match v {
+                                    Integer(val) => *val as u16,
                                     _ => 0,
                                 };
                             }
                             "publish" => {
                                 publish = match v {
-                                    Integer(val) => *val,
+                                    Integer(val) => *val as u16,
                                     _ => 0,
                                 };
                             }
@@ -205,10 +199,10 @@ impl BuffYamlUtil {
                     name.to_string(),
                     driver,
                     inputs,
-                    outputs,
                     config,
+                    rate,
                     record,
-                    publish as u16,
+                    publish,
                 )
             })
             .collect()

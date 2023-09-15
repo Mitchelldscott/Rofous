@@ -96,6 +96,7 @@ impl HidReader {
                 // println!("No packet available");
                 // *self.shutdown.write().unwrap() = true;
                 // self.layer.control_flags.disconnect();
+                self.layer.control_flags.initialize(false);
                 self.reconnect();
             }
         }
@@ -120,8 +121,6 @@ impl HidReader {
         let wait_timer = Instant::now();
 
         while wait_timer.elapsed().as_millis() < timeout {
-            let loopt = Instant::now();
-
             match self.read() {
                 64 => {
                     if self.input.get(0) == packet_id {
@@ -133,7 +132,7 @@ impl HidReader {
             }
 
             // HID runs at 1 ms
-            self.layer.loop_delay(loopt);
+            // self.layer.loop_delay(loopt);
         }
 
         // If packet never arrives
@@ -154,7 +153,7 @@ impl HidReader {
     /// reader.spin();       // runs until watchdog times out
     /// ```
     pub fn spin(&mut self) {
-        self.wait_for_report_reply(255, 500);
+        self.wait_for_report_reply(255, 10);
 
         while !self.layer.control_flags.is_shutdown() {
             let loopt = Instant::now();
@@ -168,7 +167,7 @@ impl HidReader {
                 _ => {}
             }
 
-            self.layer.loop_delay(loopt);
+            self.layer.delay(loopt);
             // if loopt.elapsed().as_micros() > 550 {
             //     println!(
             //         "HID Reader over cycled {}ms",
@@ -177,7 +176,7 @@ impl HidReader {
             // }
         }
 
-        self.wait_for_report_reply(255, 500);
+        self.wait_for_report_reply(255, 10);
     }
 
     /// Sends robot status report packet to [HidROS], waits for the reply packet,

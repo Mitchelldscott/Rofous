@@ -1,80 +1,39 @@
-##############################
-#
-#
-#         Sensors
-#
-#
-##############################
-lsm6dsox:
-  - driver: LSM
-  - inputs: []
-  - outputs: [imu]
-  - parameters: [0]
-  - record: 500
-  # - publish: "true"
-
-##############################
-#
-#
-#         Estimators
-#
-#
-##############################
-attitude_estimator:
- - driver: CMF
- - inputs: [attitude, imu]
- - outputs: [attitude]
- - parameters: [0.6]
-
-
-##############################
-#
-#
-#         Motor Drivers
-#
-#
-##############################
-# signal_generator:
-#  - driver: VAL
-#  - inputs: []
-#  - outputs: [servo_cmd]
-#  - parameters: [10.0]
-
-signal_generator:
+signal1:
  - driver: SIN
+ - rate: 2000
  - inputs: []
- - outputs: [servo_cmd]
- - parameters: [1.0, 40.0, 120.0] # [frequency, amplitude, shift]
+ - parameters: [10.0, 0.4, 0.6] # [frequency, amplitude, shift]
+ # - publish: 200
 
-servo_motor:
+pwm1:
  - driver: PWM
- - inputs: [servo_cmd]
- - outputs: [pwm_signal1]
+ - rate: 2000
+ - inputs: [signal1]
+ - parameters: [18.0]
+ # - publish: 50
+
+signal2:
+ - driver: SIN
+ - rate: 200
+ - inputs: []
+ - parameters: [5.0, 0.1, 0.2] # [frequency, amplitude, shift]
+
+pwm2:
+ - driver: PWM
+ - rate: 200
+ - inputs: [signal2]
  - parameters: [24.0]
- - publish: 10
- - record: 500
- 
-##############################
-#
-#
-#         Controllers
-#
-#
-##############################
-# attitude_controller:
-#  - config: 
-#    - [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-#    - [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-#    - [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-#    - [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-#  - inputs:
-#    - attitude_planner
-#    - attitude_estimator
-#  - outputs:
-#    - prop1
-#    - prop2
-#    - prop3
-#    - prop4
-#  - input_shapes: [3, 3]
-#  - output_shapes: [1, 1, 1, 1]
-#  - driver: SFB
+ # - publish: 50
+
+signal3:
+ - driver: SIN
+ - rate: 10
+ - inputs: []
+ - parameters: [5.0, 0.1, 0.2] # [frequency, amplitude, shift]
+
+pwm3:
+ - driver: PWM
+ - rate: 10
+ - inputs: [signal3]
+ - parameters: [25.0]
+ # - publish: 10

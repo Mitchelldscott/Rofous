@@ -15,7 +15,7 @@
 #include "utilities/assertions.h"
 #include "task_manager/task_manager.h"
 
-#define MASTER_CYCLE_TIME_MS 	1
+#define MASTER_CYCLE_TIME_MS 	0.5
 #define MASTER_CYCLE_TIME_S 	(MASTER_CYCLE_TIME_MS * 1E-3)
 #define MASTER_CYCLE_TIME_US 	(MASTER_CYCLE_TIME_MS * 1E3)
 #define MASTER_CYCLE_TIME_ERR 	(MASTER_CYCLE_TIME_MS + 0.01)
@@ -24,9 +24,7 @@ FTYK timers;
 
 // Runs once
 void setup() {
-	if (Serial) {
-		splash();
-	}
+	splash();
 	timers.set(0);
 	init_task_manager();
 }

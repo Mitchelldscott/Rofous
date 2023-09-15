@@ -34,7 +34,7 @@ class ConstTask: public Task {
 			value = 0;
 		}
 
-		void run(Vector<float>* inputs, Vector<float>* outputs) {
+		void run(Vector<float>* inputs, Vector<float>* outputs, float dt) {
 			(*outputs)[0] = float(value);
 		}
 

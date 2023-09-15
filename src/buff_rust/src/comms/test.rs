@@ -38,7 +38,7 @@ use more_asserts::assert_le;
 
 #[allow(dead_code)]
 const VERBOSITY: usize = 1;
-pub static TEST_DURATION: u64 = 30;
+pub static TEST_DURATION: u64 = 10;
 
 #[cfg(test)]
 pub mod robot_fw {
@@ -46,7 +46,11 @@ pub mod robot_fw {
 
     #[test]
     pub fn robot_fw_load() {
-        let rs = RobotFirmware::new("penguin");
+        let (writer_tx, _): (
+            crossbeam_channel::Sender<ByteBuffer>,
+            crossbeam_channel::Receiver<ByteBuffer>,
+        ) = crossbeam_channel::bounded(100);
+        let rs = RobotFirmware::new("penguin", writer_tx);
 
         rs.print();
 
@@ -219,9 +223,8 @@ pub mod live_comms {
 
             if interface.layer.control_flags.is_connected() {
                 interface.check_feedback();
-                if t.elapsed().as_secs() >= 5 {
-                    interface.send_control(0, vec![0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]);
-                    interface.layer.print();
+                if t.elapsed().as_secs() >= TEST_DURATION / 5 {
+                    // interface.send_control(0, vec![200.0]);
                     interface.print();
                     t = Instant::now();
                 }

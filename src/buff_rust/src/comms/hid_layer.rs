@@ -85,7 +85,7 @@ impl HidLayer {
         let mut lap_secs = 0;
         let t = Instant::now();
 
-        while (t.elapsed().as_millis() as f64) < self.sample_time * 10.0 {
+        while t.elapsed().as_secs() < 5 {
             match self.device() {
                 Some(dev) => {
                     return dev;
@@ -102,7 +102,7 @@ impl HidLayer {
                 }
             }
 
-            while ((t.elapsed().as_millis() - lap_millis) as f64) < self.sample_time {}
+            while ((t.elapsed().as_millis() - lap_millis) as f64) < 5.0 * self.sample_time {}
             lap_millis = t.elapsed().as_millis()
         }
 

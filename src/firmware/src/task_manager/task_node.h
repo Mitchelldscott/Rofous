@@ -19,8 +19,10 @@
 class TaskNode {
 	private:
 		int latch_flag;
+		int millis_rate;
+		float timestamp;
 
-		Task* task;					// The thing that does the jawns
+		Task* task;						// The thing that does the jawns
 		Vector<int> input_ids;			// proc_ids of input nodes (maybe useless)
 		Vector<TaskNode*> inputs;		// pointers to the input nodes (not implemented)
 		Vector<float> input_buffer;
@@ -29,7 +31,7 @@ class TaskNode {
 
 	public:
 		TaskNode();
-		TaskNode(Task*, int, int*);
+		TaskNode(Task*, int, int, int*);
 
 		void latch(int);
 		bool is_latched();
@@ -42,15 +44,18 @@ class TaskNode {
 
 		int n_links();
 		void set_inputs(int*, int);
-		void link_input(TaskNode*);
+		void link_input(TaskNode*, int);
 
-		void set_task(Task*);
+		void set_task(Task*, int);
+		void configure(int, int, float*);
 		bool setup_task();
 		void collect_inputs();
-		bool run_task();
+		bool run_task(float);
 
 		void print();
 		void print_output();
+
+		void status(byte*);
 
 		Vector<float>* operator [](int index) {
 			switch (index) {

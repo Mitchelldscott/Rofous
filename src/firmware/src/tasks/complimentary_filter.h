@@ -3,7 +3,7 @@
 
 #include "utilities/timing.h"
 #include "task_manager/task.h"
-#include "algorithms/linear_algebra.h"
+#include "tasks/linear_algebra.h"
 
 #define ATTITUDE_DIM 	3
 #define CMF_STATE_SIZE 	6
@@ -84,9 +84,8 @@ class ComplimentaryFilter: public Task {
 			}
 		}
 
-		void run(Vector<float>* inputs, Vector<float>* outputs) {
-			float dt = timers.micros(0);
-			timers.set(0);
+		void run(Vector<float>* inputs, Vector<float>* outputs, float dt) {
+			
 			float estimate[ATTITUDE_DIM];
 			float accel[ATTITUDE_DIM];
 			float gyro[ATTITUDE_DIM];

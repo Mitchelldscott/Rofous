@@ -75,10 +75,8 @@ int main() {
 
 	printf("=== Starting Factory tests ===\n");
 
-	Vector<Task*> p_list(0);
-	p_list.print();
+	Vector<Task*> p_list(2);
 	p_list.push(new_task("LSM"));
-	p_list.print();
 	p_list.push(new_task("CMF"));
 	p_list.print();
 

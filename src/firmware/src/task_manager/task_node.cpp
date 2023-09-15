@@ -13,17 +13,7 @@
 
 #include "task_manager/task_node.h"
 
-TaskNode::TaskNode() {
-	/*
-		Default constructor for a TaskNode
-		Sets everything to 0 (values, shapes: inputs, outputs, context and config data)
-	*/
-	inputs.reset(0);
-	output_buffer.reset(0);
-	parameter_buffer.reset(0);
-}
-
-TaskNode::TaskNode(Task* p, int n_inputs, int* input_ids) {
+TaskNode::TaskNode(Task* p, int rate, int n_inputs, int* input_ids) {
 	/*
 		TaskNode constructor
 		@param
@@ -33,9 +23,8 @@ TaskNode::TaskNode(Task* p, int n_inputs, int* input_ids) {
 				does not specify the tasks index in the syncor list but a unique 
 				tasks id associated with each tasks.
 	*/
-	
-	set_task(p);
-	reset_config();
+	timestamp = 0;
+	set_task(p, rate);
 	set_inputs(input_ids, n_inputs);
 }
 
@@ -72,8 +61,6 @@ void TaskNode::reset_config() {
 	*/
 	task->reset();
 	parameter_buffer.reset(0);
-	input_buffer.reset((*task)[INPUT_DIMENSION]);
-	output_buffer.reset((*task)[OUTPUT_DIMENSION]);
 }
 
 bool TaskNode::is_configured() {
@@ -97,10 +84,11 @@ void TaskNode::set_inputs(int* inputids, int n_inputs) {
 			input_ids: (int*) unique IDs of input nodes.
 			n_inputs: (int) number of input nodes.
 	*/
+	inputs.reset(0);
 	input_ids.from_array(inputids, n_inputs);
 }
 
-void TaskNode::link_input(TaskNode* node) {
+void TaskNode::link_input(TaskNode* node, int idx) {
 	/*
 		Add a pointer to the node for faster lookup.
 		Must pass inputs to this in the same order as,
@@ -108,10 +96,12 @@ void TaskNode::link_input(TaskNode* node) {
 		@param
 			node: (TaskNode*) pointer to an input node.
 	*/
-	inputs.push(node);
+	if (idx == inputs.size()) {
+		inputs.push(node);
+	}
 }
 
-void TaskNode::set_task(Task* new_task) {
+void TaskNode::set_task(Task* new_task, int rate) {
 	/*
 		Set the task that drives (input, config) -> (context, output).
 		Also resets the task and output vector to ensure initial
@@ -119,8 +109,22 @@ void TaskNode::set_task(Task* new_task) {
 		@param
 			task: (Task) User defined task.
 	*/
+	millis_rate = rate;
 	task = new_task;
+	input_buffer.reset((*task)[INPUT_DIMENSION]);
+	output_buffer.reset((*task)[OUTPUT_DIMENSION]);
 	reset_config();
+}
+
+void TaskNode::configure(int chunk_id, int chunk_size, float* data) {
+	if (chunk_id * chunk_size == parameter_buffer.size()) {
+		parameter_buffer.append(data, chunk_size);
+	}
+	else if (chunk_id * chunk_size < parameter_buffer.size()) {
+		parameter_buffer.insert(data,
+						chunk_id * chunk_size, 
+						chunk_size);
+	}
 }
 
 bool TaskNode::setup_task() {
@@ -146,7 +150,7 @@ void TaskNode::collect_inputs() {
 
 }
 
-bool TaskNode::run_task() {
+bool TaskNode::run_task(float timer) {
 	/*
 		Call the tasks user defined run function. Does nothing if not configured
 		or if inputs size is not equal to number of input ids.
@@ -156,13 +160,19 @@ bool TaskNode::run_task() {
 		@return
 			status: (bool) if run was called.
 	*/
-
-	if (is_configured() && inputs.size() == input_ids.size()) {
+	float duration = (timer - timestamp);
+	// printf("Duration, %f %f\n", duration, timer);
+	if (is_configured() && inputs.size() == input_ids.size() && int(duration * 1000) >= millis_rate) {
+		if (latch_flag == 0) {
 			collect_inputs();
-			if (!latch_flag) {
-				task->run(&input_buffer, &output_buffer);
-			}
-			return true;
+			task->run(&input_buffer, &output_buffer, duration);
+		}
+		else if (latch_flag == 2) {
+			task->run(&input_buffer, &output_buffer, duration);
+		}
+
+		timestamp = timer;
+		return true;
 	}
 
 	return false;
@@ -182,6 +192,15 @@ void TaskNode::print_output() {
 	*/
 	printf("\t");
 	output_buffer.print();
+}
+
+void TaskNode::status(byte* buffer) {
+	buffer[0] = (*task)[INPUT_DIMENSION];
+	buffer[1] = (*task)[OUTPUT_DIMENSION];
+	buffer[2] = (*task)[PARAM_DIMENSION];
+	buffer[3] = inputs.size();
+	buffer[4] = parameter_buffer.size();
+	buffer[5] = is_latched();
 }
 
 // define the template specialization

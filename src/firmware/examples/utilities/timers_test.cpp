@@ -20,7 +20,7 @@
 #define MASTER_CYCLE_TIME_US 	(MASTER_CYCLE_TIME_MS * 1E3)
 #define MASTER_CYCLE_TIME_ERR 	(MASTER_CYCLE_TIME_MS + 1)
 
-#define TEST_DURATION_S 		30
+#define TEST_DURATION_S 		240
 #define NUM_TEST_LOOPS			int(TEST_DURATION_S / MASTER_CYCLE_TIME_S)
 
 FTYK timers;
@@ -65,16 +65,16 @@ int main() {
 
 		loop_count += 1;
 		prev_lifetime = lifetime;
-		timers.delay_millis(1, MASTER_CYCLE_TIME_MS);
-		lifetime += timers.secs(1);
+		lifetime += MS_2_S(timers.delay_millis(1, MASTER_CYCLE_TIME_MS));
 		timers.set(1);
 	}
+
 	int t1 = micros();
 
 	printf("\n");
 	errors += assert_eq<float>(lifetime, TEST_DURATION_S, 1E-3, "Lifetime != expected");
 	errors += assert_eq<float>(lifetime, float(t1 - t) * 1E-6, 1E-6, "Lifetime != micros");
-	errors += assert_eq<float>(lifetime, timers.secs(0), 1E-6, "Lifetime != timer0");
+	errors += assert_eq<float>(lifetime, timers.secs(0) + (60.0 * timers.mins(0)), 1E-6, "Lifetime != timer0");
 
 	timers.print(0, "\nFull");
 	timers.print(1, "Loop");

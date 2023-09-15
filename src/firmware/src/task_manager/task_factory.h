@@ -14,11 +14,11 @@
 #ifndef TASK_FACTORY
 #define TASK_FACTORY
 
-#include "sensors/lsm6dsox.h"
-#include "motor_drivers/pwm.h"
-#include "algorithms/constant_task.h"
-#include "algorithms/sin_task.h"
-#include "algorithms/complimentary_filter.h"
+#include "tasks/lsm6dsox.h"
+#include "tasks/pwm.h"
+#include "tasks/constant_task.h"
+#include "tasks/sin_task.h"
+#include "tasks/complimentary_filter.h"
 
 #define LSM6DSOX_DRIVER_KEY "LSM"
 #define PWM_DRIVER_KEY      "PWM"
@@ -26,6 +26,6 @@
 #define CONSTANT_DRIVER_KEY "VAL"
 #define SINUSIOD_DRIVER_KEY "SIN"
 
-Task* new_task(String);
+Task* new_task(const char*);
 
 #endif

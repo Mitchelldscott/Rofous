@@ -16,24 +16,28 @@
 #ifndef BUFF_TIMING
 #define BUFF_TIMING
 
-// Some generic converters
+// Some generic converters (FLOATS only)
+#define S_2_NS(s)	 	(s * 1E9)
+#define S_2_US(s) 		(s * 1E6)
+#define S_2_MS(s) 		(s * 1E3)
+
 #define MS_2_NS(ms) 	(ms * 1E6)
 #define MS_2_US(ms) 	(ms * 1E3)
-#define MS_2_S(ms) 		(ms / 1E3)
+#define MS_2_S(ms) 		(ms * 1E-3)
 
 #define US_2_NS(us) 	(us * 1E3)
-#define US_2_MS(us) 	(us / 1E3)
-#define US_2_S(us) 		(us / 1E6)
+#define US_2_MS(us) 	(us * 1E-3)
+#define US_2_S(us) 		(us * 1E-6)
 
-#define NS_2_US(ns) 	(ns / 1E3)
-#define NS_2_MS(ns) 	(ns / 1E6)
-#define NS_2_S(ns) 		(ns / 1E9)
+#define NS_2_US(ns) 	(ns * 1E-3)
+#define NS_2_MS(ns) 	(ns * 1E-6)
+#define NS_2_S(ns) 		(ns * 1E-9)
 
 // pass ARM_DWT_CYCNT to this to get the timing down to nanoseconds
-#define CYCLES_2_S(cycles)  	((cycles) / float(F_CPU_ACTUAL))
-#define CYCLES_2_MS(cycles)  	((cycles) * (1E3 / float(F_CPU_ACTUAL)))
-#define CYCLES_2_US(cycles)  	((cycles) * (1E6 / float(F_CPU_ACTUAL)))
-#define CYCLES_2_NS(cycles)  	((cycles) * (1E9 / float(F_CPU_ACTUAL)))
+#define CYCLES_2_S(cycles)  	(float(cycles) / float(F_CPU_ACTUAL))
+#define CYCLES_2_MS(cycles)  	(float(cycles) * (1E3 / float(F_CPU_ACTUAL)))
+#define CYCLES_2_US(cycles)  	(float(cycles) * (1E6 / float(F_CPU_ACTUAL)))
+#define CYCLES_2_NS(cycles)  	(float(cycles) * (1E9 / float(F_CPU_ACTUAL)))
 
 // Get time duration from two cycle counts
 #define DURATION_S(cyccnt1, cyccnt2) (CYCLES_TO_S(cyccnt2 - cyccnt1))
@@ -52,22 +56,28 @@
 class FTYK {
 	private:
 		int active_timers[MAX_NUM_TIMERS];
-		float cyccnt_mark[MAX_NUM_TIMERS];
-		float accumulator[MAX_NUM_TIMERS];
+		int cyccnt_mark[MAX_NUM_TIMERS];
+		float seconds[MAX_NUM_TIMERS];
+		int minutes[MAX_NUM_TIMERS];
+		int hours[MAX_NUM_TIMERS];
 
 	public:
 		FTYK();
 		void set(int);
 		void mark(int);
-		float cycles(int);
+		void accumulate_cycles(int, int);
+		void cycles(int);
 		float nanos(int);
 		float micros(int);
 		float millis(int);
 		float secs(int);
+		int mins(int);
+		int hrs(int);
+		float total_seconds(int);
 		float delay_micros(int, float);
 		float delay_millis(int, float);
 		void print(int);
-		void print(int, String);
+		void print(int, const char*);
 };
 
 #endif

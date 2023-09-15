@@ -104,7 +104,7 @@ void LSM6DSOX::setup(Vector<float>* config) {
 	reset();
 }
 
-void LSM6DSOX::run(Vector<float>* unused, Vector<float>* output) {
+void LSM6DSOX::run(Vector<float>* unused, Vector<float>* output, float dt) {
 	switch (sensor_index) {
 		case 0:
 			read_lsm6dsox_accel();

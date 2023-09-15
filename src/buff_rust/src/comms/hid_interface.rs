@@ -23,7 +23,7 @@ pub static MCU_NO_COMMS_TIMEOUT_S: u64 = 10;
 pub static MCU_NO_COMMS_RESET_MS: u128 = 10;
 pub static MCU_RECONNECT_DELAY_US: f64 = 5.0 * 1E6;
 
-pub static TEENSY_CYCLE_TIME_S: f64 = 0.0005;
+pub static TEENSY_CYCLE_TIME_S: f64 = 0.0002;
 pub static TEENSY_CYCLE_TIME_MS: f64 = TEENSY_CYCLE_TIME_S * 1E3;
 pub static TEENSY_CYCLE_TIME_US: f64 = TEENSY_CYCLE_TIME_S * 1E6;
 pub static TEENSY_CYCLE_TIME_ER: f64 = TEENSY_CYCLE_TIME_US + 50.0; // err threshold (before prints happen)
@@ -113,12 +113,28 @@ impl HidInterface {
         }
     }
 
-    pub fn get_initializers(&self) -> Vec<ByteBuffer> {
-        self.robot_fw.task_init_packets()
+    pub fn send_initializers(&self) {
+        self.robot_fw.task_init_packets().iter().for_each(|init| {
+            let t = Instant::now();
+            self.writer_tx(init.clone());
+            self.layer.delay(t);
+        });
     }
 
-    pub fn send_control(&mut self, i: usize, data: Vec<f64>) {
-        self.writer_tx(get_output_overwrite_latch(i as u8, data));
+    pub fn try_config(&self) {
+        self.robot_fw.task_param_packets().iter().for_each(|init| {
+            let t = Instant::now();
+            self.writer_tx(init.clone());
+            self.layer.delay(t);
+        });
+    }
+
+    pub fn send_olatch(&mut self, i: usize, data: Vec<f64>) {
+        self.writer_tx(output_latch(i as u8, data));
+    }
+
+    pub fn send_ilatch(&mut self, i: usize, data: Vec<f64>) {
+        self.writer_tx(input_latch(i as u8, data));
     }
 
     pub fn print(&self) {
@@ -127,41 +143,32 @@ impl HidInterface {
     }
 
     pub fn pipeline(&mut self, _unused_flag: bool) {
-        let mut loop_count = 0;
-        let initializers = self.get_initializers();
-
+        self.send_initializers();
         while !self.layer.control_flags.is_connected() {}
 
         println!("[HID-Control]: Live");
 
-        // Not as worried about efficiency here
-        // Also it hard to know how many init packets
-        // there will be... so K.I.S.S.
-        initializers.iter().for_each(|init| {
-            let t = Instant::now();
-            self.writer_tx(init.clone());
-            self.layer.delay(t);
-        });
+        let mut t = Instant::now();
 
         while !self.layer.control_flags.is_shutdown() && rosrust::is_ok() {
             let loopt = Instant::now();
 
-            if self.layer.control_flags.is_connected() {
-                // if loop_count % 100 == 0 {
-                //     self.send_control(
-                //         self.robot_fw.id_of("servo_motor"),
-                //         vec![(loop_count % 256) as f64],
-                //     );
-                // }
+            if !self.layer.control_flags.is_connected()
+                || !self.layer.control_flags.is_initialized()
+            {
+                self.robot_fw.configured = vec![false; self.robot_fw.tasks.len()];
+                self.layer.control_flags.initialize(true);
+                self.send_initializers();
+            } else {
                 self.check_feedback();
+
+                if t.elapsed().as_secs() >= 20 {
+                    self.print();
+                    t = Instant::now();
+                }
             }
 
-            loop_count += 1;
-            if loop_count > 40000 {
-                self.print();
-                loop_count = 0;
-            }
-            self.layer.delay(loopt);
+            self.layer.loop_delay(loopt);
             // if t.elapsed().as_micros() as f64 > TEENSY_CYCLE_TIME_US {
             //     println!("HID Control over cycled {} ms", (t.elapsed().as_micros() as f64) * 1E-3);
             // }

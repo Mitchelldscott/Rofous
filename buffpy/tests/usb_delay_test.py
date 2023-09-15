@@ -24,7 +24,7 @@ def fb_callback(msg, pub):
 	if collect_samples:
 		pin_output.append(msg.data[0]);
 		teensy_time.append(msg.data[1]);
-		control.append((pin_output[-1] + 2) % 100);
+		control.append(((pin_output[-1] / 4096) + 0.1) % 1);
 		msg = Float64MultiArray()
 		msg.data = [control[-1]]
 		pub.publish(msg)
@@ -120,7 +120,7 @@ def send_inputs(hz, control, target_pin):
 	print(f"Duration: {duration} secs")
 	print(f"Teensy Start/Stop: {teensy_time[-1]} {teensy_time[0]}")
 	print(f"Teensy Duration: {(teensy_time[-1] - teensy_time[0])}")
-	print(f"Teensy Rate: {np.mean(np.array(teensy_time[1:]) - np.array(teensy_time[:-1]))}")
+	print(f"Teensy Rate: {1 / np.mean(np.array(teensy_time[1:]) - np.array(teensy_time[:-1]))}")
 	print(f"Feedback packets: {np.array(pin_output).shape}")
 	print(f"Feedback timestamps: {np.array(teensy_time).shape}")
 
@@ -133,7 +133,7 @@ def spin_feedback(hz, duration, target_pin):
 	global teensy_time
 	global control
 
-	pub = rospy.Publisher(f"signal{target_pin}_ctrl", Float64MultiArray, queue_size=10)
+	pub = rospy.Publisher(f"led{target_pin}_ictrl", Float64MultiArray, queue_size=10)
 	rate = rospy.Rate(hz)
 	msg = Float64MultiArray()
 
@@ -165,7 +165,7 @@ def spin_feedback(hz, duration, target_pin):
 	print(f"\tDuration: {duration} secs")
 	print(f"\tTeensy Start/Stop: {teensy_time[-1]} {teensy_time[0]}")
 	print(f"\tTeensy Duration: {(teensy_time[-1] - teensy_time[0])}")
-	print(f"\tTeensy Rate: {np.mean(np.array(teensy_time[1:]) - np.array(teensy_time[:-1]))}")
+	print(f"\tTeensy Rate: {1/np.mean(np.array(teensy_time[1:]) - np.array(teensy_time[:-1]))}")
 	print(f"\tFeedback packets: {np.array(pin_output).shape}")
 	print(f"\tFeedback timestamps: {np.array(teensy_time).shape}")
 	print(f"\tControl packets: {np.array(teensy_time).shape}")
@@ -207,7 +207,7 @@ def display_data(pin, duration, control, outputs, output_time):
 	time_ratio = duration / output_time[-1]
 	# fig, axes = plt.subplots(2, 2, figsize=(8,15))
 	plt.title(f"Signal and feedback for {pin}")
-	plt.plot(ctrl_steps, control, label="Generated signal", color='r', marker='o')
+	plt.plot(ctrl_steps, 4096 * np.array(control), label="Generated signal", color='r', marker='o')
 	plt.plot(output_time * time_ratio, outputs, label="hardware feeback", color='b', marker='x')
 	plt.legend()
 	plt.show()

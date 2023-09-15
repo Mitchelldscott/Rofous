@@ -16,25 +16,25 @@
 /// print
 
 template <> void Vector<int>::print() {
-	if (length == 0) {
-		printf("Vectori [%i]\n", length);
+	if (items == 0) {
+		printf("Vectori [%i]\n", items);
 		return;
 	}
-	printf("Vectori [%i]: [", length);
-	for (int i = 0; i < length-1; i++) {
+	printf("Vectori [%i]: [", items);
+	for (int i = 0; i < items-1; i++) {
 		printf("%i, ", buffer[i]);
 	}
-	printf("%i]\n", buffer[length-1]);
+	printf("%i]\n", buffer[items-1]);
 }
 
 template <> void Vector<float>::print() {
-	if (length == 0) {
-		printf("Vectorf [%i]\n", length);
+	if (items == 0) {
+		printf("Vectorf [%i]\n", items);
 		return;
 	}
-	printf("Vectorf [%i]: [", length);
-	for (int i = 0; i < length-1; i++) {
+	printf("Vectorf [%i]: [", items);
+	for (int i = 0; i < items-1; i++) {
 		printf("%f, ", buffer[i]);
 	}
-	printf("%f]\n", buffer[length-1]);
+	printf("%f]\n", buffer[items-1]);
 }

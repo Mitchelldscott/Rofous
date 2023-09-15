@@ -49,17 +49,21 @@ int main() {
 	nodelist[0]->print_output();
 
 	printf("=== Run Setup/Link task 1 ===\n");
+	timers.delay_millis(0, 1);
 	bool status = nodelist[1]->run_task();		// try to run the task without calling setup or linking nodes
 	errors += assert_eq<int>(int(status), 0, "No setup/links run: status check");
 	
+	timers.delay_millis(0, 1);
+
 	Vector<float>* config = (*nodelist[1])[PARAM_DIMENSION];		// Get the config buffer
 	config->from_array(tmp, 1);							// set the config, make sure if the config gets filled setup is called (config.size() is how configuration is checked)
 	nodelist[1]->setup_task();							// call setup to initialize the task	
 	status = nodelist[1]->run_task();					// Run the task with setup
 	errors += assert_eq<int>(int(status), 0, "No links run: status check");
 
-	nodelist[1]->link_input(nodelist[0]);	// link task0
-	nodelist[1]->link_input(nodelist[1]);	// link task1
+	timers.delay_millis(0, 1);
+	nodelist[1]->link_input(nodelist[0], 0);	// link task0
+	nodelist[1]->link_input(nodelist[1], 1);	// link task1
 	status = nodelist[1]->run_task();		// run
 	errors += assert_eq<int>(int(status), 1, "Linked and setup run: status check");
 	

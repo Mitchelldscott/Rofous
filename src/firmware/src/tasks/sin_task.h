@@ -7,10 +7,11 @@
 
 class SinTask: public Task {
 	private:
-		char key[3] = {'V', 'A', 'L'};
+		char key[3] = {'S', 'I', 'N'};
 		float frequency;
 		float amplitude;
 		float shift;
+		float counter;
 		FTYK timers;
 
 
@@ -47,8 +48,9 @@ class SinTask: public Task {
 			timers.set(0);
 		}
 
-		void run(Vector<float>* inputs, Vector<float>* outputs) {
-			(*outputs)[0] = (amplitude * sin(frequency * timers.secs(0))) + shift;
+		void run(Vector<float>* inputs, Vector<float>* outputs, float dt) {
+			counter += dt;
+			(*outputs)[0] = (amplitude * sin(frequency * counter)) + shift;
 		}
 
 		void print() {

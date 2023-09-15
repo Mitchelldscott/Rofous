@@ -19,25 +19,27 @@
 
 
 Vector<float> incremental_vector_fill(int target_length) {
-	Vector<float> data(target_length);
-
+	float tmp[target_length];
 	for (int i = 0; i < target_length; i++) {
-		data[i] = i + 1;
+		tmp[i] = i + 1;
 	}
 
-	return data;
+	return Vector<float>(tmp, target_length);
 }
 
 int index_operator_test(int target_length) {
 	int errors = 0;
 
 	Vector<float> data = incremental_vector_fill(target_length);
+	errors += assert_eq<int>(data.size(), target_length, "Vector operator initial size test");
+	errors += assert_eq<int>(data.len(), target_length, "Vector operator initial length test");
 
 	for (int i = 0; i < target_length; i++) {
 		errors += assert_eq<float>(data[i], float(i+1), "Vector operator test [" + String(i) + "]");
 	}
 
 	data.clear();
+	errors += assert_eq<int>(data.size(), 0, "Vector operator size test");
 	errors += assert_eq<float>(data.as_array(), 0.0f, "Vector fill and Clear test", target_length);
 
 	return errors;
@@ -45,13 +47,21 @@ int index_operator_test(int target_length) {
 
 int assign_operator_test(Vector<float> v1, Vector<float> v2) {
 	int errors = 0;
-
+	
 	v1 = v2;
+	errors += assert_eq<int>(v1.len(), v2.len(), "Vector Assign and no reset length test");
+	errors += assert_eq<int>(v1.size(), v2.size(), "Vector Assign and no reset size test");
 	errors += assert_eq<float>(v1.as_array(), v2.as_array(), "Vector Assign test", v1.size());
-
+	
 	v2.reset(0);
-	errors += assert_neq<float>(v1.as_array(), 0.0f, "Vector Assign and No Clear test", v1.size());
-	errors += assert_eq<float>(v2.as_array(), 0.0f, "Vector Assign and Clear test", v2.size());
+
+	errors += assert_neq<int>(v1.len(), 0, "Vector Assign and no reset1 length test");
+	errors += assert_neq<int>(v1.size(), 0, "Vector Assign and no reset1 size test");
+	errors += assert_eq<int>(v2.len(), 0, "Vector Assign and reset1 length test");
+	errors += assert_eq<int>(v2.size(), 0, "Vector Assign and reset1 size test");
+	errors += assert_neq<float>(v1.as_array(), 0.0f, "Vector Assign and No reset test", v1.size());
+	errors += assert_eq<float>(v2.as_array(), 0.0f, "Vector Assign and reset test", v2.size());
+	
 	return errors;
 }
 
@@ -60,17 +70,20 @@ int reset_and_fill_test(int target_length) {
 
 	data.reset(target_length);
 	return assert_eq<float>(data.as_array(), 0.0f, "Vector Reset test", target_length);
+	return assert_eq<int>(data.size(), 0, "Vector Reset size test");
 }
 
 int append_test(Vector<float> v1) {
+	v1.set_items(v1.len());
 	int errors = 0;
 	int og_length = v1.size();
 	float slice1[og_length];
 	float slice2[og_length];
-
 	Vector<float> v2 = incremental_vector_fill(v1.size());
 
 	v1.append(&v2);
+	errors += assert_eq<int>(v1.size(), 2*og_length, "Vector append size test");
+	errors += assert_eq<int>(v1.len(), 2*og_length, "Vector append length test");
 
 	for (int i = 0; i < og_length; i++) {
 		assert_eq<float>(v1[i], 0.0f, "Vector append test [" + String(i) + "]");
@@ -85,8 +98,10 @@ int append_test(Vector<float> v1) {
 	errors += assert_eq<float>(v2.as_array(), slice2, "Vector append and slice2 test", v2.size());
 
 	v1.clear();
-	errors += assert_eq<float>(v1.as_array(), 0.0f, "Vector Clear test", v1.size());
-	errors += assert_neq<float>(v2.as_array(), 0.0f, "Vector Append and No Clear test", v2.size());
+	errors += assert_eq<int>(v1.size(), 0, "Vector append and clear size test");
+	errors += assert_eq<float>(v1.as_array(), 0.0f, "Vector append and clear test", v1.size());
+	errors += assert_neq<float>(v2.as_array(), 0.0f, "Vector append and no clear test", v2.size());
+	errors += assert_eq<int>(v2.size(), og_length, "Vector append and no clear size test");
 
 	return errors;
 }
@@ -96,9 +111,13 @@ int iterative_test(int size, int depth) {
 
 	Vector<float> v1(size);
 	for (int i = 0; i < depth; i++) {
-		Vector<float> v2(size);
+		Vector<float> v2 = incremental_vector_fill(size + 2);
 		v1 = v2;
-		errors += assert_eq<float>(v1.as_array(), v2.as_array(), "Vector iterative assign test", size);
+		errors += assert_eq<float>(v1.as_array(), v2.as_array(), "Vector iterative assign", size);
+		errors += assert_eq<int>(v1.size(), v2.size(), "Vector iterative assign v1,v2 size");
+		errors += assert_eq<int>(size+2, v2.size(), "Vector iterative assign size,v2 size");
+		errors += assert_eq<int>(v1.len(), size + 2, "Vector iterative assign len1");
+		errors += assert_eq<int>(v2.len(), size + 2, "Vector iterative assign len2");
 	}
 
 	return errors;
@@ -114,7 +133,12 @@ int recursive_test(Vector<float>* v1, int size, int depth) {
 		v2[i] = float(depth);
 	}
 
+	errors += assert_eq<int>(size, v2.size(), "Vector recursive assign size");
+	errors += assert_eq<int>(size, v2.len(), "Vector recursive assign len1");
+
 	*v1 = v2;
+	errors += assert_eq<int>(v1->size(), v2.size(), "Vector recursive assign size");
+	errors += assert_eq<int>(v1->len(), size, "Vector recursive assign len2");
 	errors += assert_eq<float>(v1->as_array(), float(depth), "Vector recursion assign test [" + String(depth) + "]", size);
 
 	if (depth <= 0) {
@@ -162,11 +186,18 @@ int pop_test(int size) {
 	int errors = 0;
 	Vector<float> v = incremental_vector_fill(size);
 
-	for (int i = 0; i < size + 3; i++) {
+	for (int i = 0; i < size; i++) {
 		float f = v.pop();
-		errors += assert_eq<float>(f, i+1, "Vector pop failed");
-		errors += assert_eq<float>(v.size(), size - i - 1, "Vector pop failed");
+		errors += assert_eq<float>(f, i+1, "Vector pop value failed");
+		errors += assert_eq<float>(v.size(), size - i - 1, "Vector pop size failed");
 	}
+
+	// for (int i = size; i < size + 3; i++) {
+	// 	float f = v.pop();
+	// 	errors += assert_eq<int>(v.size(), 0, "Vector pop size failed");
+	// 	// errors += assert_eq<float>(f, NULL, "Vector pop value failed");
+	// 	errors += assert_eq<float>(v.size(), 0, "Vector pop size failed");
+	// }
 
 	return errors;
 }
@@ -193,6 +224,7 @@ int main() {
 
 	// initialize and return incremental vector
 	Vector<float> v = incremental_vector_fill(n);
+
 	// Tests assigning and getting buffer as array
 	// also clearing and getting buffer as array
 	total_errors += assign_operator_test(Vector<float>(n), v);

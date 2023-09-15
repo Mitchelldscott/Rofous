@@ -73,9 +73,6 @@ template <int buffer_size> class ByteBuffer {
 			if (index + sizeof(T) <= buffer_size) {
 				memcpy(&data[index], &value, sizeof(T));
 			}
-			else {
-				panic_blink("[ByteBuffer]: invalid put slice " + index);
-			}
 		}
 
 		template <typename T> void put(int index, int n, T* values){
@@ -91,8 +88,7 @@ template <int buffer_size> class ByteBuffer {
 				memcpy(&value, &data[index], sizeof(T));
 				return value;
 			}
-			panic_blink("[ByteBuffer]: invalid get slice ");
-			exit(0);
+			return 0;
 		}
 
 		template <typename T> void get(int index, int n, T* buffer) {

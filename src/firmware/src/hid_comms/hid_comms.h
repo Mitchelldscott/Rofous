@@ -6,7 +6,7 @@
 #ifndef HIDCOMMS_H
 #define HIDCOMMS_H
 
-#define HID_REFRESH_RATE 500.0
+#define HID_REFRESH_RATE 200.0
 #define MAX_FLOAT_DATA_PER_SEND 13
 
 extern float hid_errors;
@@ -15,7 +15,8 @@ struct TaskSetupPacket {
 	int task_id;
 	int packet_type;
 	
-	String key;
+	char key[3];
+	int rate;
 	int n_inputs;
 	Vector<int> inputs;
 
@@ -35,18 +36,27 @@ struct TaskSetupPacket {
 struct TaskFeedback {
 	// int error;	// someone should figure this out
 	int task_id;
+	int update;
+	int configured;
 	int latch;
 	float timestamp;
+	float secs;
+	float mins;
+	float hrs;
 	Vector<float> output;
 };
 
 struct CommsPipeline {
 	float lifetime;
+	int minutes;
+	int hours;
+
 	Vector<TaskFeedback*> feedback;
 	Vector<TaskSetupPacket*> setup_queue;
 };
 
 void push_hid();
+void clear_feedback_pipeline();
 void send_hid_status();
 void send_hid_feedback();
 void send_hid_with_timestamp();

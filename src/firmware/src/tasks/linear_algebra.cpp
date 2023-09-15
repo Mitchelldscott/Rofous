@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "algorithms/linear_algebra.h"
+#include "tasks/linear_algebra.h"
 
 /*
 	Vector ops

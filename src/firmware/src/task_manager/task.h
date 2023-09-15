@@ -29,15 +29,16 @@ class Task {
 	public:
 		Vector<int> dimensions;
 
-		int input_dim();
-		int output_dim();
-		int params_dim();
+		Task();
+		// int input_dim();
+		// int output_dim();
+		// int params_dim();
 
 		virtual void reset();
 		virtual void clear();
 		virtual void print();
 		virtual void setup(Vector<float>*);
-		virtual void run(Vector<float>*, Vector<float>*);
+		virtual void run(Vector<float>*, Vector<float>*, float dt);
 
 		int operator [](int index) { return dimensions[index]; }
 };

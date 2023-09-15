@@ -25,6 +25,7 @@
 template <typename T> class Vector {
 	private:
 		int length;
+		int items;
 		T* buffer;
 
 	public:
@@ -35,7 +36,9 @@ template <typename T> class Vector {
 		}
 
 		~Vector() {
-			delete buffer;
+			if (buffer != NULL) {
+				delete buffer;
+			}
 		}
 
 		Vector(int size) {
@@ -44,8 +47,9 @@ template <typename T> class Vector {
 				@param:
 					size: (int) length of the buffer with type T
 			*/
+			items = 0;
 			length = size;
-			buffer = new T[size];
+			buffer = new T[length];
 			clear();
 		}
 
@@ -56,8 +60,10 @@ template <typename T> class Vector {
 					data: (T*) data to fill buffer with
 					size: (int) length of the buffer with type T
 			*/
+			items = size;
 			length = size;
-			buffer = data;
+			buffer = new T[length];
+			memcpy(buffer, data, size * sizeof(T));
 		}
 
 		///// modifiers /////
@@ -66,20 +72,10 @@ template <typename T> class Vector {
 			/*
 				  Clear data in the buffer (set to 0).
 			*/
-			memset(buffer, 0, length * sizeof(T));
-		}
-
-		void push(T item) {
-			/*
-				  Add a single item T to the buffer.
-				Basically and append wraper. (maybe rename this)
-				@param:
-					item: (T) data to add to buffer
-			*/
-			T tmp[length + 1];
-			memcpy(tmp, buffer, length * sizeof(T));
-			tmp[length] = item;
-			from_array(tmp, length+1);
+			if (buffer != NULL) {
+				memset(buffer, 0, length * sizeof(T));
+				items = 0;
+			}
 		}
 
 		void reset(int size) {
@@ -92,9 +88,72 @@ template <typename T> class Vector {
 			if (buffer != NULL) {
 				delete buffer;
 			}
+
 			length = size;
 			buffer = new T[size];
 			clear();
+		}
+
+		void resize(int size) {
+			/*
+				  Resize buffer and keep data.
+				@param:
+					size: (int) length of the buffer with type T
+			*/
+			size = uint8_t(size);
+
+			if (length == size) {
+				return;
+			}
+
+			T* tmp = new T[size];
+
+			if (buffer != NULL) {
+				if (length > size) {
+					memcpy(tmp, buffer, size * sizeof(T));
+					if (items > size) {
+						items = size;
+					}
+				}
+				else {
+					memcpy(tmp, buffer, length * sizeof(T));
+				}
+
+				delete buffer;
+			}
+
+			length = size;
+			buffer = tmp;
+		}
+
+		void make_even_fit(int n) {
+			if (n > length) {
+				length = max(1, length);
+				int k = int(((n + 1) / 2.0)) * 2;
+				resize(k);
+			}
+		}
+
+		void set_items(int i) {
+			items = i;
+		}
+
+		void push(T item) {
+			/*
+				  Add a single item T to the buffer.
+				Basically and append wraper. (maybe rename this)
+				@param:
+					item: (T) data to add to buffer
+			*/
+			if (items >= length) {
+				if (length == 0) {
+					length = 1;
+				}
+				resize(2 * length);
+			}
+
+			buffer[items] = item;
+			items += 1;
 		}
 
 		void from_array(T* data, int size) {
@@ -104,8 +163,9 @@ template <typename T> class Vector {
 					data: (T*) data to fill buffer with
 					size: (int) length of the buffer with type T
 			*/
-			reset(size);
+			make_even_fit(size);
 			memcpy(buffer, data, size * sizeof(T));
+			items = size;
 		}
 
 		void append(T* data, int n) {
@@ -116,12 +176,9 @@ template <typename T> class Vector {
 					data: (T*) data to fill buffer with
 					size: (int) length of the buffer with type T
 			*/
-			T tmp[length];
-			memcpy(tmp, buffer, length * sizeof(T));
-			
-			reset(length + n);
-			memcpy(buffer, tmp, (length - n) * sizeof(T));
-			memcpy(&buffer[(length - n)], data, n * sizeof(T));
+			make_even_fit(items + n);
+			memcpy(&buffer[items], data, n * sizeof(T));
+			items += n;
 		}
 
 		void append(Vector<T> data) {
@@ -131,17 +188,10 @@ template <typename T> class Vector {
 				@param:
 					data: (Vector<T>*) data to fill buffer with
 			*/
-			int n = length;
-			int m = data.size();
-
-			T tmp1[n];
-			T* tmp2 = data.as_array();
-
-			memcpy(tmp1, buffer, n * sizeof(T));			
-
-			reset(n + m);
-			memcpy(buffer, tmp1, n * sizeof(T));
-			memcpy(&buffer[n], tmp2, m * sizeof(T));
+			int n = data.size();
+			make_even_fit(items + n);
+			memcpy(&buffer[items], data.as_array(), n * sizeof(T));
+			items += n;
 		}
 
 		void append(Vector<T>* data) {
@@ -151,20 +201,13 @@ template <typename T> class Vector {
 				@param:
 					data: (Vector<T>*) data to fill buffer with
 			*/
-			int n = length;
-			int m = data->size();
-
-			T tmp1[n];
-			T* tmp2 = data->as_array();
-
-			memcpy(tmp1, buffer, n * sizeof(T));			
-
-			reset(n + m);
-			memcpy(buffer, tmp1, n * sizeof(T));
-			memcpy(&buffer[n], tmp2, m * sizeof(T));
+			int n = data->size();
+			make_even_fit(items + n);
+			memcpy(&buffer[items], data->as_array(), n * sizeof(T));
+			items += n;
 		}
 
-		void insert(T* data, int index, int size) {
+		void insert(T* data, int index, int n) {
 			/*
 				  Add n values to the buffer starting at index. If buffer is not
 				large enough it will be extended. This works much better if
@@ -172,15 +215,11 @@ template <typename T> class Vector {
 				@param:
 					data: (T*) data to fill buffer with
 					index: (int) index to start insertion
-					size: (int) number of items to insert
+					n: (int) number of items to insert
 			*/
-			if (index + size > length) {
-				Vector<T> empty((index + size) - length);
-				append(&empty);
-			}
-			for (int i = 0; i < size; i++) {
-				buffer[i + index] = data[i];
-			}
+			make_even_fit(index + n);
+			memcpy(&buffer[index], data, n * sizeof(T));
+			items = index + n;
 		}
 
 		void insert(Vector<T> data, int index) {
@@ -193,18 +232,23 @@ template <typename T> class Vector {
 					index: (int) index to start insertion
 			*/
 			int n = data.size();
-			if (index + n > length) {
-				Vector<T> empty((index + n) - length);
-				append(&empty);
-			}
-			for (int i = 0; i < n; i++) {
-				buffer[i + index] = data[i];
-			}
+			make_even_fit(index + n);
+			memcpy(&buffer[index], data.as_array(), n * sizeof(T));
+			items = index + n;
 		}
 
 		///// accessors /////
 
 		int size() {
+			/*
+				  Get the size of buffer (not necessarily elements available)
+				@return
+					length: (int) size of buffer
+			*/
+			return items;
+		}
+
+		int len() {
 			/*
 				  Get the size of buffer (not necessarily elements available)
 				@return
@@ -219,7 +263,7 @@ template <typename T> class Vector {
 				@return
 					data: (T) item to search for (-1 if not found, maybe causes template issues)
 			*/
-			for (int i = 0; i < length; i++) {
+			for (int i = 0; i < items; i++) {
 				if (buffer[i] == data) {
 					return i;
 				}
@@ -239,7 +283,7 @@ template <typename T> class Vector {
 					start: (int) start index of buffer
 					n: (int) number of items in slice
 			*/
-			if (start >= 0 && start + n <= length) {
+			if (start >= 0 && start + n <= length && buffer != NULL) {
 				memcpy(data, &buffer[start], n * sizeof(T));
 			}
 			else {
@@ -248,16 +292,12 @@ template <typename T> class Vector {
 		}
 
 		T pop() {
-			if (length > 0) {
-				T tmp[length-1];
-				T value = buffer[0];
-				slice(tmp, 1, length-1);
-				from_array(tmp, length-1);
-				return value;
-			}
-			// printf("[Vector]: invalid pop %i\n", length);
-			panic_blink("[Vector]: invalid pop");
-			exit(0);
+			T tmp[items];
+			T popee = buffer[0];
+			slice(tmp, 1, items-1);
+			insert(tmp, 0, items);
+			items = max(0, items - 1);
+			return popee;
 		}
 
 		///// operators /////
@@ -272,13 +312,19 @@ template <typename T> class Vector {
 				@exit
 					when index is invalid 
 			*/
-			if (length > index && index >= 0) {
+			if (index < 0) {
+				index = max(0, length + index);
+			}
+
+			items = max(items, index+1);
+
+			if (length > index) {
 				return buffer[index];
 			}
-			
-			// printf("[Vector]: invalid index %i:%i\n", index, length);
-			panic_blink("[Vector]: invalid index");
-			exit(0);
+			else {
+				make_even_fit(index);
+				return buffer[index];
+			}
 		}
 
 		void operator=(Vector<T>* data) {
@@ -286,9 +332,9 @@ template <typename T> class Vector {
 				  = Operator overload. Will reset this vector to the
 				same size as data.
 				@param
-					data: (Vector<T>&) data to copy
+					data: (Vector<T>*) data to copy
 			*/
-			from_array(data->as_array(), data->size());
+			from_array(data->as_array(), data->len());
 		}
 
 		void operator=(Vector<T>& data) {
@@ -298,7 +344,7 @@ template <typename T> class Vector {
 				@param
 					data: (Vector<T>&) data to copy
 			*/
-			from_array(data.as_array(), data.size());
+			from_array(data.as_array(), data.len());
 		}
 
 		void print();

@@ -16,7 +16,7 @@
 #include "utilities/assertions.h"
 #include "hid_comms/hid_comms.h"
 
-#define MASTER_CYCLE_TIME_MS 	1
+#define MASTER_CYCLE_TIME_MS 	0.5
 #define MASTER_CYCLE_TIME_S 	(MASTER_CYCLE_TIME_MS * 1E-3)
 #define MASTER_CYCLE_TIME_US 	(MASTER_CYCLE_TIME_MS * 1E3 )
 #define MASTER_CYCLE_TIME_ERR 	(MASTER_CYCLE_TIME_MS + 0.01)
@@ -26,18 +26,27 @@
 FTYK timers;
 int tasks = 0;
 
-void task_publish_handler(CommsPipeline* comms_pipe, int id, Vector<float>& output) {
+void dump_feedback_packet(CommsPipeline* comms_pipe, int id) {
+	// TaskFeedback* task_fb = new TaskFeedback;
+	// task_fb->latch = 0;
+	// task_fb->task_id = id;
+	// task_fb->output.reset(5);
+	// task_fb->output.set_items(5);
+	// task_fb->timestamp = -1;
+	// printf("Dumping %i\n", id);
+
 	noInterrupts();
-	comms_pipe->feedback[id]->output = output;
+	comms_pipe->feedback[id]->output[4] = 1.0;
 	interrupts();
 }
 
-void add_feedback_node(CommsPipeline* comms_pipe, int id) {
+void add_feedback_packet(CommsPipeline* comms_pipe, int id) {
 	TaskFeedback* task_fb = new TaskFeedback;
 	task_fb->latch = 0;
 	task_fb->task_id = id;
-	task_fb->output.reset(0);
+	task_fb->output.reset(5);
 	task_fb->timestamp = -1;
+	// printf("Dumping %i\n", id);
 
 	noInterrupts();
 	comms_pipe->feedback.push(task_fb);
@@ -59,21 +68,15 @@ void task_setup_handler(CommsPipeline* comms_pipe) {
 		TaskSetupPacket* p = comms_pipe->setup_queue.pop();
 		interrupts();
 
-		printf("Consuming %i/%i items\n", i, n_items);
-
-
-		if (p->packet_type == 0) {
-			add_feedback_node(comms_pipe, p->task_id);
-			tasks += 1;
+		if (p) {
+			printf("Consuming item %i of %i, %i\n", i+1, n_items, p->packet_type);
+			if (p->packet_type == 0) {
+				add_feedback_packet(comms_pipe, tasks);
+				tasks += 1;
+			}
+			
+			delete p;
 		}
-
-		if (p->packet_type == 2) {
-			noInterrupts();
-			comms_pipe->feedback[i]->output = p->data;
-			interrupts();
-		}
-		
-		delete p;
 	}
 }
 
@@ -89,29 +92,31 @@ int main() {
 	while (!usb_rawhid_available()) {};
 
 	int lifetime = 0;
-	Vector<float> output(5);
 	timers.set(0);
 	timers.set(1);
 	while (lifetime < TEST_DURATION_S) {
 
 		task_setup_handler(comms_pipe);
 		for(int i = 0; i < tasks; i++) {
-			task_publish_handler(comms_pipe, i, output);
+			noInterrupts();
+			comms_pipe->lifetime += timers.secs(1);
+			timers.set(1);
+			interrupts();
+
+			dump_feedback_packet(comms_pipe, i);
+						
 		}
-		
-		noInterrupts();
-		comms_pipe->lifetime += MS_2_S(timers.delay_millis(1, MASTER_CYCLE_TIME_MS));
-		interrupts()
-		errors += assert_leq<float>(timers.millis(1), MASTER_CYCLE_TIME_ERR, "Teensy overcycled"); 
-		timers.set(1);
-		lifetime += timers.secs(0);
+
+		float cycletime = timers.delay_millis(0, MASTER_CYCLE_TIME_MS);
 		timers.set(0);
+		lifetime += MS_2_S(cycletime);
+		errors += assert_leq<float>(cycletime, MASTER_CYCLE_TIME_ERR, "Teensy overcycled (ms)");
 	}
 
 	printf(" * Finished tests in %fs\n", comms_pipe->lifetime);
 	printf(" * %i failed\n", int(errors + hid_errors));
 
+	while(1) {};
 	return 0;
+
 }
-
-
