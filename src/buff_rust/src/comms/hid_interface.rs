@@ -114,17 +114,18 @@ impl HidInterface {
     }
 
     pub fn send_initializers(&self) {
-        self.robot_fw.task_init_packets().iter().for_each(|init| {
+        self.robot_fw.task_init_packets().iter().for_each(|packet| {
             let t = Instant::now();
-            self.writer_tx(init.clone());
+            self.writer_tx(packet.clone());
             self.layer.delay(t);
         });
     }
 
     pub fn try_config(&self) {
-        self.robot_fw.task_param_packets().iter().for_each(|init| {
+        self.robot_fw.task_param_packets().iter().for_each(|packet| {
+            println!("sending config for {} {}", packet.get(2), self.layer.pc_stats.lifetime());
             let t = Instant::now();
-            self.writer_tx(init.clone());
+            self.writer_tx(packet.clone());
             self.layer.delay(t);
         });
     }

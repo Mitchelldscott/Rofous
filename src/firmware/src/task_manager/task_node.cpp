@@ -73,6 +73,16 @@ bool TaskNode::is_configured() {
 	return (*task)[PARAM_DIMENSION] == parameter_buffer.size();
 }
 
+bool TaskNode::is_linked() {
+	/*
+		Check if the tasks is configured. Needed because
+		setup data may be sent in chunks.
+		@return
+			status: (bool) if tasks is configured
+	*/
+	return inputs.size() == input_ids.size();
+}
+
 int TaskNode::n_links() {
 	return inputs.size();
 }
@@ -162,7 +172,7 @@ bool TaskNode::run_task(float timer) {
 	*/
 	float duration = (timer - timestamp);
 	// printf("Duration, %f %f\n", duration, timer);
-	if (is_configured() && inputs.size() == input_ids.size() && int(duration * 1000) >= millis_rate) {
+	if (is_configured() && is_linked() && int(duration * 1000) >= millis_rate) {
 		if (latch_flag == 0) {
 			collect_inputs();
 			task->run(&input_buffer, &output_buffer, duration);

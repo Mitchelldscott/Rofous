@@ -16,6 +16,9 @@
 FTYK sys_timers;
 float sys_lifetime = 0;
 
+int run_status = 0;
+int config_status = 0;
+
 Vector<int> node_ids(0);
 Vector<TaskNode*> nodes(0);
 CommsPipeline* pipeline_internal;
@@ -23,6 +26,10 @@ CommsPipeline* pipeline_internal;
 CommsPipeline* init_task_manager() {
 	sys_timers.set(0);		// setup master cycle timer
 	sys_timers.set(1);		// setup individual run timer
+	sys_timers.set(2);		// status led control rate
+
+	pinMode(RUN_STATUS_PIN, OUTPUT);
+	pinMode(CONFIGURATION_STATUS_PIN, OUTPUT);
 
 	pipeline_internal = enable_hid_interrupts();
 	return pipeline_internal;
@@ -36,7 +43,7 @@ bool link_nodes(int index) {
 	for (int i = nodes[index]->n_links(); i < nodes[index]->n_inputs(); i++) {
 		int node_idx = node_index(nodes[index]->input_id(i));
 		if (node_idx >= 0) {
-			// printf("Linking node %i %i %i\n", index, node_idx, i);
+			printf("Linking node %i %i %i\n", index, node_idx, i);
 			nodes[index]->link_input(nodes[node_idx], i);
 		}
 		else {
@@ -48,7 +55,7 @@ bool link_nodes(int index) {
 
 void add_task(TaskSetupPacket* task_init) {
 	int index = node_index(task_init->task_id);
-	// printf("Adding %i %i %c%c%c\n", task_init->task_id, task_init->rate, task_init->key[0], task_init->key[1], task_init->key[2]);
+	printf("Adding %i %i %c%c%c\n", task_init->task_id, task_init->rate, task_init->key[0], task_init->key[1], task_init->key[2]);
 
 	if (index == -1) {	// Node does not exist yet
 		// Add new node, node id
@@ -98,7 +105,11 @@ void update_task(TaskSetupPacket* task_params) {
 
 
 	int config = nodes[node_idx]->setup_task();
-	// printf("Configure node %i %i %i %i\n", node_idx, task_params->chunk_id * task_params->chunk_size, task_params->chunk_size, config);
+	printf("Configure node %i %i %i %i\n", node_idx, task_params->chunk_id * task_params->chunk_size, task_params->chunk_size, config);
+
+	if (!config) {
+		printf("failed config: %i\n", (*nodes[node_idx])[PARAM_DIMENSION]->size());
+	}
 
 	noInterrupts();
 	pipeline_internal->feedback[node_idx]->configured = config;
@@ -187,6 +198,7 @@ void task_publish_handler(int i) {
 void spin() {
 	// handle queued setup
 	task_setup_handler();
+
 	// handle task execution
 	for (int i = 0; i < nodes.size(); i++) {
 		// If task isn't fully linked to inputs this will link them (if the input tasks exist)
@@ -198,12 +210,31 @@ void spin() {
 				// printf("Ran: %i %i %f\n", i, nodes[i]->is_latched(), sys_timers.total_seconds(0));
 				// put task output, context in the pipeline for publishing
 				task_publish_handler(i);
+				run_status = 1;
 			}
+		}
+		else {
+			printf("Linking error %i\n", i);
 		}
 
 		noInterrupts();
 		pipeline_internal->lifetime = sys_timers.total_seconds(0); // update lifetime everytime a task is run
 		interrupts();
+	}
+
+	if (sys_timers.secs(2) > 0.25) {
+		sys_timers.set(2);
+
+		config_status = 0;
+
+		for(int i = 0; i < nodes.size(); i++) {
+			if (!nodes[i]->is_linked() || !nodes[i]->is_configured()) {
+				config_status = 1;
+			}
+		}
+
+		analogWrite(RUN_STATUS_PIN, run_status * 250);
+		analogWrite(CONFIGURATION_STATUS_PIN, config_status * 250);
 	}
 }
 

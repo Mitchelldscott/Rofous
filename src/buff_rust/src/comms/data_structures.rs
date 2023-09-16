@@ -515,8 +515,9 @@ impl RobotFirmware {
         byu: BuffYamlUtil,
         writer_tx: crossbeam_channel::Sender<ByteBuffer>,
     ) -> RobotFirmware {
-        rosrust::init("dyse_comms");
 
+        rosrust::init("dyse_comms");
+        
         let tasks = byu.load_tasks();
 
         let task_input_subs = (0..tasks.len())

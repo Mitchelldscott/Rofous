@@ -24,7 +24,7 @@ def fb_callback(msg, pub):
 	if collect_samples:
 		pin_output.append(msg.data[0]);
 		teensy_time.append(msg.data[1]);
-		control.append(((pin_output[-1] / 4096) + 0.1) % 1);
+		control.append(((pin_output[-1] / 4096) + 0.01) % 1);
 		msg = Float64MultiArray()
 		msg.data = [control[-1]]
 		pub.publish(msg)

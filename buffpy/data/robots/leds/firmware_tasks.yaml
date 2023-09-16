@@ -6,24 +6,37 @@
 #
 ##############################
 
-# led1:
-#  - driver: PWM
-#  - rate: 200
-#  - inputs: [pwm_signal1]
-#  - output: pwm_output1
-#  - parameters: [24.0]
-#  - publish: 200
+signal:
+ - driver: VAL
+ - rate: 200
+ - inputs: []
+ - parameters: [200.0]
+
+
+led1:
+ - driver: PWM
+ - rate: 200
+ - inputs: [signal]
+ - parameters: [11.0]
+ - publish: 200
 
 led2:
  - driver: PWM
  - rate: 100
- - inputs: [signal2]
- - parameters: [25.0]
+ - inputs: [signal]
+ - parameters: [8.0]
  - publish: 100
 
 led3:
  - driver: PWM
- - rate: 20
- - inputs: [signal3]
- - parameters: [18.0]
- - publish: 20
+ - rate: 60
+ - inputs: [signal]
+ - parameters: [10.0]
+ - publish: 100
+
+led4:
+ - driver: PWM
+ - rate: 30
+ - inputs: [signal]
+ - parameters: [7.0]
+ - publish: 100

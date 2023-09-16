@@ -22,6 +22,9 @@ buff_nodes:
   pin_test3:
     files: [../tests/usb_delay_test.py]
     args: ['3']
+  pin_test4:
+    files: [../tests/usb_delay_test.py]
+    args: ['4']
 
 # Examle of includig ros
 # Maybe need some kind of option to shut this down via cmdline

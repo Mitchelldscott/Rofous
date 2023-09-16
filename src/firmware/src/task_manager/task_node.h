@@ -40,6 +40,7 @@ class TaskNode {
 		int input_id(int);
 
 		void reset_config();
+		bool is_linked();
 		bool is_configured();
 
 		int n_links();

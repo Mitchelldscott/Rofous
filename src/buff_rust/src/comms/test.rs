@@ -55,10 +55,22 @@ pub mod robot_fw {
         rs.print();
 
         rs.task_init_packets().iter().for_each(|packet| {
-            packet.print();
-        });
+            let mut total_items = 0;
+            // packet.print();
+            packet.buffer().iter().for_each(|b| {
+                if *b != 0 {
+                    total_items += 1;
+                }
+            });
 
-        rs.print();
+            match total_items < 16 {
+                true => {
+                    println!("almost empty packet {total_items}");
+                    packet.print();
+                }
+                false => {},
+            };
+        });
     }
 }
 
@@ -148,7 +160,10 @@ pub mod dead_comms {
 
         interface.layer.control_flags.shutdown();
         println!("[HID-Control]: shutdown");
-        interface.layer.print();
+        interface.print();
+
+        assert_le!(((TEST_DURATION as f64 / TEENSY_CYCLE_TIME_S) - interface.layer.mcu_stats.packets_sent()).abs(), (TEST_DURATION * 5) as f64, "Not enough packts sent by mcu");
+        assert_le!(((TEST_DURATION as f64 / TEENSY_CYCLE_TIME_S) - interface.layer.pc_stats.packets_sent()).abs(), (TEST_DURATION * 5) as f64, "Not enough packts sent by pc");
     }
 
     #[test]
@@ -198,20 +213,11 @@ pub mod live_comms {
     use super::*;
 
     pub fn sim_interface(mut interface: HidInterface) {
-        let initializers = interface.get_initializers();
+        interface.send_initializers();
 
         while !interface.layer.control_flags.is_connected() {}
 
         println!("[HID-Control]: Live");
-
-        // Not as worried about efficiency here
-        // Also it hard to know how many init packets
-        // there will be... so K.I.S.S.
-        initializers.iter().for_each(|init| {
-            let t = Instant::now();
-            interface.writer_tx(init.clone());
-            interface.layer.delay(t);
-        });
 
         let lifetime = Instant::now();
         let mut t = Instant::now();
@@ -220,17 +226,17 @@ pub mod live_comms {
             && !interface.layer.control_flags.is_shutdown()
         {
             let loopt = Instant::now();
+            // interface.try_config();
 
             if interface.layer.control_flags.is_connected() {
                 interface.check_feedback();
-                if t.elapsed().as_secs() >= TEST_DURATION / 5 {
-                    // interface.send_control(0, vec![200.0]);
+                if t.elapsed().as_secs() >= 10 {
                     interface.print();
                     t = Instant::now();
                 }
             }
 
-            interface.layer.delay(loopt);
+            interface.layer.loop_delay(loopt);
             // if t.elapsed().as_micros() as f64 > TEENSY_CYCLE_TIME_US {
             //     println!("HID Control over cycled {} ms", (t.elapsed().as_micros() as f64) * 1E-3);
             // }
@@ -239,87 +245,35 @@ pub mod live_comms {
         interface.layer.control_flags.shutdown();
         println!("[HID-Control]: shutdown");
         interface.layer.print();
-    }
 
-    #[test]
-    pub fn hid_spawner() {
-        /*
-            Start an hid layer
-        */
+        let mut failed = false;
+        (0..interface.robot_fw.tasks.len()).for_each(|i| {
+            let rate_duration = interface.robot_fw.tasks[i].rate as f64 * (TEST_DURATION as f64 * 0.8);
+            let expected_output_size = match rate_duration > 500.0 {
+                true => 500.0,
+                false => rate_duration,
+            };
 
-        let (interface, mut reader, mut writer) = HidInterface::new();
+            match interface.robot_fw.tasks[i].output.len() as f64 >= expected_output_size {
+                true => {},
+                false => {
+                    interface.robot_fw.tasks[i].print();
+                    failed = true;
+                }
+            };
 
-        interface.layer.print();
-
-        let reader_handle = Builder::new()
-            .name("HID Reader".to_string())
-            .spawn(move || {
-                reader.pipeline();
-            })
-            .unwrap();
-
-        let writer_handle = Builder::new()
-            .name("HID Writer".to_string())
-            .spawn(move || {
-                writer.pipeline();
-            })
-            .unwrap();
-
-        let interface_sim = Builder::new()
-            .name("HID Control".to_string())
-            .spawn(move || {
-                sim_interface(interface);
-            })
-            .unwrap();
-
-        reader_handle.join().expect("[HID-Reader]: failed");
-        interface_sim.join().expect("[HID-Control]: failed");
-        writer_handle.join().expect("[HID-Writer]: failed");
-    }
-}
-
-#[cfg(test)]
-pub mod live_record {
-    // Note this useful idiom: importing names from outer (for mod tests) scope.
-    use super::*;
-
-    pub fn sim_interface(mut interface: HidInterface) {
-        let initializers = interface.get_initializers();
-
-        while !interface.layer.control_flags.is_connected() {}
-
-        println!("[HID-Control]: Live");
-
-        // Not as worried about efficiency here
-        // Also it hard to know how many init packets
-        // there will be... so K.I.S.S.
-        initializers.iter().for_each(|init| {
-            let t = Instant::now();
-            interface.writer_tx(init.clone());
-            interface.layer.delay(t);
+            match interface.robot_fw.configured[i] {
+                true => {},
+                false => {
+                    failed = true;
+                }
+            };
         });
 
-        let lifetime = Instant::now();
-
-        while lifetime.elapsed().as_secs() < TEST_DURATION
-            && !interface.layer.control_flags.is_shutdown()
-        {
-            let loopt = Instant::now();
-
-            if interface.layer.control_flags.is_connected() {
-                // interface.send_request();
-                interface.check_feedback();
-            }
-
-            interface.layer.delay(loopt);
-            // if t.elapsed().as_micros() as f64 > TEENSY_CYCLE_TIME_US {
-            //     println!("HID Control over cycled {} ms", (t.elapsed().as_micros() as f64) * 1E-3);
-            // }
-        }
-
-        interface.layer.control_flags.shutdown();
-        println!("[HID-Control]: shutdown");
-        interface.layer.print();
+        match failed {
+            true => assert_eq!(0, 1, "Failed to configure task(s)"),
+            false => {},
+        };
     }
 
     #[test]
