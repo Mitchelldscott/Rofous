@@ -137,6 +137,7 @@ bool Adafruit_LIS3MDL::_init(void) {
 
 /**************************************************************************/
 /*!
+
 @brief  Performs a software reset
 */
 /**************************************************************************/
@@ -458,6 +459,7 @@ void Adafruit_LIS3MDL::configInterrupt(bool enableX, bool enableY, bool enableZ,
 /*!
     @brief Enable or disable self-test
     @param flag If true, enable self-test
+
 */
 /**************************************************************************/
 void Adafruit_LIS3MDL::selfTest(bool flag) {

@@ -225,16 +225,18 @@ void spin() {
 	if (sys_timers.secs(2) > 0.25) {
 		sys_timers.set(2);
 
-		config_status = 0;
-
-		for(int i = 0; i < nodes.size(); i++) {
-			if (!nodes[i]->is_linked() || !nodes[i]->is_configured()) {
-				config_status = 1;
+		if (nodes.size() == 0) {
+			config_status = !config_status;
+		}
+		else {
+			config_status = 0;
+			for (int i = 0; i < nodes.size(); i++) {
+				config_status |= !(nodes[i]->is_configured() && nodes[i]->is_linked());
 			}
 		}
 
-		analogWrite(RUN_STATUS_PIN, run_status * 250);
-		analogWrite(CONFIGURATION_STATUS_PIN, config_status * 250);
+		digitalWriteFast(RUN_STATUS_PIN, run_status);
+		digitalWriteFast(CONFIGURATION_STATUS_PIN, config_status);
 	}
 }
 

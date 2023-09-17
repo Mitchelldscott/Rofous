@@ -20,14 +20,15 @@
 #ifndef _ADAFRUIT_SENSOR_H
 #define _ADAFRUIT_SENSOR_H
 
-#ifndef ARDUINO
-#include <stdint.h>
-#elif ARDUINO >= 100
-#include "Arduino.h"
-#include "Print.h"
-#else
-#include "WProgram.h"
-#endif
+// #ifndef ARDUINO
+// #include <stdint.h>
+// #elif ARDUINO >= 100
+// #include "Arduino.h"
+// #include "Print.h"
+// #else
+// #include "WProgram.h"
+// #endif
+#include <Arduino.h>
 
 /* Constants */
 #define SENSORS_GRAVITY_EARTH (9.80665F) /**< Earth's gravity in m/s^2 */
@@ -79,7 +80,8 @@ typedef enum {
   SENSOR_TYPE_PM25_ENV = (27),
   SENSOR_TYPE_PM100_ENV = (28),
   SENSOR_TYPE_GAS_RESISTANCE = (29),
-  SENSOR_TYPE_UNITLESS_PERCENT = (30)
+  SENSOR_TYPE_UNITLESS_PERCENT = (30),
+  SENSOR_TYPE_ALTITUDE = (31)
 } sensors_type_t;
 
 /** struct sensors_vec_s is used to return a vector in a common format. */
@@ -171,7 +173,9 @@ typedef struct {
                                the air (Ohms) */
     float unitless_percent; /**<Percentage, unit-less (%) */
     sensors_color_t color;  /**< color in RGB component values */
-  };                        ///< Union for the wide ranges of data we can carry
+    float altitude; /**< Distance between a reference datum and a point or
+                       object, in meters. */
+  };                ///< Union for the wide ranges of data we can carry
 } sensors_event_t;
 
 /* Sensor details (40 bytes) */
@@ -216,9 +220,6 @@ public:
   virtual void getSensor(sensor_t *) = 0;
 
   void printSensorDetails(void);
-
-private:
-  bool _autoRange;
 };
 
 #endif

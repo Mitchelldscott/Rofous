@@ -5,7 +5,6 @@
     @brief  Prints sensor information to serial console
 */
 /**************************************************************************/
-#ifndef USB_RAWHID
 void Adafruit_Sensor::printSensorDetails(void) {
   sensor_t sensor;
   getSensor(&sensor);
@@ -101,6 +100,9 @@ void Adafruit_Sensor::printSensorDetails(void) {
   case SENSOR_TYPE_UNITLESS_PERCENT:
     Serial.print(F("Unitless Percent (%)"));
     break;
+  case SENSOR_TYPE_ALTITUDE:
+    Serial.print(F("Altitude (m)"));
+    break;
   }
 
   Serial.println();
@@ -116,4 +118,3 @@ void Adafruit_Sensor::printSensorDetails(void) {
   Serial.println(sensor.resolution);
   Serial.println(F("------------------------------------\n"));
 }
-#endif

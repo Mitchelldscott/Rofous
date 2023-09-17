@@ -7,6 +7,10 @@ Task* new_task(const char* key){
         // printf("Task builder LSM6DSOX\n");
         return new LSM6DSOX();
     }
+    if (key[0] == LSM9DS1_DRIVER_KEY[0] && key[1] == LSM9DS1_DRIVER_KEY[1] && key[2] == LSM9DS1_DRIVER_KEY[2]) {
+        // printf("Task builder LSM6DSOX\n");
+        return new LSM9DS1();
+    }
     else if (key[0] == PWM_DRIVER_KEY[0] && key[1] == PWM_DRIVER_KEY[1] && key[2] == PWM_DRIVER_KEY[2]) {
         // printf("Task builder PWM_DRIVER_KEY\n");
         return new PwmDriver();

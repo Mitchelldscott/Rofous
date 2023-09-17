@@ -18,8 +18,8 @@
 #include "task_manager/task_node.h"
 
 #define MAXIMUM_NODES 10
-#define RUN_STATUS_PIN 6
-#define CONFIGURATION_STATUS_PIN 5
+#define RUN_STATUS_PIN 3
+#define CONFIGURATION_STATUS_PIN 2
 
 CommsPipeline* init_task_manager();
 

@@ -9,20 +9,19 @@ FTYK timers;
 int simple_proc_test(Task* p) {
 	int errors = 0;
 
-	p->print();
-
 	Vector<float> inputs(0);
 	Vector<float> outputs(0);
 	Vector<float> config(0);
 
 	for (int i = 0; i < 3; i++) {
 		timers.set(0);
-		p->run(&inputs, &outputs);
+		p->run(&inputs, &outputs, 1);
 		errors += assert_leq<float>(timers.micros(0), 1000, "Run Task timer (us)");
 	}
 
 	errors += assert_neq<float>(outputs.as_array(), 0.0f, "task post run non-empty outputs test", outputs.size());
 
+	p->print();
 	p->clear();
 
 	return errors;
@@ -50,9 +49,9 @@ int main() {
 	errors = assert_leq<float>(timers.micros(0), 500, "Reset Task timer (us)");
 	errors += simple_proc_test(&p);
 
-	printf("=== Starting LSM6DSOX tests ===\n");
+	printf("=== Starting LSM9DS1 tests ===\n");
 
-	LSM6DSOX imu;
+	LSM9DS1 imu;
 	
 	timers.set(0);
 	imu.reset();
@@ -76,11 +75,11 @@ int main() {
 	printf("=== Starting Factory tests ===\n");
 
 	Vector<Task*> p_list(2);
-	p_list.push(new_task("LSM"));
+	p_list.push(new_task("DS1"));
 	p_list.push(new_task("CMF"));
 	p_list.print();
 
-	printf("=== LSM6DSOX ===\n");
+	printf("=== LSM9DS1 ===\n");
 	errors += simple_proc_test(p_list[0]);
 	printf("=== ComplimentaryFilter ===\n");
 	errors += setup_proc_test(p_list[1], &cmf_config, 12);
