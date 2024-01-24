@@ -1,0 +1,21 @@
+QUADMODEL:
+  brand: XXX
+  properties:
+  	weight: N
+  	arm_length: N
+  	propeller_radius: N
+  	propeller_blades: N
+  	propeller_profile: XXX
+  	vision_type: [XXX, XXX]
+
+  limits:
+  	tilt: N
+  	ascent: N
+  	descent: N
+  	horizontal: N
+  	take_off_alt: N
+    payload: N
+    altitude: N
+    vision_coverage: N
+    visibile_horizon: N
+

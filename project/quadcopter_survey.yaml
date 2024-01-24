@@ -1,0 +1,289 @@
+# DesignTemplate:
+#
+#   brand: Dyse Industries
+#
+#   properties:
+#
+#     weight:                       # g (includes batteries and sensors, no payload)
+#     dimensions:                   # cm L x W x H (unfolded, landing gear up, no props)
+#
+#     propellers:                   # Specific propeller attributes
+#       number: 
+#       blades: 
+#       profile:                    # diameter|pitch (inches)
+#
+#     battery:                      # Describes the onboard battery
+#       capacity:                   # mAh
+#       voltage:                    # V
+#
+#     sensors:                      # Info on various available sensors
+#       fpv:
+#         fov:                      # degrees
+#         resolution: [, ]          # pixels
+#
+#   limits:
+#
+#     angular:
+#       tilt:                       # degrees (roll/pitch)
+#       rate:                       # degrees (roll/pitch, yaw)
+#
+#     linear:
+#       altitude:                   # m
+#       distance:                   # m
+#       ascent:                     # m/s
+#       descent:                    # m/s
+#       horizontal:                 # m/s
+#       wind_speed:                 # m/s
+#       
+#     mission:
+#       payload:                    # g
+#       duration:                   # mins
+#       take_off_alt:               # m
+#       hover_duration:             # mins
+#       hover_accuracy: [, ]        # +/- m (horz, vert)
+
+# ============================================================== #
+
+Inspire 3:
+  brand: DJI
+  properties:
+
+    weight: 3995                  # g (includes batteries and sensors, no payload)
+    dimensions: [50, 70, 18]      # cm L x W x H (unfolded, landing gear up, no props)
+
+    propellers:                   # Specific propeller attributes
+      number: 4
+      blades: 2
+      profile: 1676               # diameter|pitch (inches)
+
+    battery:                      # Describes the onboard battery
+      capacity: 4280              # mAh
+      voltage: 23.1               # V
+
+    sensors:                      # Info on various available sensors
+      fpv:
+        fov: 161                  # degrees
+        resolution: [1920, 1080]  # pixels
+
+      gnss: ['gps', 'galileo', 'beidou']
+
+  limits:
+
+    angular:
+      tilt: 35                    # degrees (roll/pitch)
+      rate: [200, 150]            # degrees (roll/pitch, yaw)
+
+    linear:
+      altitude: 7000              # m
+      distance: 15000             # m
+      ascent: 8                   # m/s
+      descent: 10                 # m/s
+      horizontal: 23              # m/s
+      wind_speed: 12              # m/s
+      
+    mission:
+      payload: 200                # g
+      duration: 28                # mins
+      # take_off_alt:               # m
+      hover_duration: 25          # mins
+      hover_accuracy: [0.1, 0.1]  # +/- m (horz, vert)
+
+# ============================================================== #
+
+Mavic 3 Pro:
+  brand: DJI
+  properties:
+
+    weight: 958                   # g (includes batteries and sensors, no payload)
+    dimensions: [34.75, 29, 10.7] # cm L x W x H (unfolded, landing gear up, no props)
+
+    propellers:                   # Specific propeller attributes
+      number: 4
+      blades: 2
+      profile: 9453               # diameter|pitch (inches)
+
+    battery:                      # Describes the onboard battery
+      capacity: 5000              # mAh
+      voltage: 15.4               # V
+
+    sensors:                      # Info on various available sensors
+      fpv:
+        fov: 84                   # degrees
+        resolution: [1920, 1080]  # pixels
+
+      gnss: ['gps', 'galileo', 'beidou']
+
+  limits:
+
+    angular:
+      tilt: 35                    # degrees (roll/pitch)
+      rate: [200, 150]            # degrees (roll/pitch, yaw)
+
+    linear:
+      altitude: 6000              # m
+      distance: 28000             # m
+      ascent: 8                   # m/s
+      descent: 6                  # m/s
+      horizontal: 21              # m/s
+      wind_speed: 12              # m/s
+      
+    mission:
+      payload: 200                # g
+      duration: 43                # mins
+      take_off_alt: 6000          # m
+      hover_duration: 37          # mins
+      hover_accuracy: [0.3, 0.1]  # +/- m (horz, vert)
+
+# ============================================================== #
+
+Matric 350 RTK:
+  brand: DJI
+  properties:
+
+    weight: 6470                  # g (includes batteries and sensors, no payload)
+    dimensions: [81, 67, 43]      # cm L x W x H (unfolded, landing gear up, no props)
+
+    propellers:                   # Specific propeller attributes
+      number: 8
+      blades: 2
+      profile: 2112               # diameter|pitch (inches)
+
+    battery:                      # Describes the onboard battery
+      capacity: 5880              # mAh
+      voltage: 44.76              # V
+
+    sensors:                      # Info on various available sensors
+      
+      fpv:
+        fov: 142                   # degrees
+        resolution: [1920, 1080]  # pixels
+
+      gnss: ['gps', 'galileo', 'beidou', 'glonass']
+
+      infrared: 
+        fov: 30                   # degrees
+        range: [0.1, 8]           # m
+
+  limits:
+
+    angular:
+      tilt: 30                    # degrees (roll/pitch)
+      rate: [300, 100]            # degrees (roll/pitch, yaw)
+
+    linear:
+      altitude: 7000              # m
+      # distance: 28000             # m
+      ascent: 6                   # m/s
+      descent: 5                  # m/s
+      horizontal: 23              # m/s
+      wind_speed: 12              # m/s
+      
+    mission:
+      payload: 2700               # g
+      duration: 55                # mins
+      take_off_alt: 6000          # m
+      # hover_duration: 37          # mins
+      hover_accuracy: [0.1, 0.1]  # +/- m (horz, vert)
+
+# ============================================================== #
+
+EVO II:
+  brand: Autel
+  properties:
+
+    weight: 1150                  # g (includes batteries and sensors, no payload)
+    dimensions: [81, 67, 43]      # cm L x W x H (unfolded, landing gear up, no props)
+
+    propellers:                   # Specific propeller attributes
+      number: 8
+      blades: 2
+      profile: 2112               # diameter|pitch (inches)
+
+    battery:                      # Describes the onboard battery
+      capacity: 7100              # mAh
+      voltage: 11.55              # V
+
+    sensors:                      # Info on various available sensors
+      
+      fpv:
+        fov: 79                   # degrees
+        resolution: [1920, 1080]  # pixels
+
+  limits:
+
+    # angular:
+      # tilt: 30                    # degrees (roll/pitch)
+      # rate: [300, 100]            # degrees (roll/pitch, yaw)
+
+    linear:
+      altitude: 7000              # m
+      # distance: 28000             # m
+      ascent: 8                   # m/s
+      descent: 4                  # m/s
+      horizontal: 20              # m/s
+      wind_speed: 14              # m/s
+      
+    mission:
+      payload: 849                # g
+      duration: 40                # mins
+      # take_off_alt: 6000          # m
+      hover_duration: 35          # mins
+      hover_accuracy: [0.3, 0.1]  # +/- m (horz, vert)
+
+# ============================================================== #
+
+FlyCart 30:
+  brand: DJI
+  properties:
+
+    weight: 65000                 # g (includes batteries and sensors, no payload)
+    dimensions: [280, 30, 94]     # cm L x W x H (unfolded, landing gear up, no props)
+
+    propellers:                   # Specific propeller attributes
+      number: 8
+      blades: 2
+      profile: 2112               # diameter|pitch (inches)
+
+    battery:                      # Describes the onboard battery
+      capacity: 38000             # mAh
+      voltage: 52.22              # V
+
+    sensors:                      # Info on various available sensors
+      
+      fpv:
+        fov: 149                  # degrees
+        resolution: [1920, 1440]  # pixels
+
+  limits:
+
+    angular:
+      tilt: 30                    # degrees (roll/pitch)
+      rate: [300, 100]            # degrees (roll/pitch, yaw)
+
+    linear:
+      altitude: 6000              # m
+      distance: 16000             # m
+      ascent: 5                   # m/s
+      descent: 3                  # m/s
+      horizontal: 20              # m/s
+      wind_speed: 12              # m/s
+      
+    mission:
+      payload: 3000               # g
+      duration: 18                # mins
+      # take_off_alt: 6000          # m
+      hover_duration: 29          # mins
+      hover_accuracy: [0.3, 0.1]  # +/- m (horz, vert)
+
+# ============================================================== #
+
+
+
+
+
+
+
+
+
+
+
